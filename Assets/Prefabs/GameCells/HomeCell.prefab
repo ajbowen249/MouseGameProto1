@@ -737,7 +737,7 @@ PrefabInstance:
     - target: {fileID: 167377580590972847, guid: 1138b2528fb83f74ba063a11890a2a3f,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -4.29
       objectReference: {fileID: 0}
     - target: {fileID: 167377580590972847, guid: 1138b2528fb83f74ba063a11890a2a3f,
         type: 3}
@@ -784,11 +784,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2779876170070463684, guid: 1138b2528fb83f74ba063a11890a2a3f,
+        type: 3}
+      propertyPath: m_Radius
+      value: 4.64
+      objectReference: {fileID: 0}
     - target: {fileID: 4299085469408679046, guid: 1138b2528fb83f74ba063a11890a2a3f,
         type: 3}
       propertyPath: m_Name
       value: Door
       objectReference: {fileID: 0}
+    - target: {fileID: 6507655529881690297, guid: 1138b2528fb83f74ba063a11890a2a3f,
+        type: 3}
+      propertyPath: FromCell
+      value: 
+      objectReference: {fileID: 4008398053108115855}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1138b2528fb83f74ba063a11890a2a3f, type: 3}
 --- !u!4 &6668375666063414472 stripped

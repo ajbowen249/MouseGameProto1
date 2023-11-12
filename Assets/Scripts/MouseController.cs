@@ -85,9 +85,9 @@ public class MouseController : MonoBehaviour
 
     private const float _threshold = 0.01f;
 
-    private bool _hasAnimator;
-
     private InteractionVolume _inInteractionVolume;
+
+    private Vector3? _teleportTo;
 
     private bool IsCurrentDeviceMouse
     {
@@ -95,6 +95,11 @@ public class MouseController : MonoBehaviour
         {
             return _playerInput.currentControlScheme == "KeyboardMouse";
         }
+    }
+
+    public void Teleport(Vector3 position)
+    {
+        _teleportTo = position;
     }
 
     private void Awake()
@@ -130,6 +135,14 @@ public class MouseController : MonoBehaviour
     private void LateUpdate()
     {
         CameraRotation();
+
+        if (_teleportTo != null)
+        {
+            _controller.enabled = false;
+            _controller.transform.position = (Vector3)_teleportTo;
+            _controller.enabled = true;
+            _teleportTo = null;
+        }
     }
 
     private void GroundedCheck()
