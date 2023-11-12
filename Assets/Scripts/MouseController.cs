@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using StarterAssets;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
@@ -99,6 +100,8 @@ public class MouseController : MonoBehaviour
 
     public float Energy { get; private set; } = 100f;
 
+    public Dictionary<string, int> Inventory { get; private set; } = new Dictionary<string, int>();
+
     public void Teleport(Vector3 position)
     {
         _teleportTo = position;
@@ -108,6 +111,16 @@ public class MouseController : MonoBehaviour
     {
         Energy -= cost;
         HUD.Instance.SetEnergy(Energy);
+    }
+
+    public void AddInventoryItem(string name, int quantity)
+    {
+        int existingQuantity = 0;
+        Inventory.TryGetValue(name, out existingQuantity);
+        existingQuantity += quantity;
+        Inventory[name] = existingQuantity;
+
+        HUD.Instance.AddMessage($"Picked up {name} (x{quantity})");
     }
 
     private void Awake()
