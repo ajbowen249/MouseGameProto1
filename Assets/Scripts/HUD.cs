@@ -12,7 +12,7 @@ public class HUD : MonoBehaviour
     public TMP_Text MessageLog;
 
     public int MessageLogLines = 5;
-    public int MessageLogTimeSeconds = 5;
+    public int MessageLogTimeSeconds = 7;
 
     public static HUD Instance { get; private set; }
 
@@ -37,6 +37,7 @@ public class HUD : MonoBehaviour
         if (_lastNewLog < Time.fixedTime - MessageLogTimeSeconds && MessageLog.text != "")
         {
             MessageLog.text = "";
+            _messages = new List<string>();
         }
     }
 
