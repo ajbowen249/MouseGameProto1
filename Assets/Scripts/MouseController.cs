@@ -87,6 +87,8 @@ public class MouseController : MonoBehaviour
 
     private bool _hasAnimator;
 
+    private InteractionVolume _inInteractionVolume;
+
     private bool IsCurrentDeviceMouse
     {
         get
@@ -122,6 +124,7 @@ public class MouseController : MonoBehaviour
         JumpAndGravity();
         GroundedCheck();
         Move();
+        Interaction();
     }
 
     private void LateUpdate()
@@ -217,6 +220,14 @@ public class MouseController : MonoBehaviour
                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
     }
 
+    private void Interaction()
+    {
+        if (_inInteractionVolume != null && _input.interact) {
+            _input.interact = false;
+            _inInteractionVolume.Interact(gameObject);
+        }
+    }
+
     private void JumpAndGravity()
         {
             if (Grounded)
@@ -284,5 +295,23 @@ public class MouseController : MonoBehaviour
         Gizmos.DrawSphere(
             new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
             GroundedRadius);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
+        if (interactionVolume != null) {
+            _inInteractionVolume = interactionVolume;
+            Debug.Log("Have interactable");
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
+        if (interactionVolume != null) {
+            _inInteractionVolume = null;
+            Debug.Log("Left interactable");
+        }
     }
 }
