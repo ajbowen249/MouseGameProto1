@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameCell : MonoBehaviour
 {
-    
+    public GameObject EntryPoint;
 
     void Start()
     {
