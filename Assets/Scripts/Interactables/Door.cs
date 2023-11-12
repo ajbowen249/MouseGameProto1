@@ -7,7 +7,7 @@ public class Door : MonoBehaviour
     public GameObject FromCell;
     public GameObject ToCell;
 
-    void OnInteract(GameObject interactor)
+    void OnInteraction(GameObject interactor)
     {
         if (ToCell == null)
         {

@@ -11,6 +11,8 @@ namespace StarterAssets
         public bool jump;
         public bool sprint;
         public bool interact;
+        public bool dialogUp;
+        public bool dialogDown;
 
         [Header("Movement Settings")]
         public bool analogMovement;
@@ -42,6 +44,16 @@ namespace StarterAssets
             InteractInput(value.isPressed);
         }
 
+        public void OnDialogUp(InputValue value)
+        {
+            DialogUpInput(value.isPressed);
+        }
+
+        public void OnDialogDown(InputValue value)
+        {
+            DialogDownInput(value.isPressed);
+        }
+
         public void OnSprint(InputValue value)
         {
             SprintInput(value.isPressed);
@@ -65,6 +77,16 @@ namespace StarterAssets
         public void InteractInput(bool newInteractState)
         {
             interact = newInteractState;
+        }
+
+        public void DialogUpInput(bool state)
+        {
+            dialogUp = state;
+        }
+
+        public void DialogDownInput(bool state)
+        {
+            dialogDown = state;
         }
 
         public void SprintInput(bool newSprintState)

@@ -7,7 +7,7 @@ public class Pickup : MonoBehaviour
     public string Name = "object";
     public int Quantity = 1;
 
-    void OnInteract(GameObject interactor)
+    void OnInteraction(GameObject interactor)
     {
         var player = interactor.GetComponent<MouseController>();
         if (player == null)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SnowBank : MonoBehaviour
 {
-    void OnInteract(GameObject interactor)
+    void OnInteraction(GameObject interactor)
     {
         var player = interactor.GetComponent<MouseController>();
         if (player == null)

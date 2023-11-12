@@ -7,14 +7,14 @@ public class InteractionVolume : MonoBehaviour
     [Tooltip("Text displayed to the player")]
     public string Prompt;
 
-    [Tooltip("Receiver of OnInteract")]
+    [Tooltip("Receiver of OnInteraction")]
     public GameObject Interactable;
 
     public void Interact(GameObject interactor)
     {
         if (Interactable != null)
         {
-            Interactable.SendMessage("OnInteract", interactor);
+            Interactable.SendMessage("OnInteraction", interactor, SendMessageOptions.DontRequireReceiver);
             HUD.Instance.ClearInteractionPrompt();
         }
     }

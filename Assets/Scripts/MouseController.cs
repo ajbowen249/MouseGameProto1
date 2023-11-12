@@ -79,9 +79,16 @@ public class MouseController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
+    enum ControlState
+    {
+        EXPLORATION,
+        DIALOG,
+    }
+
     private PlayerInput _playerInput;
     private CharacterController _controller;
     private StarterAssetsInputs _input;
+    private ControlState _controlState = ControlState.EXPLORATION;
     private GameObject _mainCamera;
 
     private const float _threshold = 0.01f;
@@ -123,6 +130,21 @@ public class MouseController : MonoBehaviour
         HUD.Instance.AddMessage($"Picked up {name} (x{quantity})");
     }
 
+    public void OnStartedDialog(GameObject talkingTo)
+    {
+        _controlState = ControlState.DIALOG;
+    }
+
+    public void OnEndedDialog(GameObject talkingTo)
+    {
+        _controlState = ControlState.EXPLORATION;
+    }
+
+    public StarterAssetsInputs GetInputController()
+    {
+        return _input;
+    }
+
     private void Awake()
     {
         // get a reference to our main camera
@@ -147,10 +169,16 @@ public class MouseController : MonoBehaviour
 
     private void Update()
     {
-        JumpAndGravity();
-        GroundedCheck();
-        Move();
-        Interaction();
+        switch (_controlState)
+        {
+            case ControlState.EXPLORATION:
+                GroundedCheck();
+                JumpAndGravity();
+                Move();
+                Interaction();
+                break;
+        }
+
     }
 
     private void LateUpdate()

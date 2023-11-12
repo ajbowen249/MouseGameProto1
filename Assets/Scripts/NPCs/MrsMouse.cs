@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class MrsMouse : MonoBehaviour
 {
+    private NPC _npc;
+
     void Start()
     {
-
+        _npc = gameObject.GetComponent<NPC>();
     }
 
     void Update()
@@ -14,9 +16,10 @@ public class MrsMouse : MonoBehaviour
 
     }
 
-    void OnInteract(GameObject interactor)
+    void OnInteraction(GameObject interactor)
     {
-        StartCoroutine(ShowMessages());
+        _npc.InitiateDialog(interactor);
+        // StartCoroutine(ShowMessages());
     }
 
     IEnumerator ShowMessages()
