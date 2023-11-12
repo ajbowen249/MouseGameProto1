@@ -11,6 +11,8 @@ public class HUD : MonoBehaviour
     public TMP_Text Prompt;
     public TMP_Text MessageLog;
     public TMP_Text EnergyMeter;
+    public TMP_Text DialogText;
+    public TMP_Text DialogOptions;
 
     public int MessageLogLines = 5;
     public int MessageLogTimeSeconds = 7;
@@ -24,14 +26,11 @@ public class HUD : MonoBehaviour
     {
         Instance = this;
 
-        if (Canvas == null || Prompt == null || MessageLog == null || EnergyMeter == null)
-        {
-            Debug.LogError("One or more elements is null.");
-        }
-
         ClearInteractionPrompt();
         MessageLog.text = "";
         EnergyMeter.text = "";
+        DialogText.text = "";
+        DialogOptions.text = "";
     }
 
     void Update()
