@@ -109,7 +109,7 @@ public class MouseController : MonoBehaviour
     private void Start()
     {
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-        
+
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<StarterAssetsInputs>();
         _playerInput = GetComponent<PlayerInput>();
@@ -222,59 +222,60 @@ public class MouseController : MonoBehaviour
 
     private void Interaction()
     {
-        if (_inInteractionVolume != null && _input.interact) {
+        if (_inInteractionVolume != null && _input.interact)
+        {
             _input.interact = false;
             _inInteractionVolume.Interact(gameObject);
         }
     }
 
     private void JumpAndGravity()
+    {
+        if (Grounded)
         {
-            if (Grounded)
+            // reset the fall timeout timer
+            _fallTimeoutDelta = FallTimeout;
+
+            // stop our velocity dropping infinitely when grounded
+            if (_verticalVelocity < 0.0f)
             {
-                // reset the fall timeout timer
-                _fallTimeoutDelta = FallTimeout;
-
-                // stop our velocity dropping infinitely when grounded
-                if (_verticalVelocity < 0.0f)
-                {
-                    _verticalVelocity = -2f;
-                }
-
-                // Jump
-                if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-                {
-                    // the square root of H * -2 * G = how much velocity needed to reach desired height
-                    _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-                }
-
-                // jump timeout
-                if (_jumpTimeoutDelta >= 0.0f)
-                {
-                    _jumpTimeoutDelta -= Time.deltaTime;
-                }
-            }
-            else
-            {
-                // reset the jump timeout timer
-                _jumpTimeoutDelta = JumpTimeout;
-
-                // fall timeout
-                if (_fallTimeoutDelta >= 0.0f)
-                {
-                    _fallTimeoutDelta -= Time.deltaTime;
-                }
-
-                // if we are not grounded, do not jump
-                _input.jump = false;
+                _verticalVelocity = -2f;
             }
 
-            // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-            if (_verticalVelocity < _terminalVelocity)
+            // Jump
+            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
             {
-                _verticalVelocity += Gravity * Time.deltaTime;
+                // the square root of H * -2 * G = how much velocity needed to reach desired height
+                _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+            }
+
+            // jump timeout
+            if (_jumpTimeoutDelta >= 0.0f)
+            {
+                _jumpTimeoutDelta -= Time.deltaTime;
             }
         }
+        else
+        {
+            // reset the jump timeout timer
+            _jumpTimeoutDelta = JumpTimeout;
+
+            // fall timeout
+            if (_fallTimeoutDelta >= 0.0f)
+            {
+                _fallTimeoutDelta -= Time.deltaTime;
+            }
+
+            // if we are not grounded, do not jump
+            _input.jump = false;
+        }
+
+        // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+        if (_verticalVelocity < _terminalVelocity)
+        {
+            _verticalVelocity += Gravity * Time.deltaTime;
+        }
+    }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
@@ -300,18 +301,20 @@ public class MouseController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
-        if (interactionVolume != null) {
+        if (interactionVolume != null)
+        {
             _inInteractionVolume = interactionVolume;
-            Debug.Log("Have interactable");
+            HUD.Instance.SetInteractionPrompt(_inInteractionVolume.Prompt);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
-        if (interactionVolume != null) {
+        if (interactionVolume != null)
+        {
             _inInteractionVolume = null;
-            Debug.Log("Left interactable");
+            HUD.Instance.ClearInteractionPrompt();
         }
     }
 }

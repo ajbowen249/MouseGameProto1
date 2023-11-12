@@ -10,8 +10,10 @@ public class InteractionVolume : MonoBehaviour
     [Tooltip("Receiver of OnInteract")]
     public GameObject Interactable;
 
-    public void Interact(GameObject interactor) {
-        if (Interactable != null) {
+    public void Interact(GameObject interactor)
+    {
+        if (Interactable != null)
+        {
             Interactable.SendMessage("OnInteract", interactor);
         }
     }
