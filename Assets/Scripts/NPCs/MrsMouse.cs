@@ -6,15 +6,18 @@ public class MrsMouse : MonoBehaviour
 {
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 
-    void OnInteract(GameObject interactor) {
-        Debug.Log("Interacted with mrs mouse");
+    void OnInteract(GameObject interactor)
+    {
+        HUD.Instance.AddMessage("My love!");
+        HUD.Instance.AddMessage("We are out of Mouserella cheese!");
+        HUD.Instance.AddMessage("You must get more. Be careful, the city is dangerous!");
     }
 }
