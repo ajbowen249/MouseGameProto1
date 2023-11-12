@@ -97,9 +97,17 @@ public class MouseController : MonoBehaviour
         }
     }
 
+    public float Energy { get; private set; } = 100f;
+
     public void Teleport(Vector3 position)
     {
         _teleportTo = position;
+    }
+
+    public void ExpendEnergy(float cost)
+    {
+        Energy -= cost;
+        HUD.Instance.SetEnergy(Energy);
     }
 
     private void Awake()

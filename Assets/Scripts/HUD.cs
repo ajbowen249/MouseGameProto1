@@ -10,6 +10,7 @@ public class HUD : MonoBehaviour
     public GameObject Canvas;
     public TMP_Text Prompt;
     public TMP_Text MessageLog;
+    public TMP_Text EnergyMeter;
 
     public int MessageLogLines = 5;
     public int MessageLogTimeSeconds = 7;
@@ -23,13 +24,14 @@ public class HUD : MonoBehaviour
     {
         Instance = this;
 
-        if (Canvas == null || Prompt == null || MessageLog == null)
+        if (Canvas == null || Prompt == null || MessageLog == null || EnergyMeter == null)
         {
             Debug.LogError("One or more elements is null.");
         }
 
         ClearInteractionPrompt();
         MessageLog.text = "";
+        EnergyMeter.text = "";
     }
 
     void Update()
@@ -61,5 +63,10 @@ public class HUD : MonoBehaviour
         MessageLog.text = string.Join("\n", toRender.ToArray());
 
         _lastNewLog = Time.fixedTime;
+    }
+
+    public void SetEnergy(float value)
+    {
+        EnergyMeter.text = $"Energy: {value}";
     }
 }
