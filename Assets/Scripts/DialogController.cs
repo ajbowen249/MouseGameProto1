@@ -51,7 +51,23 @@ public class DialogController : MonoBehaviour
         if (_input.interact)
         {
             _input.interact = false;
-            BroadcastMessage("OnEndedDialog", _talkingTo.gameObject, SendMessageOptions.DontRequireReceiver);
+
+            var option = _dialog.Options[_dialogIndex];
+            if (option.Tag != "")
+            {
+                _talkingTo.BroadcastMessage("OnDialogChoice", option.Tag, SendMessageOptions.DontRequireReceiver);
+            }
+
+            if (option.Node != null)
+            {
+                _dialog = option.Node;
+                _dialogIndex = 0;
+                HUD.Instance.SetDialog(_dialog, _dialogIndex);
+            }
+            else
+            {
+                BroadcastMessage("OnEndedDialog", _talkingTo.gameObject, SendMessageOptions.DontRequireReceiver);
+            }
         }
 
         var dialogDirection = 0;
