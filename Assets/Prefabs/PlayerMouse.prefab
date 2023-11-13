@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 6206004760290105021}
   - component: {fileID: 2859532756409783153}
   - component: {fileID: 1226246727788734624}
+  - component: {fileID: 8167667135440660546}
   m_Layer: 8
   m_Name: PlayerMouse
   m_TagString: Untagged
@@ -186,6 +187,9 @@ MonoBehaviour:
   look: {x: 0, y: 0}
   jump: 0
   sprint: 0
+  interact: 0
+  dialogUp: 0
+  dialogDown: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1
@@ -268,3 +272,15 @@ MonoBehaviour:
     m_Bits: 0
   canPush: 0
   strength: 1.1
+--- !u!114 &8167667135440660546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7646408992045724113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4702e9ac08996754f84adc83e4c06481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

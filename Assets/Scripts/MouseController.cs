@@ -3,6 +3,12 @@ using UnityEngine.InputSystem;
 using StarterAssets;
 using System.Collections.Generic;
 
+public enum ControlState
+{
+    EXPLORATION,
+    DIALOG,
+}
+
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
 public class MouseController : MonoBehaviour
@@ -64,6 +70,8 @@ public class MouseController : MonoBehaviour
     [Tooltip("For locking the camera position on all axis")]
     public bool LockCameraPosition = false;
 
+    public ControlState State { get; private set; } = ControlState.EXPLORATION;
+
     // cinemachine
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
@@ -79,16 +87,9 @@ public class MouseController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
-    enum ControlState
-    {
-        EXPLORATION,
-        DIALOG,
-    }
-
     private PlayerInput _playerInput;
     private CharacterController _controller;
     private StarterAssetsInputs _input;
-    private ControlState _controlState = ControlState.EXPLORATION;
     private GameObject _mainCamera;
 
     private const float _threshold = 0.01f;
@@ -132,12 +133,12 @@ public class MouseController : MonoBehaviour
 
     public void OnStartedDialog(GameObject talkingTo)
     {
-        _controlState = ControlState.DIALOG;
+        State = ControlState.DIALOG;
     }
 
     public void OnEndedDialog(GameObject talkingTo)
     {
-        _controlState = ControlState.EXPLORATION;
+        State = ControlState.EXPLORATION;
     }
 
     public StarterAssetsInputs GetInputController()
@@ -169,7 +170,7 @@ public class MouseController : MonoBehaviour
 
     private void Update()
     {
-        switch (_controlState)
+        switch (State)
         {
             case ControlState.EXPLORATION:
                 GroundedCheck();
@@ -284,10 +285,13 @@ public class MouseController : MonoBehaviour
 
     private void Interaction()
     {
-        if (_inInteractionVolume != null && _input.interact)
+        if (_input.interact)
         {
             _input.interact = false;
-            _inInteractionVolume.Interact(gameObject);
+            if (_inInteractionVolume != null)
+            {
+                _inInteractionVolume.Interact(gameObject);
+            }
         }
     }
 

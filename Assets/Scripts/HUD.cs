@@ -22,6 +22,9 @@ public class HUD : MonoBehaviour
     private List<string> _messages = new List<string>();
     private float _lastNewLog = 0;
 
+    private DialogNode _dialog;
+    private int _dialogIndex;
+
     void Start()
     {
         Instance = this;
@@ -40,11 +43,41 @@ public class HUD : MonoBehaviour
             MessageLog.text = "";
             _messages = new List<string>();
         }
+
+        if (_dialog != null)
+        {
+            DialogText.text = _dialog.Message;
+            var optionsLines = "";
+
+            for (int i = 0; i < _dialog.Options.Count; i++)
+            {
+                var option = _dialog.Options[i];
+                if (i == _dialogIndex)
+                {
+                    optionsLines += "> ";
+                }
+
+                optionsLines += option.Text + "\n";
+            }
+
+            DialogOptions.text = optionsLines;
+        }
+        else if (DialogText.text != "" || DialogOptions.text != "")
+        {
+            DialogText.text = "";
+            DialogOptions.text = "";
+        }
     }
 
     public void SetInteractionPrompt(string prompt)
     {
         Prompt.text = prompt;
+    }
+
+    public void SetDialog(DialogNode node, int selectedIndex)
+    {
+        _dialog = node;
+        _dialogIndex = selectedIndex;
     }
 
     public void ClearInteractionPrompt()

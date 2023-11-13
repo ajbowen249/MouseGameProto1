@@ -9,6 +9,43 @@ public class MrsMouse : MonoBehaviour
     void Start()
     {
         _npc = gameObject.GetComponent<NPC>();
+        _npc.DialogTree = new DialogNode
+        {
+            Message = "My love! We are out of Mouserella cheese! You must get more. Be careful, the city is dangerous!",
+            Options = new List<DialogOption>
+            {
+                new DialogOption
+                {
+                    Text = "Okay!",
+                    Tag = "positive",
+                    Node = null,
+                },
+                new DialogOption
+                {
+                    Text = "No way!",
+                    Tag = "",
+                    Node = new DialogNode
+                    {
+                        Message = "What the heck, for real?!",
+                        Options = new List<DialogOption>
+                        {
+                            new DialogOption
+                            {
+                                Text = "Fine",
+                                Tag = "positive",
+                                Node = null,
+                            },
+                            new DialogOption
+                            {
+                                Text = "Yeah, really!",
+                                Tag = "negative",
+                                Node = null,
+                            },
+                        },
+                    },
+                },
+            },
+        };
     }
 
     void Update()
@@ -19,15 +56,5 @@ public class MrsMouse : MonoBehaviour
     void OnInteraction(GameObject interactor)
     {
         _npc.InitiateDialog(interactor);
-        // StartCoroutine(ShowMessages());
-    }
-
-    IEnumerator ShowMessages()
-    {
-        HUD.Instance.AddMessage("My love!");
-        yield return new WaitForSeconds(0.5f);
-        HUD.Instance.AddMessage("We are out of Mouserella cheese!");
-        yield return new WaitForSeconds(0.5f);
-        HUD.Instance.AddMessage("You must get more. Be careful, the city is dangerous!");
     }
 }
