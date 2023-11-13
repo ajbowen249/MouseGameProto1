@@ -54,10 +54,17 @@ public class HUD : MonoBehaviour
                 var option = _dialog.Options[i];
                 if (i == _dialogIndex)
                 {
-                    optionsLines += "> ";
+                    optionsLines += "<b><color=\"yellow\">";
                 }
 
-                optionsLines += option.Text + "\n";
+                optionsLines += option.Text;
+
+                if (i == _dialogIndex)
+                {
+                    optionsLines += "</color></b>";
+                }
+
+                optionsLines += "\n";
             }
 
             DialogOptions.text = optionsLines;
