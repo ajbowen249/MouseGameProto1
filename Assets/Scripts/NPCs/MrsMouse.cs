@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MrsMouse : MonoBehaviour
 {
@@ -56,5 +57,13 @@ public class MrsMouse : MonoBehaviour
     void OnInteraction(GameObject interactor)
     {
         _npc.InitiateDialog(interactor);
+    }
+
+    void OnDialogChoice(string tag)
+    {
+        if (tag == "negative")
+        {
+            SceneManager.LoadScene("Fail");
+        }
     }
 }
