@@ -21,4 +21,18 @@ public class CarExitSpawner : MonoBehaviour
 
         return carObject;
     }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+
+        var rotation = transform.rotation;
+        rotation.eulerAngles = rotation.eulerAngles + new Vector3(-90, 0, 0);
+
+        Gizmos.DrawMesh(
+            CarExitPrefab.GetComponentInChildren<MeshFilter>().sharedMesh,
+            transform.position + new Vector3(0f, 1.51f, 0f),
+            rotation
+        );
+    }
 }
