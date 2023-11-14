@@ -11,15 +11,11 @@ public class CarExit : MonoBehaviour
     public GameObject ToCell;
     public GameObject ExitPath;
 
-    public delegate bool ExitRequirement();
-    private ExitRequirement _exitRequirement;
-
     private MouseController _driver;
 
     void OnInteraction(GameObject interactor)
     {
-        var canExit = _exitRequirement == null ? true : _exitRequirement();
-        if (!canExit)
+        if (!FromCell.GetComponent<GameCell>().CanExit())
         {
             return;
         }
@@ -35,10 +31,5 @@ public class CarExit : MonoBehaviour
                 _driver.DetachFrom(ExitPoint.transform);
             });
         }
-    }
-
-    public void SetExitRequirement(ExitRequirement requirement)
-    {
-        _exitRequirement = requirement;
     }
 }

@@ -7,13 +7,10 @@ public class YardCell : MonoBehaviour
     public GameObject Car;
     public GameObject SnowBank;
 
-    void OnPlayerEnter(GameObject player)
+    void Start()
     {
-        var spawner = GetComponentInChildren<CarExitSpawner>();
-        Car = spawner.SpawnCarExit();
-
-        var carExit = Car.GetComponent<CarExit>();
-        carExit.SetExitRequirement(() => {
+        var cell = gameObject.GetComponent<GameCell>();
+        cell.SetExitRequirement(() => {
             if (SnowBank == null)
             {
                 return true;
@@ -23,5 +20,11 @@ public class YardCell : MonoBehaviour
 
             return false;
         });
+    }
+
+    void OnPlayerEnter(GameObject player)
+    {
+        var spawner = GetComponentInChildren<CarExitSpawner>();
+        spawner.SpawnCarExit();
     }
 }
