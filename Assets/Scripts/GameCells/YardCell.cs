@@ -10,6 +10,15 @@ public class YardCell : MonoBehaviour
     void Start()
     {
         var carExit = Car.GetComponent<CarExit>();
-        carExit.SetExitRequirement(() => SnowBank == null);
+        carExit.SetExitRequirement(() => {
+            if (SnowBank == null)
+            {
+                return true;
+            }
+
+            HUD.Instance.AddMessage("The snow blocks your path.");
+
+            return false;
+        });
     }
 }

@@ -98,6 +98,8 @@ public class MouseController : MonoBehaviour
 
     private Vector3? _teleportTo;
 
+    private GameObject _attachedTo;
+
     private bool IsCurrentDeviceMouse
     {
         get
@@ -146,6 +148,24 @@ public class MouseController : MonoBehaviour
         return _input;
     }
 
+    public void AttachTo(GameObject parent, Transform target)
+    {
+        _attachedTo = parent;
+        _controller.enabled = false;
+        transform.SetParent(parent.transform);
+        transform.position = target.position;
+        transform.rotation = target.rotation;
+    }
+
+    public void DetachFrom(Transform target)
+    {
+        transform.position = target.position;
+        transform.rotation = target.rotation;
+        transform.SetParent(null);
+        _controller.enabled = true;
+        _attachedTo = null;
+    }
+
     private void Awake()
     {
         // get a reference to our main camera
@@ -170,6 +190,11 @@ public class MouseController : MonoBehaviour
 
     private void Update()
     {
+        if (_attachedTo != null)
+        {
+            return;
+        }
+
         switch (State)
         {
             case ControlState.EXPLORATION:
@@ -291,6 +316,7 @@ public class MouseController : MonoBehaviour
             if (_inInteractionVolume != null)
             {
                 _inInteractionVolume.Interact(gameObject);
+                _inInteractionVolume = null;
             }
         }
     }
