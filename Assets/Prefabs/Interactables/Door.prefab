@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a88b453281ef349b770823d1d876cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FromCell: {fileID: 0}
+  ToCell: {fileID: 0}
 --- !u!1 &5873230839069729420
 GameObject:
   m_ObjectHideFlags: 0

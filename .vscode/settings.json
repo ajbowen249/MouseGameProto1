@@ -3,5 +3,8 @@
         "Behaviour",
         "interactor",
         "lerp"
-    ]
+    ],
+    "files.exclude": {
+        "**/*.cs.meta": true
+    }
 }

@@ -18,12 +18,9 @@ public class Door : MonoBehaviour
         var gameCell = ToCell.GetComponent<GameCell>();
         var entryPoint = gameCell.EntryPoint.gameObject.transform.position;
 
-        var maybeMouseController = interactor.GetComponent<MouseController>();
-
-        if (maybeMouseController != null)
-        {
-            maybeMouseController.Teleport(entryPoint);
-        }
+        var mouseController = interactor.GetComponent<MouseController>();
+        mouseController.Teleport(entryPoint);
+        gameCell.PlayerEntered(mouseController.gameObject);
 
         if (FromCell != null)
         {

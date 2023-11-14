@@ -6,13 +6,8 @@ public class GameCell : MonoBehaviour
 {
     public GameObject EntryPoint;
 
-    void Start()
+    public void PlayerEntered(GameObject player)
     {
-        
-    }
-
-    void Update()
-    {
-        
+        BroadcastMessage("OnPlayerEnter", player, SendMessageOptions.DontRequireReceiver);
     }
 }
