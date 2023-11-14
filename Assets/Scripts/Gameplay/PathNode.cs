@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public class PathNode : MonoBehaviour
 {
@@ -11,7 +11,7 @@ public class PathNode : MonoBehaviour
     void ScanSiblings()
     {
         var siblings = transform.parent.GetComponentsInChildren<PathNode>();
-        var index = ArrayUtility.FindIndex(siblings, node => node == this);
+        var index = Array.IndexOf(siblings, this);
 
         if (index < 0)
         {
