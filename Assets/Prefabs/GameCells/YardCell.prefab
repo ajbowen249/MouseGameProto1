@@ -319,6 +319,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5368055828128286147}
   - component: {fileID: 2453908889758519760}
+  - component: {fileID: 4687476456762673512}
   m_Layer: 0
   m_Name: YardCell
   m_TagString: Untagged
@@ -359,6 +360,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 3262305771490578596}
+--- !u!114 &4687476456762673512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3367333639008631512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98e6774e266ea814f90e66acb40928c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Car: {fileID: 8482392345186799305}
+  SnowBank: {fileID: 2768907613247579766}
 --- !u!1 &3853918445698834644
 GameObject:
   m_ObjectHideFlags: 0
@@ -1387,6 +1402,12 @@ PrefabInstance:
 --- !u!4 &1472736755602539602 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6330563192228214302, guid: 6ae3d1063b1d2034da132437db86e6c6,
+    type: 3}
+  m_PrefabInstance: {fileID: 4875880967345353292}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8482392345186799305 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3899300397976599685, guid: 6ae3d1063b1d2034da132437db86e6c6,
     type: 3}
   m_PrefabInstance: {fileID: 4875880967345353292}
   m_PrefabAsset: {fileID: 0}
