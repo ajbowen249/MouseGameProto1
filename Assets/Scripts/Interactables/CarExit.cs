@@ -28,8 +28,22 @@ public class CarExit : MonoBehaviour
             _driver.AttachTo(gameObject, DriverSeat.transform);
 
             PathFollower.SendObjectAlongPath(gameObject, ExitPath, () => {
-                _driver.DetachFrom(ExitPoint.transform);
+                OnEndedPath();
             });
+        }
+    }
+
+    void OnEndedPath()
+    {
+        _driver.DetachFrom(ExitPoint.transform);
+        if (ToCell != null)
+        {
+            var maybeSpawner = ToCell.GetComponentInChildren<CarExitSpawner>();
+            if (maybeSpawner != null)
+            {
+                Destroy(gameObject);
+                maybeSpawner.SpawnCarExit();
+            }
         }
     }
 }
