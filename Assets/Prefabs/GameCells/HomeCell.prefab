@@ -731,7 +731,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TalkCamera: {fileID: 4786852615010435537}
-  _talkingTo: {fileID: 0}
 --- !u!1 &8205984596072932669
 GameObject:
   m_ObjectHideFlags: 0
