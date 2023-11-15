@@ -112,6 +112,6 @@ public class HUD : MonoBehaviour
     {
         GasMeter.text = $"Gas: {gas}";
         EnergyMeter.text = $"Energy: {energy}";
-        TimeMeter.text = $"Time: {time}";
+        TimeMeter.text = $"Time: {TimeUtils.FormatHours(time)}";
     }
 }
