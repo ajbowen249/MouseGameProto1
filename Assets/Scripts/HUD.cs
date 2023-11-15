@@ -10,7 +10,9 @@ public class HUD : MonoBehaviour
     public GameObject Canvas;
     public TMP_Text Prompt;
     public TMP_Text MessageLog;
+    public TMP_Text GasMeter;
     public TMP_Text EnergyMeter;
+    public TMP_Text TimeMeter;
     public TMP_Text DialogText;
     public TMP_Text DialogOptions;
 
@@ -31,9 +33,11 @@ public class HUD : MonoBehaviour
 
         ClearInteractionPrompt();
         MessageLog.text = "";
-        EnergyMeter.text = "";
         DialogText.text = "";
         DialogOptions.text = "";
+        GasMeter.text = "";
+        EnergyMeter.text = "";
+        TimeMeter.text = "";
     }
 
     void Update()
@@ -104,8 +108,18 @@ public class HUD : MonoBehaviour
         _lastNewLog = Time.fixedTime;
     }
 
+    public void SetGas(float value)
+    {
+        GasMeter.text = $"Gas: {value}";
+    }
+
     public void SetEnergy(float value)
     {
         EnergyMeter.text = $"Energy: {value}";
+    }
+
+    public void SetTime(float value)
+    {
+        TimeMeter.text = $"Time: {value}";
     }
 }

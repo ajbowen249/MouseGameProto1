@@ -108,7 +108,9 @@ public class MouseController : MonoBehaviour
         }
     }
 
+    public float Gas { get; private set; } = 20f;
     public float Energy { get; private set; } = 100f;
+    public float Hours { get; private set; } = 5f;
 
     public Dictionary<string, int> Inventory { get; private set; } = new Dictionary<string, int>();
 
@@ -117,10 +119,22 @@ public class MouseController : MonoBehaviour
         _teleportTo = position;
     }
 
+    public void ExpendGas(float cost)
+    {
+        Gas -= cost;
+        HUD.Instance.SetGas(Gas);
+    }
+
     public void ExpendEnergy(float cost)
     {
         Energy -= cost;
         HUD.Instance.SetEnergy(Energy);
+    }
+
+    public void ExpendTime(float cost)
+    {
+        Hours -= cost;
+        HUD.Instance.SetTime(Hours);
     }
 
     public void AddInventoryItem(string name, int quantity)
