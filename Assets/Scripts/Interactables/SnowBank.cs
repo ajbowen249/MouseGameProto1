@@ -16,13 +16,21 @@ public class SnowBank : MonoBehaviour
         int shovels;
         if (player.Inventory.TryGetValue("Shovel", out shovels))
         {
-            player.ExpendEnergy(10);
-            HUD.Instance.AddMessage("You expend 10 energy clearing the snow with your shovel.");
+            player.ExpendResources(new ActionCost
+            {
+                description = "You clear the snow with your shovel",
+                energy = 10,
+                time = 5f / 60f,
+            });
         }
         else
         {
-            player.ExpendEnergy(60);
-            HUD.Instance.AddMessage("You expend 60 energy clearing the snow with your bare hands.");
+            player.ExpendResources(new ActionCost
+            {
+                description = "You clear the snow with your bare hands",
+                energy = 60,
+                time = 2,
+            });
         }
 
         Destroy(gameObject);

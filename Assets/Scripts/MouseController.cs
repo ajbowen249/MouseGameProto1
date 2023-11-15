@@ -9,6 +9,14 @@ public enum ControlState
     DIALOG,
 }
 
+public struct ActionCost
+{
+    public string description;
+    public float? gas;
+    public float? energy;
+    public float? time;
+}
+
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
 public class MouseController : MonoBehaviour
@@ -119,22 +127,27 @@ public class MouseController : MonoBehaviour
         _teleportTo = position;
     }
 
-    public void ExpendGas(float cost)
+    public void ExpendResources(ActionCost cost)
     {
-        Gas -= cost;
-        HUD.Instance.SetGas(Gas);
-    }
+        if (cost.gas is float gas)
+        {
+            Gas -= gas;
+        }
 
-    public void ExpendEnergy(float cost)
-    {
-        Energy -= cost;
-        HUD.Instance.SetEnergy(Energy);
-    }
+        if (cost.energy is float energy)
+        {
+            Energy -= energy;
+        }
 
-    public void ExpendTime(float cost)
-    {
-        Hours -= cost;
-        HUD.Instance.SetTime(Hours);
+        if (cost.time is float time)
+        {
+            Hours -= time;
+        }
+
+        HUD.Instance.SetMeters(Gas, Energy, Hours);
+
+        var message = $"{cost.description}: {cost.gas} {cost.energy} {cost.time}";
+        HUD.Instance.AddMessage(message);
     }
 
     public void AddInventoryItem(string name, int quantity)

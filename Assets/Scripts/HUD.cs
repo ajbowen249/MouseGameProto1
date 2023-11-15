@@ -108,18 +108,10 @@ public class HUD : MonoBehaviour
         _lastNewLog = Time.fixedTime;
     }
 
-    public void SetGas(float value)
+    public void SetMeters(float gas, float energy, float time)
     {
-        GasMeter.text = $"Gas: {value}";
-    }
-
-    public void SetEnergy(float value)
-    {
-        EnergyMeter.text = $"Energy: {value}";
-    }
-
-    public void SetTime(float value)
-    {
-        TimeMeter.text = $"Time: {value}";
+        GasMeter.text = $"Gas: {gas}";
+        EnergyMeter.text = $"Energy: {energy}";
+        TimeMeter.text = $"Time: {time}";
     }
 }
