@@ -24,33 +24,7 @@ public class Door : MonoBehaviour
 
         if (FromCell != null)
         {
-            StartCoroutine(FadeOutFrom());
+            FromCell.GetComponent<GameCell>().FadeOutAndDie();
         }
-    }
-
-    IEnumerator FadeOutFrom()
-    {
-        foreach (var collider in FromCell.GetComponentsInChildren<Collider>())
-        {
-            collider.enabled = false;
-        }
-
-        var renderers = FromCell.GetComponentsInChildren<MeshRenderer>();
-        float steps = 10.0f;
-
-        for (float i = 0.0f; i < steps; i++)
-        {
-            var progress = (steps - (i / 2)) / steps;
-            var color = new Color(progress, progress, progress, progress);
-
-            foreach (var renderer in renderers)
-            {
-                renderer.material.color = color;
-            }
-
-            yield return new WaitForSeconds(0.05f);
-        }
-
-        Destroy(FromCell);
     }
 }

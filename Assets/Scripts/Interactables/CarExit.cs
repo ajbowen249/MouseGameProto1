@@ -15,10 +15,13 @@ public class CarExit : MonoBehaviour
 
     void OnInteraction(GameObject interactor)
     {
-        if (!FromCell.GetComponent<GameCell>().CanExit())
+        var fromGameCell = FromCell.GetComponent<GameCell>();
+        if (!fromGameCell.CanExit())
         {
             return;
         }
+
+        fromGameCell.FadeOutAndDie();
 
         Destroy(gameObject.GetComponentInChildren<InteractionVolume>());
 
