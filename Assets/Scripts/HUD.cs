@@ -16,6 +16,8 @@ public class HUD : MonoBehaviour
     public TMP_Text DialogText;
     public TMP_Text DialogOptions;
 
+    public GameObject PlayerObject;
+
     public int MessageLogLines = 5;
     public int MessageLogTimeSeconds = 7;
 
@@ -26,6 +28,8 @@ public class HUD : MonoBehaviour
 
     private DialogNode _dialog;
     private int _dialogIndex;
+
+    private MouseController _player;
 
     void Start()
     {
@@ -38,6 +42,8 @@ public class HUD : MonoBehaviour
         GasMeter.text = "";
         EnergyMeter.text = "";
         TimeMeter.text = "";
+
+        _player = PlayerObject.GetComponent<MouseController>();
     }
 
     void Update()
@@ -50,34 +56,18 @@ public class HUD : MonoBehaviour
 
         if (_dialog != null)
         {
-            DialogText.text = _dialog.Message;
-            var optionsLines = "";
-
-            for (int i = 0; i < _dialog.Options.Count; i++)
-            {
-                var option = _dialog.Options[i];
-                if (i == _dialogIndex)
-                {
-                    optionsLines += "<b><color=\"yellow\">";
-                }
-
-                optionsLines += option.Text;
-
-                if (i == _dialogIndex)
-                {
-                    optionsLines += "</color></b>";
-                }
-
-                optionsLines += "\n";
-            }
-
-            DialogOptions.text = optionsLines;
+            DrawDialog();
         }
         else if (DialogText.text != "" || DialogOptions.text != "")
         {
             DialogText.text = "";
             DialogOptions.text = "";
         }
+    }
+
+    public void SetPlayer(MouseController player)
+    {
+        _player = player;
     }
 
     public void SetInteractionPrompt(string prompt)
@@ -113,5 +103,50 @@ public class HUD : MonoBehaviour
         GasMeter.text = $"Gas: {gas}";
         EnergyMeter.text = $"Energy: {energy}";
         TimeMeter.text = $"Time: {TimeUtils.FormatHours(time)}";
+    }
+
+    private void DrawDialog()
+    {
+        if (_player == null)
+        {
+            return;
+        }
+
+        DialogText.text = _dialog.Message;
+        var optionsLines = "";
+
+        for (int i = 0; i < _dialog.Options.Count; i++)
+        {
+            var option = _dialog.Options[i];
+            optionsLines += FormatDialogOption(option, i == _dialogIndex) + "\n";
+        }
+
+        DialogOptions.text = optionsLines;
+    }
+
+    private string FormatDialogOption(DialogOption option, bool isSelected)
+    {
+        var color = _player.CanSelectDialogOption(option) ?
+            (isSelected ? "yellow" : "white") :
+            (isSelected ? "#5c5c01" : "#505050");
+
+        var text = option.Text;
+
+        if (option.RequiredGas is float gas)
+        {
+            text += $" G {gas}";
+        }
+
+        if (option.RequiredEnergy is float energy)
+        {
+            text += $" E {energy}";
+        }
+
+        if (option.RequiredTime is float time)
+        {
+            text += $" T {TimeUtils.FormatHours(time)}";
+        }
+
+        return $"{(isSelected ? "<b>" : "")}<color={color}>{text}</color>{(isSelected ? "</b>" : "")}";
     }
 }

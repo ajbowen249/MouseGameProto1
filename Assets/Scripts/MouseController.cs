@@ -202,6 +202,26 @@ public class MouseController : MonoBehaviour
         _attachedTo = null;
     }
 
+    public bool CanSelectDialogOption(DialogOption option)
+    {
+        if (option.RequiredGas is float gas && Gas < gas)
+        {
+            return false;
+        }
+
+        if (option.RequiredEnergy is float energy && Energy < energy)
+        {
+            return false;
+        }
+
+        if (option.RequiredTime is float time && Hours < time)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private void Awake()
     {
         // get a reference to our main camera

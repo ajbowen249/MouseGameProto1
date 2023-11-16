@@ -53,6 +53,13 @@ public class DialogController : MonoBehaviour
             _input.interact = false;
 
             var option = _dialog.Options[_dialogIndex];
+
+            if (!_mouseController.CanSelectDialogOption(option))
+            {
+                HUD.Instance.AddMessage("Missing requirements");
+                return;
+            }
+
             if (option.Tag != "")
             {
                 _talkingTo.BroadcastMessage("OnDialogChoice", option.Tag, SendMessageOptions.DontRequireReceiver);
