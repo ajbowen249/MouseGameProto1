@@ -44,6 +44,9 @@ public class CarExit : MonoBehaviour
                 Destroy(gameObject);
                 maybeSpawner.SpawnCarExit();
             }
+
+            var toGameCell = ToCell.GetComponent<GameCell>();
+            toGameCell.PlayerEntered(_driver.gameObject);
         }
     }
 }
