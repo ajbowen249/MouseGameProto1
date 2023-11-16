@@ -132,17 +132,17 @@ public class HUD : MonoBehaviour
 
         var text = option.Text;
 
-        if (option.RequiredGas is float gas)
+        if (option.Cost?.gas is float gas)
         {
             text += $" G {gas}";
         }
 
-        if (option.RequiredEnergy is float energy)
+        if (option.Cost?.energy is float energy)
         {
             text += $" E {energy}";
         }
 
-        if (option.RequiredTime is float time)
+        if (option.Cost?.time is float time)
         {
             text += $" T {TimeUtils.FormatHours(time)}";
         }

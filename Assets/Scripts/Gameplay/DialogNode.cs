@@ -8,9 +8,7 @@ public class DialogOption
     public string Tag;
     public DialogNode Node;
 
-    public float? RequiredGas;
-    public float? RequiredEnergy;
-    public float? RequiredTime;
+    public ActionCost? Cost;
 }
 
 public class DialogNode

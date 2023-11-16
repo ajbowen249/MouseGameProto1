@@ -204,17 +204,17 @@ public class MouseController : MonoBehaviour
 
     public bool CanSelectDialogOption(DialogOption option)
     {
-        if (option.RequiredGas is float gas && Gas < gas)
+        if (option.Cost?.gas is float gas && Gas < gas)
         {
             return false;
         }
 
-        if (option.RequiredEnergy is float energy && Energy < energy)
+        if (option.Cost?.energy is float energy && Energy < energy)
         {
             return false;
         }
 
-        if (option.RequiredTime is float time && Hours < time)
+        if (option.Cost?.time is float time && Hours < time)
         {
             return false;
         }
