@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class HotDogStand : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public GameObject Crowd;
+
     void Start()
     {
-        
-    }
+        var cell = gameObject.GetComponent<GameCell>();
+        cell.SetExitRequirement(() => {
+            if (Crowd == null)
+            {
+                return true;
+            }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            HUD.Instance.AddMessage("The crowd, ravenous for Hot Dogs, blocks your path.");
+
+            return false;
+        });
     }
 }
