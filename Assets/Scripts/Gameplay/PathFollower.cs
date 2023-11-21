@@ -42,6 +42,11 @@ public class PathFollower : MonoBehaviour
 
     void Update()
     {
+        if (FollowingObject == null || gameObject == null)
+        {
+            return;
+        }
+
         if (_t < 1)
         {
             _t += Speed * Time.deltaTime;
