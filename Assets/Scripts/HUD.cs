@@ -31,10 +31,19 @@ public class HUD : MonoBehaviour
 
     private MouseController _player;
 
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+    }
+
     void Start()
     {
-        Instance = this;
-
         ClearInteractionPrompt();
         MessageLog.text = "";
         DialogText.text = "";

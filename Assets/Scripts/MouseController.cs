@@ -7,6 +7,7 @@ public enum ControlState
 {
     EXPLORATION,
     DIALOG,
+    SUSPENDED,
 }
 
 public struct ActionCost
@@ -90,6 +91,8 @@ public class MouseController : MonoBehaviour
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
+
+    private ControlState? _suspendedState;
 
     // timeout deltatime
     private float _jumpTimeoutDelta;
@@ -177,6 +180,18 @@ public class MouseController : MonoBehaviour
     public void OnEndedDialog(GameObject talkingTo)
     {
         State = ControlState.EXPLORATION;
+    }
+
+    public void Suspend(ControlState? returnState = null)
+    {
+        _suspendedState = returnState ?? State;
+        State = ControlState.SUSPENDED;
+    }
+
+    public void Resume()
+    {
+        State = _suspendedState ?? ControlState.EXPLORATION;
+        _suspendedState = null;
     }
 
     public StarterAssetsInputs GetInputController()

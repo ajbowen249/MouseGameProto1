@@ -5,8 +5,17 @@ using UnityEngine;
 public class HotDogStand : MonoBehaviour
 {
     public GameObject Crowd;
+    public GameObject MinigameCamera;
+    public GameObject MinigamePrefab;
+
+    private MouseController _playerController;
 
     void Start()
+    {
+        MinigameCamera.SetActive(false);
+    }
+
+    void OnPlayerEnter(GameObject player)
     {
         var cell = gameObject.GetComponent<GameCell>();
         cell.SetExitRequirement(() => {
@@ -19,5 +28,16 @@ public class HotDogStand : MonoBehaviour
 
             return false;
         });
+    }
+
+    public void StartMinigame()
+    {
+        MinigameCamera.SetActive(true);
+        MinigameManager.Instance.StartMinigame(MinigamePrefab);
+    }
+
+    public void OnMinigameEnded()
+    {
+        MinigameCamera.SetActive(false);
     }
 }

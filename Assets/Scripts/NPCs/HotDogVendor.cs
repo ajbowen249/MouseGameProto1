@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class HotDogVendor : MonoBehaviour
 {
     public GameObject Crowd;
+    public GameObject GameCellObject;
 
     private NPC _npc;
     private MouseController _player;
@@ -26,6 +27,11 @@ public class HotDogVendor : MonoBehaviour
             Message = "It's 'Dawgageddon! A 'Dawgopolypse! I gotta whip up dogs for all 'dese customas, pronto!",
             Options = new List<DialogOption>
             {
+                new DialogOption
+                {
+                    Text = "I wanna help!",
+                    Tag = "positive",
+                },
                 new DialogOption
                 {
                     Text = "Get cookin', then!",
@@ -59,6 +65,10 @@ public class HotDogVendor : MonoBehaviour
                     },
                 },
             };
+        }
+        else if (tag == "positive")
+        {
+            GameCellObject.GetComponent<HotDogStand>().StartMinigame();
         }
     }
 }
