@@ -25,6 +25,7 @@ public class MinigameManager : MonoBehaviour
         EndMinigame();
         var minigameObject = Instantiate(minigamePrefab, transform.position, transform.rotation);
         _activeMinigame = minigameObject.GetComponent<Minigame>();
+        minigameObject.BroadcastMessage("OnStartMinigame", player.gameObject, SendMessageOptions.DontRequireReceiver);
         CameraStackManager.Instance.AddCamera(_activeMinigame.Camera.GetComponent<Camera>());
         _activePlayer = player;
         _activePlayer.Suspend();
