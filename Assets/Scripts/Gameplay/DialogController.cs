@@ -73,7 +73,9 @@ public class DialogController : MonoBehaviour
             }
             else
             {
+                var talkingTo = _talkingTo;
                 BroadcastMessage("OnEndedDialog", _talkingTo.gameObject, SendMessageOptions.DontRequireReceiver);
+                talkingTo?.BroadcastMessage("OnEndedDialog", gameObject, SendMessageOptions.DontRequireReceiver);
             }
         }
 

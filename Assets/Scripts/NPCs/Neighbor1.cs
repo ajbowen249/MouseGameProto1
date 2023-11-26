@@ -14,9 +14,9 @@ public class Neighbor1 : MonoBehaviour
 
     private MouseController _player;
 
-    void OnPlayerEnter(GameObject player)
+    void OnInteraction(GameObject interactor)
     {
-        _player = player.GetComponent<MouseController>();
+        _player = interactor.GetComponent<MouseController>();
         _npc = gameObject.GetComponent<NPC>();
 
         var clearCost = GetSnowClearCost(PlayerHasShovel());
@@ -67,10 +67,7 @@ public class Neighbor1 : MonoBehaviour
                 },
             },
         };
-    }
 
-    void OnInteraction(GameObject interactor)
-    {
         _npc.InitiateDialog(interactor);
     }
 
@@ -81,7 +78,8 @@ public class Neighbor1 : MonoBehaviour
             return;
         }
 
-        PathFollower.SendObjectAlongPath(gameObject, PlowPath, () => {
+        PathFollower.SendObjectAlongPath(gameObject, PlowPath, () =>
+        {
             if (tag == "positive")
             {
                 _player.ExpendResources(GetSnowClearCost(PlayerHasShovel()));
@@ -97,7 +95,8 @@ public class Neighbor1 : MonoBehaviour
 
             Destroy(SnowBank);
 
-            PathFollower.SendObjectAlongPath(gameObject, ReturnPath, () => {
+            PathFollower.SendObjectAlongPath(gameObject, ReturnPath, () =>
+            {
             });
         });
     }

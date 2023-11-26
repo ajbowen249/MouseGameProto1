@@ -11,15 +11,17 @@ public class HotDogVendor : MonoBehaviour
     private NPC _npc;
     private MouseController _player;
 
+    private bool _startMinigame = false;
+
     private static ActionCost WaitForChef = new ActionCost
     {
         description = "You wait for the chef to cook up all 'dem dawgs",
         time = 1,
     };
 
-    void OnPlayerEnter(GameObject player)
+    void OnInteraction(GameObject interactor)
     {
-        _player = player.GetComponent<MouseController>();
+        _player = interactor.GetComponent<MouseController>();
         _npc = gameObject.GetComponent<NPC>();
 
         _npc.DialogTree = new DialogNode
@@ -40,10 +42,7 @@ public class HotDogVendor : MonoBehaviour
                 },
             },
         };
-    }
 
-    void OnInteraction(GameObject interactor)
-    {
         _npc.InitiateDialog(interactor);
     }
 
@@ -68,7 +67,15 @@ public class HotDogVendor : MonoBehaviour
         }
         else if (tag == "positive")
         {
-            GameCellObject.GetComponent<HotDogStand>().StartMinigame();
+            _startMinigame = true;
+        }
+    }
+
+    void OnEndedDialog(GameObject player)
+    {
+        if (_startMinigame)
+        {
+            GameCellObject.GetComponent<HotDogStand>().StartMinigame(_player);
         }
     }
 }

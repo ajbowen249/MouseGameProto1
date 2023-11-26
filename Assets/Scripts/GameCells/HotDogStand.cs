@@ -8,8 +8,6 @@ public class HotDogStand : MonoBehaviour
     public GameObject MinigameCamera;
     public GameObject MinigamePrefab;
 
-    private MouseController _playerController;
-
     void Start()
     {
         MinigameCamera.SetActive(false);
@@ -30,10 +28,10 @@ public class HotDogStand : MonoBehaviour
         });
     }
 
-    public void StartMinigame()
+    public void StartMinigame(MouseController player)
     {
         MinigameCamera.SetActive(true);
-        MinigameManager.Instance.StartMinigame(MinigamePrefab);
+        MinigameManager.Instance.StartMinigame(MinigamePrefab, player);
     }
 
     public void OnMinigameEnded()
