@@ -5,8 +5,6 @@ using StarterAssets;
 
 public class HotDogCatcher : MonoBehaviour
 {
-    public GameObject HotDogPrefab;
-
     public StarterAssetsInputs Input;
 
     private bool _hasDog = false;
@@ -22,20 +20,8 @@ public class HotDogCatcher : MonoBehaviour
 
     void Start()
     {
+        _hotDogInstance = transform.Find("HotDogGraphic").gameObject;
         _startLocation = transform.position;
-
-        var rotation = Quaternion.Euler(0f, 0f, 0f);
-        rotation.eulerAngles = transform.rotation.eulerAngles + new Vector3(0f, -90, 0f);
-
-        _hotDogInstance = Instantiate(
-            HotDogPrefab,
-            transform.position,
-            rotation,
-            transform
-        );
-
-        _hotDogInstance.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-
         UpdateGraphic();
     }
 
@@ -58,5 +44,71 @@ public class HotDogCatcher : MonoBehaviour
         _hotDogInstance.transform.Find("Dog").gameObject.SetActive(_hasDog);
         _hotDogInstance.transform.Find("Toppings/Ketchup").gameObject.SetActive(_hasKetchup);
         _hotDogInstance.transform.Find("Toppings/Mustard").gameObject.SetActive(_hasMustard);
+    }
+
+    private void OnBadDog(string message)
+    {
+        _hasDog = false;
+        _hasKetchup = false;
+        _hasMustard = false;
+        HUD.Instance.AddMessage(message);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var topping = other.GetComponent<FallingTopping>();
+        if (topping == null)
+        {
+            return;
+        }
+
+        ConsumeTopping(topping);
+        Destroy(topping.gameObject);
+        UpdateGraphic();
+    }
+
+    private void ConsumeTopping(FallingTopping topping)
+    {
+        if (topping.IsDog)
+        {
+            if (_hasDog)
+            {
+                OnBadDog("Duplicate dog");
+                return;
+            }
+
+            _hasDog = true;
+        }
+
+        if (topping.IsKetchup || topping.IsMustard)
+        {
+            if (!_hasDog)
+            {
+                OnBadDog("Can't add topping before dog");
+                return;
+            }
+
+            if (topping.IsKetchup)
+            {
+                if (_hasKetchup)
+                {
+                    OnBadDog("Extra ketchup");
+                    return;
+                }
+
+                _hasKetchup = true;
+            }
+
+            if (topping.IsMustard)
+            {
+                if (_hasMustard)
+                {
+                    OnBadDog("Extra mustard");
+                    return;
+                }
+
+                _hasMustard = true;
+            }
+        }
     }
 }
