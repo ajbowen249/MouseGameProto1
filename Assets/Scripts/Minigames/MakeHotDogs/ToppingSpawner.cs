@@ -6,10 +6,10 @@ public class ToppingSpawner : MonoBehaviour
 {
     public GameObject FallingToppingPrefab;
 
-    public float SpawnRate = 1f;
-    public float Range = 5f;
+    public float SpawnRate = 1;
+    public float Range = 5;
 
-    private float _lastSpawn = 0f;
+    private float _lastSpawn = 0;
 
     void Start()
     {
@@ -26,7 +26,13 @@ public class ToppingSpawner : MonoBehaviour
 
         if (Time.time >= _lastSpawn + SpawnRate)
         {
-            Instantiate(FallingToppingPrefab, transform.position + new Vector3(Random.Range(-1 * Range, Range), 0f, 0f), transform.rotation);
+            Instantiate(
+                FallingToppingPrefab,
+                transform.position + new Vector3(Random.Range(-1 * Range, Range), 0f, 0f),
+                transform.rotation,
+                transform
+            );
+
             _lastSpawn = Time.time;
         }
     }
