@@ -8,6 +8,7 @@ public class MinigameManager : MonoBehaviour
 
     private Minigame _activeMinigame;
     private MouseController _activePlayer;
+    private GameObject _activeMinigameOwner;
 
     void Awake()
     {
@@ -20,9 +21,10 @@ public class MinigameManager : MonoBehaviour
         Instance = this;
     }
 
-    public void StartMinigame(GameObject minigamePrefab, MouseController player)
+    public void StartMinigame(GameObject minigamePrefab, MouseController player, GameObject minigameOwner)
     {
         EndMinigame();
+        _activeMinigameOwner = minigameOwner;
         var minigameObject = Instantiate(minigamePrefab, transform.position, transform.rotation);
         _activeMinigame = minigameObject.GetComponent<Minigame>();
         minigameObject.BroadcastMessage("OnStartMinigame", player.gameObject, SendMessageOptions.DontRequireReceiver);
@@ -36,7 +38,7 @@ public class MinigameManager : MonoBehaviour
         if (_activeMinigame != null)
         {
             CameraStackManager.Instance.RemoveCamera(_activeMinigame.Camera.GetComponent<Camera>());
-            Destroy(_activeMinigame);
+            Destroy(_activeMinigame.gameObject);
             _activeMinigame = null;
         }
 
@@ -44,6 +46,12 @@ public class MinigameManager : MonoBehaviour
         {
             _activePlayer.Resume();
             _activePlayer = null;
+        }
+
+        if (_activeMinigameOwner != null)
+        {
+            _activeMinigameOwner.BroadcastMessage("OnMinigameEnded", null, SendMessageOptions.DontRequireReceiver);
+            _activeMinigameOwner = null;
         }
     }
 }

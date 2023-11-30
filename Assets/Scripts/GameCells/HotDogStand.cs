@@ -31,11 +31,12 @@ public class HotDogStand : MonoBehaviour
     public void StartMinigame(MouseController player)
     {
         MinigameCamera.SetActive(true);
-        MinigameManager.Instance.StartMinigame(MinigamePrefab, player);
+        MinigameManager.Instance.StartMinigame(MinigamePrefab, player, gameObject);
     }
 
     public void OnMinigameEnded()
     {
         MinigameCamera.SetActive(false);
+        Destroy(Crowd);
     }
 }

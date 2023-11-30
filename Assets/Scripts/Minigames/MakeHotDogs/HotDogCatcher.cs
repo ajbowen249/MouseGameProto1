@@ -6,6 +6,7 @@ using StarterAssets;
 public class HotDogCatcher : MonoBehaviour
 {
     public StarterAssetsInputs Input;
+    public MakeHotDogs Minigame;
 
     private bool _hasDog = false;
     private bool _hasKetchup = false;
@@ -46,12 +47,24 @@ public class HotDogCatcher : MonoBehaviour
         _hotDogInstance.transform.Find("Toppings/Mustard").gameObject.SetActive(_hasMustard);
     }
 
-    private void OnBadDog(string message)
+    private void Clear()
     {
         _hasDog = false;
         _hasKetchup = false;
         _hasMustard = false;
+        UpdateGraphic();
+    }
+
+    private void OnBadDog(string message)
+    {
+        Clear();
         HUD.Instance.AddMessage(message);
+    }
+
+    private void OnDogComplete()
+    {
+        Clear();
+        Minigame?.OnMadeHotDog();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -65,6 +78,11 @@ public class HotDogCatcher : MonoBehaviour
         ConsumeTopping(topping);
         Destroy(topping.gameObject);
         UpdateGraphic();
+
+        if (_hasDog && _hasKetchup && _hasMustard)
+        {
+            OnDogComplete();
+        }
     }
 
     private void ConsumeTopping(FallingTopping topping)

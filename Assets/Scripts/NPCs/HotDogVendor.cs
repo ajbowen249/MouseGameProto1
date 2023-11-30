@@ -22,26 +22,30 @@ public class HotDogVendor : MonoBehaviour
     void OnInteraction(GameObject interactor)
     {
         _player = interactor.GetComponent<MouseController>();
-        _npc = gameObject.GetComponent<NPC>();
 
-        _npc.DialogTree = new DialogNode
+        if (_npc == null)
         {
-            Message = "It's 'Dawgageddon! A 'Dawgopolypse! I gotta whip up dogs for all 'dese customas, pronto!",
-            Options = new List<DialogOption>
+            _npc = gameObject.GetComponent<NPC>();
+
+            _npc.DialogTree = new DialogNode
             {
-                new DialogOption
+                Message = "It's 'Dawgageddon! A 'Dawgopolypse! I gotta whip up dogs for all 'dese customas, pronto!",
+                Options = new List<DialogOption>
                 {
-                    Text = "I wanna help!",
-                    Tag = "positive",
+                    new DialogOption
+                    {
+                        Text = "I wanna help!",
+                        Tag = "positive",
+                    },
+                    new DialogOption
+                    {
+                        Text = "Get cookin', then!",
+                        Tag = "negative",
+                        Cost = WaitForChef,
+                    },
                 },
-                new DialogOption
-                {
-                    Text = "Get cookin', then!",
-                    Tag = "negative",
-                    Cost = WaitForChef,
-                },
-            },
-        };
+            };
+        }
 
         _npc.InitiateDialog(interactor);
     }
@@ -68,6 +72,18 @@ public class HotDogVendor : MonoBehaviour
         else if (tag == "positive")
         {
             _startMinigame = true;
+
+            _npc.DialogTree = new DialogNode
+            {
+                Message = "Thanks fer all da help!",
+                Options = new List<DialogOption>
+                {
+                    new DialogOption
+                    {
+                        Text = "...",
+                    },
+                },
+            };
         }
     }
 
@@ -76,6 +92,7 @@ public class HotDogVendor : MonoBehaviour
         if (_startMinigame)
         {
             GameCellObject.GetComponent<HotDogStand>().StartMinigame(_player);
+            _startMinigame = false;
         }
     }
 }
