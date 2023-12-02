@@ -2,9 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public enum AttachEdge
+{
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST,
+}
+
+[System.Serializable]
+public class CellAttachPoint
+{
+    public int row;
+    public int col;
+    public AttachEdge edge;
+}
+
 public class GameCell : MonoBehaviour
 {
+    public const float CellWidth = 20;
+    public const float HalfWidth = CellWidth / 2;
+
     public GameObject EntryPoint;
+    public List<CellAttachPoint> AttachPoints;
 
     public delegate bool ExitRequirement();
     private ExitRequirement _exitRequirement;
@@ -53,5 +74,34 @@ public class GameCell : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    void OnDrawGizmos()
+    {
+        foreach (var attachPoint in AttachPoints)
+        {
+            Gizmos.color = Color.yellow;
+
+            var x = CellWidth * (float)attachPoint.col;
+            var z = CellWidth * (float)attachPoint.row;
+
+            switch (attachPoint.edge)
+            {
+            case AttachEdge.SOUTH:
+                z -= HalfWidth;
+                break;
+            case AttachEdge.NORTH:
+                z += HalfWidth;
+                break;
+            case AttachEdge.EAST:
+                x -= HalfWidth;
+                break;
+            case AttachEdge.WEST:
+                x += HalfWidth;
+                break;
+            }
+
+            Gizmos.DrawWireSphere(transform.position + new Vector3(x, HalfWidth / 2, z), 1);
+        }
     }
 }
