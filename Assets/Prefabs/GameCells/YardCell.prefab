@@ -380,9 +380,11 @@ MonoBehaviour:
   - row: 0
     col: 0
     edge: 1
+    modes: 01000000
   - row: 0
     col: 0
     edge: 0
+    modes: 0000000001000000
 --- !u!114 &4687476456762673512
 MonoBehaviour:
   m_ObjectHideFlags: 0

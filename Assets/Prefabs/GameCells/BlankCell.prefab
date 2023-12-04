@@ -188,15 +188,19 @@ MonoBehaviour:
   - row: 0
     col: 0
     edge: 0
+    modes: 0000000001000000
   - row: 0
     col: 0
     edge: 1
+    modes: 0000000001000000
   - row: 0
     col: 0
     edge: 2
+    modes: 
   - row: 0
     col: 0
     edge: 3
+    modes: 0000000001000000
 --- !u!1 &8205984596072932669
 GameObject:
   m_ObjectHideFlags: 0

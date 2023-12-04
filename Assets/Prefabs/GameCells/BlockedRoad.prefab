@@ -954,9 +954,11 @@ MonoBehaviour:
   - row: 0
     col: 0
     edge: 1
+    modes: 0000000001000000
   - row: 0
     col: 1
     edge: 3
+    modes: 0000000001000000
 --- !u!114 &1407636662527619101
 MonoBehaviour:
   m_ObjectHideFlags: 0

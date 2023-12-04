@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public enum AttachEdge
 {
     NORTH,
@@ -11,12 +12,41 @@ public enum AttachEdge
     WEST,
 }
 
-[System.Serializable]
+public static class AttachEdgeExtensions
+{
+    public static AttachEdge Opposite(this AttachEdge edge)
+    {
+        switch (edge)
+        {
+        case AttachEdge.NORTH:
+            return AttachEdge.SOUTH;
+        case AttachEdge.SOUTH:
+            return AttachEdge.NORTH;
+        case AttachEdge.EAST:
+            return AttachEdge.WEST;
+        case AttachEdge.WEST:
+            return AttachEdge.EAST;
+        default:
+            throw new Exception("Unknown edge value");
+        }
+    }
+}
+
+
+[Serializable]
+public enum AttachMode
+{
+    CAR,
+    FOOT,
+}
+
+[Serializable]
 public class CellAttachPoint
 {
     public int row;
     public int col;
     public AttachEdge edge;
+    public List<AttachMode> modes;
 }
 
 public class GameCell : MonoBehaviour
