@@ -15,7 +15,6 @@ public class HotDogCatcher : MonoBehaviour
     private GameObject _hotDogInstance;
 
     private float _moveSpeed = 3f;
-    private float _maxDistance = 5f;
 
     private Vector3 _startLocation;
 
