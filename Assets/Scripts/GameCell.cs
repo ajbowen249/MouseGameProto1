@@ -34,10 +34,17 @@ public static class AttachEdgeExtensions
 
 
 [Serializable]
-public enum AttachMode
+public enum AttachModeType
 {
     CAR,
     FOOT,
+}
+
+[Serializable]
+public class AttachMode
+{
+    public AttachModeType type;
+    public bool isOptional;
 }
 
 [Serializable]
@@ -47,7 +54,6 @@ public class CellAttachPoint
     public int col;
     public AttachEdge edge;
     public List<AttachMode> modes;
-    public bool isOptional;
 }
 
 [Serializable]

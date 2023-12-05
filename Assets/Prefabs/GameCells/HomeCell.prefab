@@ -486,8 +486,9 @@ MonoBehaviour:
   - row: 0
     col: 0
     edge: 0
-    modes: 01000000
-    isOptional: 0
+    modes:
+    - type: 1
+      isOptional: 0
   Footprint:
   - row: 0
     col: 0

@@ -766,13 +766,19 @@ MonoBehaviour:
   - row: 0
     col: 0
     edge: 2
-    modes: 0000000001000000
-    isOptional: 0
+    modes:
+    - type: 0
+      isOptional: 0
+    - type: 1
+      isOptional: 0
   - row: 0
     col: 0
     edge: 3
-    modes: 0000000001000000
-    isOptional: 0
+    modes:
+    - type: 0
+      isOptional: 0
+    - type: 1
+      isOptional: 0
   Footprint:
   - row: 0
     col: 0
