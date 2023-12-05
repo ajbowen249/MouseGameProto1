@@ -204,6 +204,7 @@ MonoBehaviour:
   Footprint:
   - row: 0
     col: 0
+  CanBeRandom: 1
 --- !u!1 &8205984596072932669
 GameObject:
   m_ObjectHideFlags: 0

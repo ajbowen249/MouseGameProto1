@@ -388,6 +388,7 @@ MonoBehaviour:
   Footprint:
   - row: 0
     col: 0
+  CanBeRandom: 0
 --- !u!114 &4687476456762673512
 MonoBehaviour:
   m_ObjectHideFlags: 0

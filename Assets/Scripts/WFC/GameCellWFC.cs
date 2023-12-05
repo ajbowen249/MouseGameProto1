@@ -26,7 +26,7 @@ public class GameCellWFC
                     BaseCell = gameCell,
                     InnerRow = footprint.row,
                     InnerCol = footprint.col,
-                    CanBeRandom = false, // TODO: Add prop
+                    CanBeRandom = gameCell.CanBeRandom,
                     AttachPoints = gameCell.AttachPoints.Where(
                         point => point.row == footprint.row && point.col == footprint.col
                     ).ToList(),

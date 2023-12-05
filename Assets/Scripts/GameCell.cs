@@ -64,6 +64,7 @@ public class GameCell : MonoBehaviour
     public GameObject EntryPoint;
     public List<CellAttachPoint> AttachPoints;
     public List<CellFootprint> Footprint;
+    public bool CanBeRandom;
 
     public delegate bool ExitRequirement();
     private ExitRequirement _exitRequirement;
