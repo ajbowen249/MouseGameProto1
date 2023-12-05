@@ -955,15 +955,18 @@ MonoBehaviour:
     col: 0
     edge: 1
     modes: 0000000001000000
+    isOptional: 0
   - row: 0
     col: 1
     edge: 3
     modes: 0000000001000000
+    isOptional: 0
   Footprint:
   - row: 0
     col: 0
   - row: 0
     col: 1
+  CanBeRandom: 0
 --- !u!114 &1407636662527619101
 MonoBehaviour:
   m_ObjectHideFlags: 0

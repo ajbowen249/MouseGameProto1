@@ -47,6 +47,7 @@ public class CellAttachPoint
     public int col;
     public AttachEdge edge;
     public List<AttachMode> modes;
+    public bool isOptional;
 }
 
 [Serializable]

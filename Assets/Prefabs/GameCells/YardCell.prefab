@@ -381,10 +381,12 @@ MonoBehaviour:
     col: 0
     edge: 1
     modes: 01000000
+    isOptional: 0
   - row: 0
     col: 0
     edge: 0
     modes: 0000000001000000
+    isOptional: 0
   Footprint:
   - row: 0
     col: 0
