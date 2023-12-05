@@ -13,15 +13,25 @@ public class GameCellWFC
     private class WCFCell
     {
         public GameCell BaseCell { get; private set; }
-        // TODO: also pull filtered attach points
         public int InnerRow { get; private set; }
         public int InnerCol { get; private set; }
         public bool CanBeRandom { get; private set; }
+        public List<CellAttachPoint> AttachPoints { get; private set; }
 
-        public WCFCell(GameCell gameCell)
+        public static List<WCFCell> FromGameCell(GameCell gameCell)
         {
-            BaseCell = gameCell;
-            // TODO: finish
+            return gameCell.Footprint.Select(footprint => {
+                return new WCFCell
+                {
+                    BaseCell = gameCell,
+                    InnerRow = footprint.row,
+                    InnerCol = footprint.col,
+                    CanBeRandom = false, // TODO: Add prop
+                    AttachPoints = gameCell.AttachPoints.Where(
+                        point => point.row == footprint.row && point.col == footprint.col
+                    ).ToList(),
+                };
+            }).ToList();
         }
     }
 
@@ -35,7 +45,7 @@ public class GameCellWFC
         _cols = cols;
         _gameCells = gameCells;
 
-        _allCellTypes = _gameCells.Select(prefab => new WCFCell(prefab)).ToList();
+        _allCellTypes = _gameCells.Select(cell => WCFCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
         _wfc = new WFCContext<WCFCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
     }
