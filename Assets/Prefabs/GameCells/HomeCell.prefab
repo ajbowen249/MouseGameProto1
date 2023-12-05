@@ -487,6 +487,9 @@ MonoBehaviour:
     col: 0
     edge: 0
     modes: 01000000
+  Footprint:
+  - row: 0
+    col: 0
 --- !u!1 &4786852615010435537
 GameObject:
   m_ObjectHideFlags: 0

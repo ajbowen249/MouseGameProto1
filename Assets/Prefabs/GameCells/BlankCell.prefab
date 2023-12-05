@@ -201,6 +201,9 @@ MonoBehaviour:
     col: 0
     edge: 3
     modes: 0000000001000000
+  Footprint:
+  - row: 0
+    col: 0
 --- !u!1 &8205984596072932669
 GameObject:
   m_ObjectHideFlags: 0

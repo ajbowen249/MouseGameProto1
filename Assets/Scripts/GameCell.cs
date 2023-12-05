@@ -49,6 +49,13 @@ public class CellAttachPoint
     public List<AttachMode> modes;
 }
 
+[Serializable]
+public class CellFootprint
+{
+    public int row;
+    public int col;
+}
+
 public class GameCell : MonoBehaviour
 {
     public const float CellWidth = 20;
@@ -56,6 +63,7 @@ public class GameCell : MonoBehaviour
 
     public GameObject EntryPoint;
     public List<CellAttachPoint> AttachPoints;
+    public List<CellFootprint> Footprint;
 
     public delegate bool ExitRequirement();
     private ExitRequirement _exitRequirement;
@@ -108,10 +116,10 @@ public class GameCell : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        Gizmos.color = Color.yellow;
+
         foreach (var attachPoint in AttachPoints)
         {
-            Gizmos.color = Color.yellow;
-
             var x = CellWidth * (float)attachPoint.col;
             var z = CellWidth * (float)attachPoint.row;
 
@@ -132,6 +140,20 @@ public class GameCell : MonoBehaviour
             }
 
             Gizmos.DrawWireSphere(transform.position + new Vector3(x, HalfWidth / 2, z), 1);
+        }
+
+        Gizmos.color = Color.green;
+
+        foreach (var footprint in Footprint)
+        {
+            Gizmos.DrawWireCube(
+                transform.position + new Vector3(
+                    CellWidth * footprint.col,
+                    HalfWidth / 2,
+                    CellWidth * footprint.row
+                ),
+                new Vector3(CellWidth, HalfWidth, CellWidth)
+            );
         }
     }
 }

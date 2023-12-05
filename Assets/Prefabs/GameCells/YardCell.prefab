@@ -385,6 +385,9 @@ MonoBehaviour:
     col: 0
     edge: 0
     modes: 0000000001000000
+  Footprint:
+  - row: 0
+    col: 0
 --- !u!114 &4687476456762673512
 MonoBehaviour:
   m_ObjectHideFlags: 0
