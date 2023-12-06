@@ -82,6 +82,11 @@ public class WFCGrid<TCell>
         .Where(pair => pair.Item2 != null)
         .ToList();
     }
+
+    public bool AllSettled()
+    {
+        return _grid.All(row => row.All(cell => cell.IsSettled()));
+    }
 }
 
 /// <summary>
@@ -113,6 +118,11 @@ public class WFCContext<TCell>
         _reducer = reducer;
     }
 
+    public void SetCell(int row, int col, TCell possibleCell, bool revisitSettled)
+    {
+        SetCell(row, col, new List<TCell> { possibleCell }, revisitSettled);
+    }
+
     public void SetCell(int row, int col, List<TCell> possibleCells, bool revisitSettled)
     {
         var cell = Grid.GetCell(row, col);
@@ -139,6 +149,11 @@ public class WFCContext<TCell>
         {
             Iterate();
         }
+    }
+
+    public bool AllSettled()
+    {
+        return Grid.AllSettled();
     }
 
     private void Iterate()

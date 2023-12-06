@@ -4,6 +4,90 @@ using System.Linq;
 using System;
 using UnityEngine;
 
+public class WFCCell
+{
+    public GameCell BaseCell { get; private set; }
+    public int InnerRow { get; private set; }
+    public int InnerCol { get; private set; }
+    public bool CanBeRandom { get; private set; }
+    public bool IsSubCell { get; private set; }
+    public List<AbsoluteAttachPoint> AttachPoints { get; private set; }
+
+    public static List<WFCCell> FromGameCell(GameCell gameCell)
+    {
+        // Each game cell can take up multiple "cells" in the grid. The "footprint" defines which ones, so this splits
+        // the prefab into at least one WFCCell per inner "cell."
+        return gameCell.Footprint.SelectMany(footprint =>
+        {
+            // Attach points are also assigned a cell, so we also want to narrow this down to only include attach points
+            // in this quadrant.
+            var relevantAttachPoints = gameCell.AttachPoints.Where(
+                point => point.row == footprint.row && point.col == footprint.col
+            ).ToList();
+
+            // Since points can have multiple "types" (foot, car), split them up into separate "absolute" points. That
+            // makes the reducer simpler, because it doesn't need to, "clarify" modes deeply.
+            var allPoints = relevantAttachPoints.SelectMany(point =>
+                point.modes.Select(mode => (mode, point.edge))
+            );
+
+            var optionalPoints = new List<AbsoluteAttachPoint>();
+            var requiredPoints = new List<AbsoluteAttachPoint>();
+
+            foreach (var point in allPoints)
+            {
+                var (mode, edge) = point;
+                var absolutePoint = new AbsoluteAttachPoint
+                {
+                    edge = edge,
+                    modeType = mode.type,
+                };
+
+                (mode.isOptional ? optionalPoints : requiredPoints).Add(absolutePoint);
+            }
+
+            // Attach points can be optional. So, to make the reducer function simpler, generate the full set of
+            // possibilities as a set of cell types. It should be rare for this to generate a ton of options. The full
+            // 4-way blank cell is the worst one.
+
+            var absoluteSets = new List<List<AbsoluteAttachPoint>>();
+            var numVariants = Math.Pow(2, optionalPoints.Count);
+
+            for (uint i = 0; i < numVariants; i++)
+            {
+                var points = new List<AbsoluteAttachPoint>(requiredPoints);
+
+                for (int bit = 0; bit < optionalPoints.Count; bit++)
+                {
+                    var isSet = (i >> bit & 1) != 0;
+                    if (isSet)
+                    {
+                        points.Add(optionalPoints[bit]);
+                    }
+                }
+
+                absoluteSets.Add(points);
+            }
+
+            return absoluteSets.Select(attachPoints => new WFCCell
+            {
+                BaseCell = gameCell,
+                InnerRow = footprint.row,
+                InnerCol = footprint.col,
+                CanBeRandom = gameCell.CanBeRandom,
+                IsSubCell = gameCell.Footprint.Count > 1,
+                AttachPoints = attachPoints,
+            });
+        }).ToList();
+    }
+}
+
+public struct AbsoluteAttachPoint
+{
+    public AttachEdge edge;
+    public AttachModeType modeType;
+}
+
 public class GameCellWFC
 {
     private List<GameCell> _gameCells;
@@ -11,92 +95,9 @@ public class GameCellWFC
     private int _rows;
     private int _cols;
 
-    private struct AbsoluteAttachPoint
-    {
-        public AttachEdge edge;
-        public AttachModeType modeType;
-    }
-
-    private class WCFCell
-    {
-        public GameCell BaseCell { get; private set; }
-        public int InnerRow { get; private set; }
-        public int InnerCol { get; private set; }
-        public bool CanBeRandom { get; private set; }
-        public bool IsSubCell { get; private set; }
-        public List<AbsoluteAttachPoint> AttachPoints { get; private set; }
-
-        public static List<WCFCell> FromGameCell(GameCell gameCell)
-        {
-            // Each game cell can take up multiple "cells" in the grid. The "footprint" defines which ones, so this
-            // splits the prefab into at least one WCFCell per inner "cell."
-            return gameCell.Footprint.SelectMany(footprint => {
-                // Attach points are also assigned a cell, so we also want to narrow this down to only include attach
-                // points in this quadrant.
-                var relevantAttachPoints = gameCell.AttachPoints.Where(
-                    point => point.row == footprint.row && point.col == footprint.col
-                ).ToList();
-
-                // Since points can have multiple "types" (foot, car), split them up into separate "absolute" points.
-                // That makes the reducer simpler, because it doesn't need to, "clarify" modes deeply.
-                var allPoints = relevantAttachPoints.SelectMany(point =>
-                    point.modes.Select(mode => (mode, point.edge))
-                );
-
-                var optionalPoints = new List<AbsoluteAttachPoint>();
-                var requiredPoints = new List<AbsoluteAttachPoint>();
-
-                foreach (var point in allPoints)
-                {
-                    var (mode, edge) = point;
-                    var absolutePoint = new AbsoluteAttachPoint
-                    {
-                        edge = edge,
-                        modeType = mode.type,
-                    };
-
-                    (mode.isOptional ? optionalPoints : requiredPoints).Add(absolutePoint);
-                }
-
-                // Attach points can be optional. So, to make the reducer function simpler, generate the full set of
-                // possibilities as a set of cell types. It should be rare for this to generate a ton of options. The
-                // full 4-way blank cell is the worst one.
-
-                var absoluteSets = new List<List<AbsoluteAttachPoint>>();
-                var numVariants = Math.Pow(2, optionalPoints.Count);
-
-                for (uint i = 0; i < numVariants; i++)
-                {
-                    var points = new List<AbsoluteAttachPoint>(requiredPoints);
-
-                    for (int bit = 0; bit < optionalPoints.Count; bit++)
-                    {
-                        var isSet = (i >> bit & 1) != 0;
-                        if (isSet)
-                        {
-                            points.Add(optionalPoints[bit]);
-                        }
-                    }
-
-                    absoluteSets.Add(points);
-                }
-
-                return absoluteSets.Select(attachPoints => new WCFCell
-                {
-                    BaseCell = gameCell,
-                    InnerRow = footprint.row,
-                    InnerCol = footprint.col,
-                    CanBeRandom = gameCell.CanBeRandom,
-                    IsSubCell = gameCell.Footprint.Count > 1,
-                    AttachPoints = attachPoints,
-                });
-            }).ToList();
-        }
-    }
-
-    private List<WCFCell> _allCellTypes;
-    private List<WCFCell> _randomCellTypes;
-    private WFCContext<WCFCell> _wfc;
+    private List<WFCCell> _allCellTypes;
+    private List<WFCCell> _randomCellTypes;
+    private WFCContext<WFCCell> _wfc;
 
     public GameCellWFC(int rows, int cols, List<GameCell> gameCells)
     {
@@ -104,12 +105,32 @@ public class GameCellWFC
         _cols = cols;
         _gameCells = gameCells;
 
-        _allCellTypes = _gameCells.Select(cell => WCFCell.FromGameCell(cell)).SelectMany(x => x).ToList();
+        _allCellTypes = _gameCells.Select(cell => WFCCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
-        _wfc = new WFCContext<WCFCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
+        _wfc = new WFCContext<WFCCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
     }
 
-    private List<WCFCell> Reduce(int row, int col, PendingCell<WCFCell> cell)
+    public void Generate()
+    {
+        PlaceFixedCells();
+        _wfc.IterateComplete();
+    }
+
+    public WFCGrid<WFCCell> GetGrid()
+    {
+        return _wfc.Grid;
+    }
+
+    private void PlaceFixedCells()
+    {
+        var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
+        var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
+
+        _wfc.SetCell(0, 5, HomeCell, true);
+        _wfc.SetCell(1, 5, YardCell, true);
+    }
+
+    private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)
     {
         // First, check if any neighbors are parts of a bigger cell that would include this one, and narrow to that
         // type if needed. If that part isn't in our list of possibilities, that's a problem. Also remove any multi-cell

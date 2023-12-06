@@ -909,7 +909,7 @@ GameObject:
   - component: {fileID: 7340330147554968974}
   - component: {fileID: 1407636662527619101}
   m_Layer: 0
-  m_Name: BlockedRoad
+  m_Name: BlockedRoadCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
