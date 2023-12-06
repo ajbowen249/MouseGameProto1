@@ -765,7 +765,7 @@ MonoBehaviour:
   AttachPoints:
   - row: 0
     col: 0
-    edge: 2
+    edge: 3
     modes:
     - type: 0
       isOptional: 0
@@ -775,7 +775,7 @@ MonoBehaviour:
       exitObjects: []
   - row: 0
     col: 0
-    edge: 3
+    edge: 2
     modes:
     - type: 0
       isOptional: 0

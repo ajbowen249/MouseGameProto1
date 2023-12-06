@@ -134,17 +134,17 @@ public class GameCell : MonoBehaviour
 
             switch (attachPoint.edge)
             {
-            case AttachEdge.SOUTH:
-                z -= HalfWidth;
-                break;
             case AttachEdge.NORTH:
                 z += HalfWidth;
                 break;
+            case AttachEdge.SOUTH:
+                z -= HalfWidth;
+                break;
             case AttachEdge.EAST:
-                x -= HalfWidth;
+                x += HalfWidth;
                 break;
             case AttachEdge.WEST:
-                x += HalfWidth;
+                x -= HalfWidth;
                 break;
             }
 
