@@ -383,14 +383,18 @@ MonoBehaviour:
     modes:
     - type: 1
       isOptional: 0
+      exitObjects: []
   - row: 0
     col: 0
     edge: 0
     modes:
     - type: 0
       isOptional: 0
+      exitObjects:
+      - {fileID: 1794887567754566522}
     - type: 1
       isOptional: 0
+      exitObjects: []
   Footprint:
   - row: 0
     col: 0
@@ -1709,6 +1713,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f822c789818b3644ad1d282af07637c, type: 3}
+--- !u!1 &1794887567754566522 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7201213182939411440, guid: 8f822c789818b3644ad1d282af07637c,
+    type: 3}
+  m_PrefabInstance: {fileID: 8865161627560847498}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6589472518927563371 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2339026065001812705, guid: 8f822c789818b3644ad1d282af07637c,

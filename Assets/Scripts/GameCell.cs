@@ -45,6 +45,7 @@ public class AttachMode
 {
     public AttachModeType type;
     public bool isOptional;
+    public List<GameObject> exitObjects;
 }
 
 [Serializable]
