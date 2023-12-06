@@ -125,9 +125,16 @@ public class GameCellWFC
     {
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
+        var BlockedRoadCell = _allCellTypes.Find(cell =>
+            cell.BaseCell.gameObject.name == "BlockedRoadCell" && cell.InnerRow == 0 && cell.InnerCol == 0
+        );
+
+        var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
 
         _wfc.SetCell(0, 5, HomeCell, true);
         _wfc.SetCell(1, 5, YardCell, true);
+        _wfc.SetCell(2, 5, BlockedRoadCell, true);
+        _wfc.SetCell(2, 7, HotDogStandCell, true);
     }
 
     private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)
