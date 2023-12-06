@@ -8,6 +8,7 @@ public class GameGenerator : MonoBehaviour
     public int Rows = 10;
     public int Cols = 10;
     public List<GameObject> GameCellPrefabs;
+    public GameObject MrDebugObject;
 
     private GameCellWFC _wcf;
     private List<List<GameObject>> _liveCells = new List<List<GameObject>>();
@@ -18,6 +19,12 @@ public class GameGenerator : MonoBehaviour
         _wcf.Generate();
         SpawnCells();
         ConnectCells();
+
+        var mrDebug = MrDebugObject?.GetComponentInChildren<MrDebug>();
+        if (mrDebug != null)
+        {
+            mrDebug.GameCells = _liveCells.SelectMany(row => row).Where(cell => cell != null).ToList();
+        }
     }
 
     private void SpawnCells()

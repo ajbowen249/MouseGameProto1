@@ -20,7 +20,7 @@ public class MrDebug : MonoBehaviour
         {
             cellOptions.Add(new DialogOption
             {
-                Text = cell.name,
+                Text = cell.name.Replace("Cell(Clone)", ""),
                 Tag = $"start:{cell.name}",
             });
         }
@@ -57,32 +57,21 @@ public class MrDebug : MonoBehaviour
 
     void JumpToCell(string name)
     {
-        for (int i = 0; i < GameCells.Count; i++)
+        // TODO: This used to kill "previous" cells (FadeOutAndDie). Not sure what to do post-playground.
+        var cell = GameCells.Find(cell => cell.name == name);
+        var maybeSpawner = cell.GetComponentInChildren<CarExitSpawner>();
+        if (maybeSpawner != null)
         {
-            var cell = GameCells[i];
-            if (cell.name == name)
-            {
-                var maybeSpawner = cell.GetComponentInChildren<CarExitSpawner>();
-                if (maybeSpawner != null)
-                {
-                    maybeSpawner.SpawnCarExit();
-                }
-
-                var gameCell = cell.GetComponent<GameCell>();
-
-                var entryPoint = gameCell.EntryPoint.gameObject.transform.position;
-
-                var mouseController = _player.GetComponent<MouseController>();
-                mouseController.Teleport(entryPoint);
-
-                gameCell.PlayerEntered(_player);
-
-                return;
-            }
-            else
-            {
-                cell.GetComponent<GameCell>()?.FadeOutAndDie();
-            }
+            maybeSpawner.SpawnCarExit();
         }
+
+        var gameCell = cell.GetComponent<GameCell>();
+
+        var entryPoint = gameCell.EntryPoint.gameObject.transform.position;
+
+        var mouseController = _player.GetComponent<MouseController>();
+        mouseController.Teleport(entryPoint);
+
+        gameCell.PlayerEntered(_player);
     }
 }
