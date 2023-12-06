@@ -17,6 +17,7 @@ public class GameGenerator : MonoBehaviour
         _wcf = new GameCellWFC(Rows, Cols, GameCellPrefabs.Select(prefab => prefab.GetComponent<GameCell>()).ToList());
         _wcf.Generate();
         SpawnCells();
+        ConnectCells();
     }
 
     private void SpawnCells()
@@ -55,6 +56,76 @@ public class GameGenerator : MonoBehaviour
             }
 
             _liveCells.Add(cellRow);
+        }
+    }
+
+    private void ConnectCells()
+    {
+        for (int row = 0; row < Rows; row++)
+        {
+            for (int col = 0; col < Cols; col++)
+            {
+                var cellObject = _liveCells[row][col];
+                if (cellObject == null)
+                {
+                    continue;
+                }
+
+                var cell = cellObject.GetComponent<GameCell>();
+
+                foreach (var point in cell.AttachPoints)
+                {
+                    foreach (var mode in point.modes)
+                    {
+                        if (mode.exitObjects.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        var neighborRow = row;
+                        var neighborCol = col;
+
+                        switch (point.edge)
+                        {
+                            case AttachEdge.NORTH:
+                                neighborRow++;
+                                break;
+                            case AttachEdge.SOUTH:
+                                neighborRow--;
+                                break;
+                            case AttachEdge.EAST:
+                                neighborCol++;
+                                break;
+                            case AttachEdge.WEST:
+                                neighborCol--;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (neighborRow < 0 || neighborCol < 0 || neighborRow >= Rows || neighborCol >= Cols)
+                        {
+                            continue;
+                        }
+
+                        var neighbor = _liveCells[neighborRow][neighborCol];
+
+                        if (neighbor == null)
+                        {
+                            continue;
+                        }
+
+                        foreach (var exitObject in mode.exitObjects)
+                        {
+                            var door = cell.GetComponentInChildren<Door>();
+                            if (door != null)
+                            {
+                                door.ToCell = neighbor;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
