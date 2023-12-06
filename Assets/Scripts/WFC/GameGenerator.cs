@@ -82,8 +82,8 @@ public class GameGenerator : MonoBehaviour
                             continue;
                         }
 
-                        var neighborRow = row;
-                        var neighborCol = col;
+                        var neighborRow = row + point.row;
+                        var neighborCol = col + point.col;
 
                         switch (point.edge)
                         {
@@ -121,6 +121,32 @@ public class GameGenerator : MonoBehaviour
                             if (door != null)
                             {
                                 door.ToCell = neighbor;
+                            }
+
+                            var car = cell.GetComponentInChildren<CarExitSpawner>();
+
+                            if (car != null)
+                            {
+                                car.ToCell = neighbor;
+                                var neighborCar = neighbor.GetComponentInChildren<CarExitSpawner>();
+
+                                // TODO: Give cells a way to guide the car out/in. For now, this just goes straight
+                                var pathName = $"generated_path_{cell.gameObject.name}_to_{neighbor.name}";
+                                var path = new GameObject(pathName);
+
+                                var pathOffset = new Vector3(0f, 0.0756f, 0f);
+
+                                var startNode = new GameObject($"{pathName}_0");
+                                startNode.transform.position = car.transform.position + pathOffset;
+                                startNode.transform.SetParent(path.transform);
+                                startNode.AddComponent<PathNode>();
+
+                                var endNode = new GameObject($"{pathName}_1");
+                                endNode.transform.position = neighborCar.transform.position + pathOffset;
+                                endNode.transform.SetParent(path.transform);
+                                endNode.AddComponent<PathNode>();
+
+                                car.ExitPath = path;
                             }
                         }
                     }
