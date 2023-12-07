@@ -376,29 +376,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 3262305771490578596}
-  AttachPoints:
-  - row: 0
-    col: 0
-    edge: 1
-    modes:
-    - type: 1
-      isOptional: 0
-      exitObjects: []
-  - row: 0
-    col: 0
-    edge: 0
-    modes:
-    - type: 0
-      isOptional: 0
-      exitObjects:
-      - {fileID: 1794887567754566522}
-    - type: 1
-      isOptional: 0
-      exitObjects: []
   Footprint:
   - row: 0
     col: 0
   CanBeRandom: 0
+  EntryPoints:
+  - row: 0
+    col: 0
+    edge: 1
+    mode:
+      type: 1
+      isOptional: 0
+    toCell: {fileID: 0}
 --- !u!114 &4687476456762673512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1708,17 +1697,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: CarExitSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: FromCell
+      value: 
+      objectReference: {fileID: 3367333639008631512}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.data[0].mode.type
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f822c789818b3644ad1d282af07637c, type: 3}
---- !u!1 &1794887567754566522 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7201213182939411440, guid: 8f822c789818b3644ad1d282af07637c,
-    type: 3}
-  m_PrefabInstance: {fileID: 8865161627560847498}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6589472518927563371 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2339026065001812705, guid: 8f822c789818b3644ad1d282af07637c,

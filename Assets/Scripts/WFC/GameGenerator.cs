@@ -79,16 +79,12 @@ public class GameGenerator : MonoBehaviour
                 }
 
                 var cell = cellObject.GetComponent<GameCell>();
+                var exits = cellObject.GetComponentsInChildren<Exit>().ToList();
 
-                foreach (var point in cell.AttachPoints)
+                foreach (var exit in exits)
                 {
-                    foreach (var mode in point.modes)
+                    foreach (var point in exit.AttachPointOptions)
                     {
-                        if (mode.exitObjects.Count == 0)
-                        {
-                            continue;
-                        }
-
                         var neighborRow = row + point.row;
                         var neighborCol = col + point.col;
 
@@ -115,47 +111,13 @@ public class GameGenerator : MonoBehaviour
                             continue;
                         }
 
-                        var neighbor = _liveCells[neighborRow][neighborCol];
-
-                        if (neighbor == null)
+                        var neighborObject = _liveCells[neighborRow][neighborCol];
+                        if (neighborObject == null)
                         {
                             continue;
                         }
 
-                        foreach (var exitObject in mode.exitObjects)
-                        {
-                            var door = cell.GetComponentInChildren<Door>();
-                            if (door != null)
-                            {
-                                door.ToCell = neighbor;
-                            }
-
-                            var car = cell.GetComponentInChildren<CarExitSpawner>();
-
-                            if (car != null)
-                            {
-                                car.ToCell = neighbor;
-                                var neighborCar = neighbor.GetComponentInChildren<CarExitSpawner>();
-
-                                // TODO: Give cells a way to guide the car out/in. For now, this just goes straight
-                                var pathName = $"generated_path_{cell.gameObject.name}_to_{neighbor.name}";
-                                var path = new GameObject(pathName);
-
-                                var pathOffset = new Vector3(0f, 0.0756f, 0f);
-
-                                var startNode = new GameObject($"{pathName}_0");
-                                startNode.transform.position = car.transform.position + pathOffset;
-                                startNode.transform.SetParent(path.transform);
-                                startNode.AddComponent<PathNode>();
-
-                                var endNode = new GameObject($"{pathName}_1");
-                                endNode.transform.position = neighborCar.transform.position + pathOffset;
-                                endNode.transform.SetParent(path.transform);
-                                endNode.AddComponent<PathNode>();
-
-                                car.ExitPath = path;
-                            }
-                        }
+                        point.toCell = neighborObject;
                     }
                 }
             }

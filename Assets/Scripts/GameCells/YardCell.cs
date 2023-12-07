@@ -10,7 +10,7 @@ public class YardCell : MonoBehaviour
     void Start()
     {
         var cell = gameObject.GetComponent<GameCell>();
-        cell.SetExitRequirement(() => {
+        cell.SetExitRequirement(attachPoint => {
             if (SnowBank == null)
             {
                 return true;

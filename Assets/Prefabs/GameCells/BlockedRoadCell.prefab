@@ -950,34 +950,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 8205984596072932669}
-  AttachPoints:
-  - row: 0
-    col: 0
-    edge: 1
-    modes:
-    - type: 0
-      isOptional: 0
-      exitObjects: []
-    - type: 1
-      isOptional: 0
-      exitObjects: []
-  - row: 0
-    col: 1
-    edge: 2
-    modes:
-    - type: 0
-      isOptional: 0
-      exitObjects:
-      - {fileID: 7649290211149974021}
-    - type: 1
-      isOptional: 0
-      exitObjects: []
   Footprint:
   - row: 0
     col: 0
   - row: 0
     col: 1
   CanBeRandom: 0
+  EntryPoints:
+  - row: 0
+    col: 0
+    edge: 1
+    mode:
+      type: 0
+      isOptional: 0
+    toCell: {fileID: 0}
 --- !u!114 &1407636662527619101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1702,6 +1688,36 @@ PrefabInstance:
       propertyPath: m_Name
       value: CarExitSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: FromCell
+      value: 
+      objectReference: {fileID: 4008398053108115855}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.data[0].col
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.data[1].col
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.data[0].edge
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7306274163161537387, guid: 8f822c789818b3644ad1d282af07637c,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.data[1].edge
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1710,12 +1726,6 @@ PrefabInstance:
 --- !u!4 &3007707491301665556 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2339026065001812705, guid: 8f822c789818b3644ad1d282af07637c,
-    type: 3}
-  m_PrefabInstance: {fileID: 704925316371528181}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7649290211149974021 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7201213182939411440, guid: 8f822c789818b3644ad1d282af07637c,
     type: 3}
   m_PrefabInstance: {fileID: 704925316371528181}
   m_PrefabAsset: {fileID: 0}

@@ -16,7 +16,7 @@ public class HotDogStand : MonoBehaviour
     void OnPlayerEnter(GameObject player)
     {
         var cell = gameObject.GetComponent<GameCell>();
-        cell.SetExitRequirement(() => {
+        cell.SetExitRequirement(attachPoint => {
             if (Crowd == null)
             {
                 return true;

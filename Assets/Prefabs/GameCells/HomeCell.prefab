@@ -482,19 +482,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 8205984596072932669}
-  AttachPoints:
-  - row: 0
-    col: 0
-    edge: 0
-    modes:
-    - type: 1
-      isOptional: 0
-      exitObjects:
-      - {fileID: 7309652426377232353}
   Footprint:
   - row: 0
     col: 0
   CanBeRandom: 0
+  EntryPoints: []
 --- !u!1 &4786852615010435537
 GameObject:
   m_ObjectHideFlags: 0
@@ -975,6 +967,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Door
       objectReference: {fileID: 0}
+    - target: {fileID: 5260331502954167506, guid: 1138b2528fb83f74ba063a11890a2a3f,
+        type: 3}
+      propertyPath: FromCell
+      value: 
+      objectReference: {fileID: 4008398053108115855}
+    - target: {fileID: 5260331502954167506, guid: 1138b2528fb83f74ba063a11890a2a3f,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5260331502954167506, guid: 1138b2528fb83f74ba063a11890a2a3f,
+        type: 3}
+      propertyPath: AttachPointOptions.Array.data[0].mode.type
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6507655529881690297, guid: 1138b2528fb83f74ba063a11890a2a3f,
         type: 3}
       propertyPath: FromCell
@@ -988,12 +995,6 @@ PrefabInstance:
 --- !u!4 &6668375666063414472 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 167377580590972847, guid: 1138b2528fb83f74ba063a11890a2a3f,
-    type: 3}
-  m_PrefabInstance: {fileID: 6834337038631480167}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7309652426377232353 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4299085469408679046, guid: 1138b2528fb83f74ba063a11890a2a3f,
     type: 3}
   m_PrefabInstance: {fileID: 6834337038631480167}
   m_PrefabAsset: {fileID: 0}

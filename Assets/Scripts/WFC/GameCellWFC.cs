@@ -25,25 +25,18 @@ public class WFCCell
                 point => point.row == footprint.row && point.col == footprint.col
             ).ToList();
 
-            // Since points can have multiple "types" (foot, car), split them up into separate "absolute" points. That
-            // makes the reducer simpler, because it doesn't need to, "clarify" modes deeply.
-            var allPoints = relevantAttachPoints.SelectMany(point =>
-                point.modes.Select(mode => (mode, point.edge))
-            );
-
             var optionalPoints = new List<AbsoluteAttachPoint>();
             var requiredPoints = new List<AbsoluteAttachPoint>();
 
-            foreach (var point in allPoints)
+            foreach (var point in relevantAttachPoints)
             {
-                var (mode, edge) = point;
                 var absolutePoint = new AbsoluteAttachPoint
                 {
-                    edge = edge,
-                    modeType = mode.type,
+                    edge = point.edge,
+                    modeType = point.mode.type,
                 };
 
-                (mode.isOptional ? optionalPoints : requiredPoints).Add(absolutePoint);
+                (point.mode.isOptional ? optionalPoints : requiredPoints).Add(absolutePoint);
             }
 
             // Attach points can be optional. So, to make the reducer function simpler, generate the full set of

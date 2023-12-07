@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -32,31 +33,6 @@ public static class AttachEdgeExtensions
     }
 }
 
-
-[Serializable]
-public enum AttachModeType
-{
-    CAR,
-    FOOT,
-}
-
-[Serializable]
-public class AttachMode
-{
-    public AttachModeType type;
-    public bool isOptional;
-    public List<GameObject> exitObjects;
-}
-
-[Serializable]
-public class CellAttachPoint
-{
-    public int row;
-    public int col;
-    public AttachEdge edge;
-    public List<AttachMode> modes;
-}
-
 [Serializable]
 public class CellFootprint
 {
@@ -70,26 +46,47 @@ public class GameCell : MonoBehaviour
     public const float HalfWidth = CellWidth / 2;
 
     public GameObject EntryPoint;
-    public List<CellAttachPoint> AttachPoints;
     public List<CellFootprint> Footprint;
     public bool CanBeRandom;
+    public List<CellAttachPoint> EntryPoints;
 
-    public delegate bool ExitRequirement();
+    public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
+
+    public List<CellAttachPoint> AttachPoints
+    {
+        get
+        {
+            var points = gameObject.GetComponentsInChildren<Exit>()
+                .SelectMany(exit => exit.AttachPointOptions)
+                .Distinct()
+                .ToList();
+
+            points.AddRange(EntryPoints);
+
+            return points;
+        }
+    }
 
     public void SetExitRequirement(ExitRequirement requirement)
     {
         _exitRequirement = requirement;
     }
 
-    public bool CanExit()
+    public bool CanExit(CellAttachPoint attachPoint)
     {
-        return _exitRequirement == null ? true : _exitRequirement();
+        return _exitRequirement == null ? true : _exitRequirement(attachPoint);
     }
 
     public void PlayerEntered(GameObject player)
     {
         BroadcastMessage("OnPlayerEnter", player, SendMessageOptions.DontRequireReceiver);
+    }
+
+    public void PlayerExited(GameObject player)
+    {
+        BroadcastMessage("OnPlayerExit", player, SendMessageOptions.DontRequireReceiver);
+        FadeOutAndDie();
     }
 
     public void FadeOutAndDie()
