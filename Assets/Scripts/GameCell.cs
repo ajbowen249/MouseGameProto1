@@ -53,18 +53,25 @@ public class GameCell : MonoBehaviour
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
 
-    public List<CellAttachPoint> AttachPoints
+    public List<CellAttachPoint> AllAttachPoints
     {
         get
         {
             var points = gameObject.GetComponentsInChildren<Exit>()
                 .SelectMany(exit => exit.AttachPointOptions)
-                .Distinct()
                 .ToList();
 
             points.AddRange(EntryPoints);
 
-            return points;
+            return points.ToList();
+        }
+    }
+
+    public List<CellAttachPoint> DistinctAttachPoints
+    {
+        get
+        {
+            return AllAttachPoints.Distinct().ToList();
         }
     }
 
@@ -87,6 +94,11 @@ public class GameCell : MonoBehaviour
     {
         BroadcastMessage("OnPlayerExit", player, SendMessageOptions.DontRequireReceiver);
         FadeOutAndDie();
+    }
+
+    public void GenerationComplete()
+    {
+        BroadcastMessage("OnGenerationComplete", this, SendMessageOptions.DontRequireReceiver);
     }
 
     public void FadeOutAndDie()
@@ -124,7 +136,7 @@ public class GameCell : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
 
-        foreach (var attachPoint in AttachPoints)
+        foreach (var attachPoint in DistinctAttachPoints)
         {
             var x = CellWidth * (float)attachPoint.col;
             var z = CellWidth * (float)attachPoint.row;

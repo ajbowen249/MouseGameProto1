@@ -19,6 +19,7 @@ public class GameGenerator : MonoBehaviour
         _wcf.Generate();
         SpawnCells();
         ConnectCells();
+        NotifyGenerationComplete();
 
         var mrDebug = MrDebugObject?.GetComponentInChildren<MrDebug>();
         if (mrDebug != null)
@@ -81,45 +82,54 @@ public class GameGenerator : MonoBehaviour
                 var cell = cellObject.GetComponent<GameCell>();
                 var exits = cellObject.GetComponentsInChildren<Exit>().ToList();
 
-                foreach (var exit in exits)
+                foreach (var point in cell.AllAttachPoints)
                 {
-                    foreach (var point in exit.AttachPointOptions)
+                    var neighborRow = row + point.row;
+                    var neighborCol = col + point.col;
+
+                    switch (point.edge)
                     {
-                        var neighborRow = row + point.row;
-                        var neighborCol = col + point.col;
-
-                        switch (point.edge)
-                        {
-                            case AttachEdge.NORTH:
-                                neighborRow++;
-                                break;
-                            case AttachEdge.SOUTH:
-                                neighborRow--;
-                                break;
-                            case AttachEdge.EAST:
-                                neighborCol++;
-                                break;
-                            case AttachEdge.WEST:
-                                neighborCol--;
-                                break;
-                            default:
-                                break;
-                        }
-
-                        if (neighborRow < 0 || neighborCol < 0 || neighborRow >= Rows || neighborCol >= Cols)
-                        {
-                            continue;
-                        }
-
-                        var neighborObject = _liveCells[neighborRow][neighborCol];
-                        if (neighborObject == null)
-                        {
-                            continue;
-                        }
-
-                        point.toCell = neighborObject;
+                        case AttachEdge.NORTH:
+                            neighborRow++;
+                            break;
+                        case AttachEdge.SOUTH:
+                            neighborRow--;
+                            break;
+                        case AttachEdge.EAST:
+                            neighborCol++;
+                            break;
+                        case AttachEdge.WEST:
+                            neighborCol--;
+                            break;
+                        default:
+                            break;
                     }
+
+                    if (neighborRow < 0 || neighborCol < 0 || neighborRow >= Rows || neighborCol >= Cols)
+                    {
+                        continue;
+                    }
+
+                    point.toCell = _liveCells[neighborRow][neighborCol];
                 }
+            }
+        }
+    }
+
+    private void NotifyGenerationComplete()
+    {
+        for (int row = 0; row < Rows; row++)
+        {
+            for (int col = 0; col < Cols; col++)
+            {
+                var cellObject = _liveCells[row][col];
+                var cell = cellObject?.GetComponent<GameCell>();
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                cell.GenerationComplete();
             }
         }
     }

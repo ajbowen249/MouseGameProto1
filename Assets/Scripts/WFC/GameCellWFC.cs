@@ -21,7 +21,7 @@ public class WFCCell
         {
             // Attach points are also assigned a cell, so we also want to narrow this down to only include attach points
             // in this quadrant.
-            var relevantAttachPoints = gameCell.AttachPoints.Where(
+            var relevantAttachPoints = gameCell.DistinctAttachPoints.Where(
                 point => point.row == footprint.row && point.col == footprint.col
             ).ToList();
 
@@ -133,7 +133,10 @@ public class GameCellWFC
         _wfc.SetCell(2, 8, BlankCell, true);
         _wfc.SetCell(2, 9, BlankCell, true);
         _wfc.SetCell(3, 8, BlankCell, true);
-        _wfc.SetCell(1, 8, BlankCell, true);
+        _wfc.SetCell(4, 8, BlankCell, true);
+        _wfc.SetCell(4, 7, BlankCell, true);
+        _wfc.SetCell(4, 6, BlankCell, true);
+        _wfc.SetCell(5, 6, BlankCell, true);
     }
 
     private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)

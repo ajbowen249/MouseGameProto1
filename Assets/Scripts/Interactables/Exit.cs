@@ -25,6 +25,8 @@ public class CellAttachPoint
     public int col;
     public AttachEdge edge;
     public AttachMode mode;
+
+    [HideInInspector]
     public GameObject toCell;
 
     public bool Equals(CellAttachPoint a, CellAttachPoint b)
@@ -46,6 +48,14 @@ public class Exit : MonoBehaviour
     private ExitHandler _exitHandler;
     private CellAttachPoint _selectedPoint;
     private GameObject _selectingInteractor;
+
+    private List<CellAttachPoint> SelectableOptions
+    {
+        get
+        {
+            return AttachPointOptions.Where(point => point.toCell != null).ToList();
+        }
+    }
 
     public void SetExitHandler(ExitHandler exitHandler)
     {
@@ -100,12 +110,17 @@ public class Exit : MonoBehaviour
         npc.DialogTree = new DialogNode
         {
             Message = "<i>select direction</i>",
-            Options = AttachPointOptions.Select((point, index) => new DialogOption
+            Options = SelectableOptions.Select((point, index) => new DialogOption
             {
                 Text = point.edge.ToString(),
                 Tag = index.ToString(),
             }).ToList(),
         };
+
+        if (npc.DialogTree.Options.Count == 0)
+        {
+            return;
+        }
 
         npc.InitiateDialog(interactor);
     }
@@ -113,7 +128,7 @@ public class Exit : MonoBehaviour
     void OnDialogChoice(string tag)
     {
         var index = int.Parse(tag);
-        _selectedPoint = AttachPointOptions[index];
+        _selectedPoint = SelectableOptions[index];
         AttemptExit(_selectingInteractor);
     }
 }
