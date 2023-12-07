@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 167377580590972847}
   - component: {fileID: 6507655529881690297}
   - component: {fileID: 5260331502954167506}
+  - component: {fileID: 3690865388480049235}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -61,6 +62,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FromCell: {fileID: 0}
   AttachPointOptions: []
+--- !u!114 &3690865388480049235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4299085469408679046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecfca2eb5a6d72c499fa58cf3cd7a144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TalkCamera: {fileID: 0}
 --- !u!1 &5873230839069729420
 GameObject:
   m_ObjectHideFlags: 0

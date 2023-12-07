@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -43,6 +44,8 @@ public class Exit : MonoBehaviour
     public delegate void ExitHandler(GameObject interactor, CellAttachPoint attachPoint);
 
     private ExitHandler _exitHandler;
+    private CellAttachPoint _selectedPoint;
+    private GameObject _selectingInteractor;
 
     public void SetExitHandler(ExitHandler exitHandler)
     {
@@ -57,20 +60,25 @@ public class Exit : MonoBehaviour
             Debug.LogError("Exit missing FromCell");
         }
 
-        if (AttachPointOptions.Count != 1)
+        if (_selectedPoint == null)
         {
-            Debug.LogError("TODO: Need to build exit selection dialog.");
+            if (AttachPointOptions.Count == 1)
+            {
+                _selectedPoint = AttachPointOptions[0];
+            }
+            else
+            {
+                StartSelectDialog(interactor);
+                return;
+            }
+        }
+
+        if (!fromGameCell.CanExit(_selectedPoint))
+        {
             return;
         }
 
-        var attachPoint = AttachPointOptions[0];
-        if (!fromGameCell.CanExit(attachPoint))
-        {
-            return;
-        }
-
-
-        var toCell = attachPoint.toCell?.GetComponent<GameCell>();
+        var toCell = _selectedPoint.toCell?.GetComponent<GameCell>();
         if (toCell == null)
         {
             Debug.LogError("Exit missing to cell");
@@ -78,9 +86,34 @@ public class Exit : MonoBehaviour
 
         if (_exitHandler != null)
         {
-            _exitHandler(interactor, attachPoint);
+            _exitHandler(interactor, _selectedPoint);
         }
 
         fromGameCell.PlayerExited(interactor);
+    }
+
+    private void StartSelectDialog(GameObject interactor)
+    {
+        _selectingInteractor = interactor;
+        var npc = gameObject.GetComponent<NPC>();
+
+        npc.DialogTree = new DialogNode
+        {
+            Message = "<i>select direction</i>",
+            Options = AttachPointOptions.Select((point, index) => new DialogOption
+            {
+                Text = point.edge.ToString(),
+                Tag = index.ToString(),
+            }).ToList(),
+        };
+
+        npc.InitiateDialog(interactor);
+    }
+
+    void OnDialogChoice(string tag)
+    {
+        var index = int.Parse(tag);
+        _selectedPoint = AttachPointOptions[index];
+        AttemptExit(_selectingInteractor);
     }
 }

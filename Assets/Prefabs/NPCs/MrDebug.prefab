@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b43fe254a3a73147b78ad0e1bddb535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameCells: []
 --- !u!1 &7138631812202804413
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,7 +217,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 10
+  m_Priority: 20
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}

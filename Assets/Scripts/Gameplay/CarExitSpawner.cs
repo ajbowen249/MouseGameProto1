@@ -16,6 +16,11 @@ public class CarExitSpawner : MonoBehaviour
         return carObject;
     }
 
+    void OnInteraction(GameObject interactor)
+    {
+        gameObject.GetComponent<Exit>().AttemptExit(interactor);
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;

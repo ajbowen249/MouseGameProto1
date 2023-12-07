@@ -50,9 +50,4 @@ public class CarExit : MonoBehaviour
             });
         });
     }
-
-    void OnInteraction(GameObject interactor)
-    {
-        _exit.AttemptExit(interactor);
-    }
 }

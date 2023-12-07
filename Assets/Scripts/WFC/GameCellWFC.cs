@@ -116,6 +116,7 @@ public class GameCellWFC
 
     private void PlaceFixedCells()
     {
+        var BlankCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "BlankCell");
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = _allCellTypes.Find(cell =>
@@ -128,6 +129,11 @@ public class GameCellWFC
         _wfc.SetCell(1, 5, YardCell, true);
         _wfc.SetCell(2, 5, BlockedRoadCell, true);
         _wfc.SetCell(2, 7, HotDogStandCell, true);
+
+        _wfc.SetCell(2, 8, BlankCell, true);
+        _wfc.SetCell(2, 9, BlankCell, true);
+        _wfc.SetCell(3, 8, BlankCell, true);
+        _wfc.SetCell(1, 8, BlankCell, true);
     }
 
     private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)

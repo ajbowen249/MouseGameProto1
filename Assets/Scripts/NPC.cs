@@ -11,7 +11,10 @@ public class NPC : MonoBehaviour
 
     void Start()
     {
-        TalkCamera.SetActive(false);
+        if (TalkCamera != null)
+        {
+            TalkCamera.SetActive(false);
+        }
     }
 
     public void InitiateDialog(GameObject talkingTo)

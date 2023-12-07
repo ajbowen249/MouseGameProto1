@@ -26,7 +26,10 @@ public class DialogController : MonoBehaviour
 
         HUD.Instance.SetDialog(_dialog, _dialogIndex);
 
-        _talkingTo.TalkCamera.SetActive(true);
+        if (_talkingTo.TalkCamera != null)
+        {
+            _talkingTo.TalkCamera.SetActive(true);
+        }
 
         // Movement overlaps dialog input
         _input.dialogDown = false;
@@ -36,7 +39,12 @@ public class DialogController : MonoBehaviour
     public void OnEndedDialog(GameObject talkingTo)
     {
         HUD.Instance.SetDialog(null, 0);
-        _talkingTo.TalkCamera.SetActive(false);
+
+        if (_talkingTo.TalkCamera)
+        {
+            _talkingTo.TalkCamera.SetActive(false);
+        }
+
         _talkingTo = null;
     }
 
@@ -46,7 +54,6 @@ public class DialogController : MonoBehaviour
         {
             return;
         }
-
 
         if (_input.interact)
         {
