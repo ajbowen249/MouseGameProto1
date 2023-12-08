@@ -55,18 +55,17 @@ public class CarExit : MonoBehaviour
                 var nextExitObject = maybeSpawner.SpawnCarExit();
                 var nextExit = nextExitObject.GetComponent<CarExit>();
 
-
                 if (autoContinue)
                 {
-                    nextExit.AutoContinue(driver.gameObject);
+                    nextExit.AutoContinue(driver.gameObject, exit.FromCell);
                 }
             });
         });
     }
 
-    public void AutoContinue(GameObject driver)
+    public void AutoContinue(GameObject driver, GameObject fromCell)
     {
         var cell = _exit.FromCell.GetComponent<GameCell>();
-        _exit.AttemptExit(driver);
+        _exit.AttemptExit(driver, fromCell);
     }
 }

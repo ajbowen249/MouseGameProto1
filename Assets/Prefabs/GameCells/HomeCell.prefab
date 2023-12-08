@@ -487,6 +487,7 @@ MonoBehaviour:
     col: 0
   CanBeRandom: 0
   EntryPoints: []
+  DestroyOnExit: 1
 --- !u!1 &4786852615010435537
 GameObject:
   m_ObjectHideFlags: 0

@@ -49,6 +49,7 @@ public class GameCell : MonoBehaviour
     public List<CellFootprint> Footprint;
     public bool CanBeRandom;
     public List<CellAttachPoint> EntryPoints;
+    public bool DestroyOnExit = false;
 
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
@@ -103,7 +104,10 @@ public class GameCell : MonoBehaviour
     public void PlayerExited(GameObject player)
     {
         BroadcastMessage("OnPlayerExit", player, SendMessageOptions.DontRequireReceiver);
-        FadeOutAndDie();
+        if (DestroyOnExit)
+        {
+            FadeOutAndDie();
+        }
     }
 
     public void GenerationComplete()

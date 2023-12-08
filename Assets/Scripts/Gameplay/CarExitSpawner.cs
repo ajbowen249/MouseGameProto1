@@ -5,6 +5,7 @@ using UnityEngine;
 public class CarExitSpawner : MonoBehaviour
 {
     public GameObject CarExitPrefab;
+    public bool EnableAutoContinue = false;
 
     Exit _exit;
 
@@ -30,6 +31,11 @@ public class CarExitSpawner : MonoBehaviour
 
     public bool ShouldAutoContinue(GameObject fromCell)
     {
+        if (!EnableAutoContinue)
+        {
+            return false;
+        }
+
         var cell = _exit.FromCell.GetComponent<GameCell>();
         return cell.CanAutoContinue(fromCell);
     }
