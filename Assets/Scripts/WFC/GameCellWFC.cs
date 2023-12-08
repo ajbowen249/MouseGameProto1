@@ -124,6 +124,7 @@ public class GameCellWFC
         );
 
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
+        var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");
 
         _wfc.SetCell(0, 5, HomeCell, true);
         _wfc.SetCell(1, 5, YardCell, true);
@@ -136,7 +137,16 @@ public class GameCellWFC
         _wfc.SetCell(4, 8, BlankCell, true);
         _wfc.SetCell(4, 7, BlankCell, true);
         _wfc.SetCell(4, 6, BlankCell, true);
+
         _wfc.SetCell(5, 6, BlankCell, true);
+        _wfc.SetCell(6, 6, BlankCell, true);
+
+        _wfc.SetCell(6, 5, BlankCell, true);
+        _wfc.SetCell(6, 4, BlankCell, true);
+        _wfc.SetCell(6, 7, BlankCell, true);
+        _wfc.SetCell(6, 8, BlankCell, true);
+
+        _wfc.SetCell(7, 6, CheeseStoreCell, true);
     }
 
     private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)
