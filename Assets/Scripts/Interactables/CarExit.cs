@@ -38,16 +38,35 @@ public class CarExit : MonoBehaviour
             driver.AttachTo(gameObject, DriverSeat.transform);
 
             PathFollower.SendObjectAlongPath(gameObject, exitPath, () => {
-                driver.DetachFrom(ExitPoint.transform);
                 var maybeSpawner = toCell.GetComponentInChildren<CarExitSpawner>();
-                if (maybeSpawner != null)
+                if (maybeSpawner == null)
                 {
-                    Destroy(gameObject);
-                    maybeSpawner.SpawnCarExit();
+                    Debug.LogError("Destination cell has no car spawner.");
                 }
 
                 toCell.PlayerEntered(driver.gameObject);
+
+                var autoContinue = maybeSpawner.ShouldAutoContinue(exit.FromCell);
+
+                var detachLocation = autoContinue ? DriverSeat.transform : ExitPoint.transform;
+                driver.DetachFrom(detachLocation);
+                Destroy(gameObject);
+
+                var nextExitObject = maybeSpawner.SpawnCarExit();
+                var nextExit = nextExitObject.GetComponent<CarExit>();
+
+
+                if (autoContinue)
+                {
+                    nextExit.AutoContinue(driver.gameObject);
+                }
             });
         });
+    }
+
+    public void AutoContinue(GameObject driver)
+    {
+        var cell = _exit.FromCell.GetComponent<GameCell>();
+        _exit.AttemptExit(driver);
     }
 }

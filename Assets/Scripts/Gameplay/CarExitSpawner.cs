@@ -6,19 +6,32 @@ public class CarExitSpawner : MonoBehaviour
 {
     public GameObject CarExitPrefab;
 
+    Exit _exit;
+
+    void Start()
+    {
+        _exit = gameObject.GetComponent<Exit>();
+    }
+
     public GameObject SpawnCarExit()
     {
         var carObject = Instantiate(CarExitPrefab, transform.position, transform.rotation);
 
         var car = carObject.GetComponent<CarExit>();
-        car.OnCreated(gameObject.GetComponent<Exit>());
+        car.OnCreated(_exit);
 
         return carObject;
     }
 
     void OnInteraction(GameObject interactor)
     {
-        gameObject.GetComponent<Exit>().AttemptExit(interactor);
+        _exit.AttemptExit(interactor);
+    }
+
+    public bool ShouldAutoContinue(GameObject fromCell)
+    {
+        var cell = _exit.FromCell.GetComponent<GameCell>();
+        return cell.CanAutoContinue(fromCell);
     }
 
     void OnDrawGizmos()

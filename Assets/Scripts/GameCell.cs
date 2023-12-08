@@ -53,14 +53,24 @@ public class GameCell : MonoBehaviour
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
 
+    private List<CellAttachPoint> _activeCarExits;
+    private List<CellAttachPoint> _activeFootExits;
+
+    public List<CellAttachPoint> ExitPoints
+    {
+        get
+        {
+            return GetComponentsInChildren<Exit>()
+                .SelectMany(exit => exit.AttachPointOptions)
+                .ToList();
+        }
+    }
+
     public List<CellAttachPoint> AllAttachPoints
     {
         get
         {
-            var points = gameObject.GetComponentsInChildren<Exit>()
-                .SelectMany(exit => exit.AttachPointOptions)
-                .ToList();
-
+            var points = ExitPoints;
             points.AddRange(EntryPoints);
 
             return points.ToList();
@@ -98,7 +108,19 @@ public class GameCell : MonoBehaviour
 
     public void GenerationComplete()
     {
+        _activeCarExits = ExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.CAR)
+            .ToList();
+
+        _activeFootExits = ExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.FOOT)
+            .ToList();
+
         BroadcastMessage("OnGenerationComplete", this, SendMessageOptions.DontRequireReceiver);
+    }
+
+    public bool CanAutoContinue(GameObject fromCell)
+    {
+        return _activeCarExits.Where(point => point.toCell != fromCell).Count() == 1 &&
+            _activeFootExits.Count == 0 && _exitRequirement == null;
     }
 
     public void FadeOutAndDie()

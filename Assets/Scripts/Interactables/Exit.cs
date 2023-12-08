@@ -72,9 +72,9 @@ public class Exit : MonoBehaviour
 
         if (_selectedPoint == null)
         {
-            if (AttachPointOptions.Count == 1)
+            if (SelectableOptions.Count == 1)
             {
-                _selectedPoint = AttachPointOptions[0];
+                _selectedPoint = SelectableOptions[0];
             }
             else
             {
