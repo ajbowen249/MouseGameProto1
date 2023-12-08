@@ -774,6 +774,14 @@ MonoBehaviour:
       type: 0
       isOptional: 0
     toCell: {fileID: 0}
+  - row: 0
+    col: 0
+    edge: 2
+    mode:
+      type: 0
+      isOptional: 0
+    toCell: {fileID: 0}
+  DestroyOnExit: 0
 --- !u!114 &891125436928546809
 MonoBehaviour:
   m_ObjectHideFlags: 0

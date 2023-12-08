@@ -54,12 +54,20 @@ public class GameCell : MonoBehaviour
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
 
-    public IEnumerable<CellAttachPoint> ExitPoints
+    public IEnumerable<CellAttachPoint> AllExitPoints
+    {
+        get
+        {
+            return GetComponentsInChildren<Exit>(true)
+                .SelectMany(exit => exit.AttachPointOptions);
+        }
+    }
+
+    public IEnumerable<CellAttachPoint> ActiveExitPoints
     {
         get
         {
             return GetComponentsInChildren<Exit>()
-                .Where(exit => exit.gameObject.activeSelf)
                 .SelectMany(exit => exit.AttachPointOptions);
         }
     }
@@ -68,7 +76,18 @@ public class GameCell : MonoBehaviour
     {
         get
         {
-            var points = ExitPoints.ToList();
+            var points = AllExitPoints.ToList();
+            points.AddRange(EntryPoints);
+
+            return points;
+        }
+    }
+
+    public IEnumerable<CellAttachPoint> ActiveAttachPoints
+    {
+        get
+        {
+            var points = ActiveExitPoints.ToList();
             points.AddRange(EntryPoints);
 
             return points;
@@ -87,7 +106,7 @@ public class GameCell : MonoBehaviour
     {
         get
         {
-            return ExitPoints.Where(point =>point.toCell != null && point.mode.type == AttachModeType.CAR);
+            return ActiveExitPoints.Where(point =>point.toCell != null && point.mode.type == AttachModeType.CAR);
         }
     }
 
@@ -95,7 +114,7 @@ public class GameCell : MonoBehaviour
     {
         get
         {
-            return ExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.FOOT);
+            return ActiveExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.FOOT);
         }
     }
 
