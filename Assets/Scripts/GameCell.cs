@@ -54,35 +54,48 @@ public class GameCell : MonoBehaviour
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
 
-    private List<CellAttachPoint> _activeCarExits;
-    private List<CellAttachPoint> _activeFootExits;
-
-    public List<CellAttachPoint> ExitPoints
+    public IEnumerable<CellAttachPoint> ExitPoints
     {
         get
         {
             return GetComponentsInChildren<Exit>()
-                .SelectMany(exit => exit.AttachPointOptions)
-                .ToList();
+                .Where(exit => exit.gameObject.activeSelf)
+                .SelectMany(exit => exit.AttachPointOptions);
         }
     }
 
-    public List<CellAttachPoint> AllAttachPoints
+    public IEnumerable<CellAttachPoint> AllAttachPoints
     {
         get
         {
-            var points = ExitPoints;
+            var points = ExitPoints.ToList();
             points.AddRange(EntryPoints);
 
-            return points.ToList();
+            return points;
         }
     }
 
-    public List<CellAttachPoint> DistinctAttachPoints
+    public IEnumerable<CellAttachPoint> DistinctAttachPoints
     {
         get
         {
-            return AllAttachPoints.Distinct().ToList();
+            return AllAttachPoints.Distinct();
+        }
+    }
+
+    private IEnumerable<CellAttachPoint> ActiveCarExits
+    {
+        get
+        {
+            return ExitPoints.Where(point =>point.toCell != null && point.mode.type == AttachModeType.CAR);
+        }
+    }
+
+        private IEnumerable<CellAttachPoint> ActiveFootExits
+    {
+        get
+        {
+            return ExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.FOOT);
         }
     }
 
@@ -112,19 +125,13 @@ public class GameCell : MonoBehaviour
 
     public void GenerationComplete()
     {
-        _activeCarExits = ExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.CAR)
-            .ToList();
-
-        _activeFootExits = ExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.FOOT)
-            .ToList();
-
         BroadcastMessage("OnGenerationComplete", this, SendMessageOptions.DontRequireReceiver);
     }
 
     public bool CanAutoContinue(GameObject fromCell)
     {
-        return _activeCarExits.Where(point => point.toCell != fromCell).Count() == 1 &&
-            _activeFootExits.Count == 0 && _exitRequirement == null;
+        return ActiveCarExits.Where(point => point.toCell != fromCell).Count() == 1 &&
+            ActiveFootExits.Count() == 0 && _exitRequirement == null;
     }
 
     public void FadeOutAndDie()
