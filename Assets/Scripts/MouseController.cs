@@ -16,6 +16,7 @@ public struct ActionCost
     public float? gas;
     public float? energy;
     public float? time;
+    public float? money;
 }
 
 [RequireComponent(typeof(CharacterController))]
@@ -122,6 +123,7 @@ public class MouseController : MonoBehaviour
     public float Gas { get; private set; } = 20f;
     public float Energy { get; private set; } = 100f;
     public float Hours { get; private set; } = 5f;
+    public float Money { get; private set; } = 100f;
 
     public Dictionary<string, int> Inventory { get; private set; } = new Dictionary<string, int>();
 
@@ -153,10 +155,16 @@ public class MouseController : MonoBehaviour
             if (cost.time is float time)
             {
                 Hours -= time;
-                message += $"T: {TimeUtils.FormatHours(time)} ";
+                message += $"T: {FormatUtils.FormatHours(time)} ";
             }
 
-            HUD.Instance.SetMeters(Gas, Energy, Hours);
+            if (cost.money is float money)
+            {
+                Money -= money;
+                message += $"{FormatUtils.FormatMoney(money)} ";
+            }
+
+            HUD.Instance.SetMeters(Gas, Energy, Hours, Money);
         }
 
         HUD.Instance.AddMessage(message);

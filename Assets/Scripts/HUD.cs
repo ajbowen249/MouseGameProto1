@@ -10,9 +10,12 @@ public class HUD : MonoBehaviour
     public GameObject Canvas;
     public TMP_Text Prompt;
     public TMP_Text MessageLog;
+
     public TMP_Text GasMeter;
     public TMP_Text EnergyMeter;
     public TMP_Text TimeMeter;
+    public TMP_Text MoneyMeter;
+
     public TMP_Text DialogText;
     public TMP_Text DialogOptions;
 
@@ -51,6 +54,7 @@ public class HUD : MonoBehaviour
         GasMeter.text = "";
         EnergyMeter.text = "";
         TimeMeter.text = "";
+        MoneyMeter.text = "";
 
         _player = PlayerObject.GetComponent<MouseController>();
     }
@@ -107,11 +111,12 @@ public class HUD : MonoBehaviour
         _lastNewLog = Time.fixedTime;
     }
 
-    public void SetMeters(float gas, float energy, float time)
+    public void SetMeters(float gas, float energy, float time, float money)
     {
         GasMeter.text = $"Gas: {gas}";
         EnergyMeter.text = $"Energy: {energy}";
-        TimeMeter.text = $"Time: {TimeUtils.FormatHours(time)}";
+        TimeMeter.text = $"Time: {FormatUtils.FormatHours(time)}";
+        MoneyMeter.text = FormatUtils.FormatMoney(money);
     }
 
     private void DrawDialog()
@@ -153,7 +158,12 @@ public class HUD : MonoBehaviour
 
         if (option.Cost?.time is float time)
         {
-            text += $" T {TimeUtils.FormatHours(time)}";
+            text += $" T {FormatUtils.FormatHours(time)}";
+        }
+
+        if (option.Cost?.money is float money)
+        {
+            text += $" {FormatUtils.FormatMoney(money)}";
         }
 
         return $"{(isSelected ? "<b>" : "")}<color={color}>{text}</color>{(isSelected ? "</b>" : "")}";

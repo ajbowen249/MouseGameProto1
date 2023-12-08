@@ -28,7 +28,7 @@ public class MakeHotDogs : MonoBehaviour
     {
         DogsRemainingText.text = $"{_dogsRemaining}";
         var timeSpent = (Time.time - _startTime) / 100f;
-        TimeTakenText.text = $"{TimeUtils.FormatHours(timeSpent)}";
+        TimeTakenText.text = $"{FormatUtils.FormatHours(timeSpent)}";
 
         if (_dogsRemaining <= 0)
         {
