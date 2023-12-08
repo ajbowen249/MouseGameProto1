@@ -107,6 +107,7 @@ public class Exit : MonoBehaviour
         }
 
         fromGameCell.PlayerExited(interactor);
+        _selectedPoint = null;
     }
 
     private void StartSelectDialog(GameObject interactor)
