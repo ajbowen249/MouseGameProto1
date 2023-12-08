@@ -48,13 +48,12 @@ public class Exit : MonoBehaviour
     private ExitHandler _exitHandler;
     private CellAttachPoint _selectedPoint;
     private GameObject _selectingInteractor;
-    private GameObject _previousCell;
 
     private List<CellAttachPoint> SelectableOptions
     {
         get
         {
-            return AttachPointOptions.Where(point => point.toCell != null && point.toCell != _previousCell).ToList();
+            return AttachPointOptions.Where(point => point.toCell != null).ToList();
         }
     }
 
@@ -70,7 +69,6 @@ public class Exit : MonoBehaviour
 
     public void AttemptExit(GameObject interactor, GameObject previousCell)
     {
-        _previousCell = previousCell;
         var fromGameCell = FromCell?.GetComponent<GameCell>();
         if (fromGameCell == null)
         {
@@ -79,9 +77,10 @@ public class Exit : MonoBehaviour
 
         if (_selectedPoint == null)
         {
-            if (SelectableOptions.Count == 1)
+            var selectableMinusPrevious = SelectableOptions.Where(point => point.toCell != previousCell).ToList();
+            if (selectableMinusPrevious.Count == 1)
             {
-                _selectedPoint = SelectableOptions[0];
+                _selectedPoint = selectableMinusPrevious[0];
             }
             else
             {
