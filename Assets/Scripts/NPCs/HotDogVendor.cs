@@ -50,9 +50,9 @@ public class HotDogVendor : MonoBehaviour
         _npc.InitiateDialog(interactor);
     }
 
-    void OnDialogChoice(string tag)
+    void OnDialogChoice(DialogOption option)
     {
-        if (tag == "negative")
+        if (option.Tag == "negative")
         {
             _player.ExpendResources(WaitForChef);
             Destroy(Crowd);
@@ -69,7 +69,7 @@ public class HotDogVendor : MonoBehaviour
                 },
             };
         }
-        else if (tag == "positive")
+        else if (option.Tag == "positive")
         {
             _startMinigame = true;
 

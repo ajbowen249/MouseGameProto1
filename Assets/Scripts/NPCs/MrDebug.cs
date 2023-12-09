@@ -45,9 +45,9 @@ public class MrDebug : MonoBehaviour
         npc.InitiateDialog(interactor);
     }
 
-    void OnDialogChoice(string tag)
+    void OnDialogChoice(DialogOption option)
     {
-        var parts = tag.Split(":");
+        var parts = option.Tag.Split(":");
 
         if (parts[0] == "start")
         {

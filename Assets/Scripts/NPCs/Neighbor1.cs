@@ -71,9 +71,9 @@ public class Neighbor1 : MonoBehaviour
         _npc.InitiateDialog(interactor);
     }
 
-    void OnDialogChoice(string tag)
+    void OnDialogChoice(DialogOption option)
     {
-        if (string.IsNullOrEmpty(tag))
+        if (string.IsNullOrEmpty(option.Tag))
         {
             return;
         }

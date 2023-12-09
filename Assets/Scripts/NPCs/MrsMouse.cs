@@ -59,9 +59,9 @@ public class MrsMouse : MonoBehaviour
         _npc.InitiateDialog(interactor);
     }
 
-    void OnDialogChoice(string tag)
+    void OnDialogChoice(DialogOption option)
     {
-        if (tag == "negative")
+        if (option.Tag == "negative")
         {
             SceneManager.LoadScene("Fail");
         }

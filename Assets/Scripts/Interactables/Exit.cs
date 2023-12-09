@@ -132,9 +132,9 @@ public class Exit : MonoBehaviour
         npc.InitiateDialog(interactor);
     }
 
-    void OnDialogChoice(string tag)
+    void OnDialogChoice(DialogOption option)
     {
-        var index = int.Parse(tag);
+        var index = int.Parse(option.Tag);
         _selectedPoint = SelectableOptions[index];
         AttemptExit(_selectingInteractor);
     }

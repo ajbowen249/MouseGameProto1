@@ -69,7 +69,7 @@ public class DialogController : MonoBehaviour
 
             if (option.Tag != "" && option.Tag != null)
             {
-                _talkingTo.BroadcastMessage("OnDialogChoice", option.Tag, SendMessageOptions.DontRequireReceiver);
+                _talkingTo.BroadcastMessage("OnDialogChoice", option, SendMessageOptions.DontRequireReceiver);
             }
 
             if (option.Node != null)
