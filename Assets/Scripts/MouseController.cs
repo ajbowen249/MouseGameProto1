@@ -135,35 +135,35 @@ public class MouseController : MonoBehaviour
     public void ExpendResources(ActionCost cost)
     {
         var message = $"{cost.description}";
-        var hasCost = cost.gas != null || cost.energy != null || cost.time != null;
-        if (hasCost)
+        var costText = "";
+
+        if (cost.gas is float gas)
         {
-            message += ": ";
+            Gas -= gas;
+            costText += $" G: {gas} ";
+        }
 
-            if (cost.gas is float gas)
-            {
-                Gas -= gas;
-                message += $"G: {gas} ";
-            }
+        if (cost.energy is float energy)
+        {
+            Energy -= energy;
+            costText += $" E: {energy} ";
+        }
 
-            if (cost.energy is float energy)
-            {
-                Energy -= energy;
-                message += $"E: {energy} ";
-            }
+        if (cost.time is float time)
+        {
+            Hours -= time;
+            costText += $" T: {FormatUtils.FormatHours(time)} ";
+        }
 
-            if (cost.time is float time)
-            {
-                Hours -= time;
-                message += $"T: {FormatUtils.FormatHours(time)} ";
-            }
+        if (cost.money is float money)
+        {
+            Money -= money;
+            costText += $" {FormatUtils.FormatMoney(money)} ";
+        }
 
-            if (cost.money is float money)
-            {
-                Money -= money;
-                message += $"{FormatUtils.FormatMoney(money)} ";
-            }
-
+        if (costText != "")
+        {
+            message += $":{costText}";
             HUD.Instance.SetMeters(Gas, Energy, Hours, Money);
         }
 
