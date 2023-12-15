@@ -18,8 +18,16 @@ public class PendingCellGraphic : MonoBehaviour
 
     public TMP_Text OptionCount;
 
-    public void SetOptions(PendingCell<WFCCell> cell)
+    public GameObject Floor;
+    public Material UnqueuedMat;
+    public Material QueuedMat;
+    public Material SettledMat;
+
+    public void SetOptions(PendingCell<WFCCell> cell, bool isQueued)
     {
+        var floorRenderer = Floor.GetComponent<Renderer>();
+        floorRenderer.material = cell.IsSettled() ? SettledMat : (isQueued ? QueuedMat : UnqueuedMat);
+
         var map = new Dictionary<AttachModeType, Dictionary<AttachEdge, TMP_Text>>
         {
             {

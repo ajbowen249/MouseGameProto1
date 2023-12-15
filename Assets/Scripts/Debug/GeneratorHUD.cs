@@ -7,7 +7,7 @@ public class GeneratorHUD : MonoBehaviour
 {
     public TMP_Text PhaseText;
     public GameObject GeneratorObject;
-    public float StepRateSeconds = 0.05f;
+    public float StepRateSeconds = 0.01f;
 
     private GameGenerator _generator;
     private bool _isSteppingToEnd = false;

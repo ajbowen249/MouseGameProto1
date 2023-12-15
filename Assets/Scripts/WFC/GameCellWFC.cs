@@ -150,10 +150,14 @@ public class GameCellWFC
     {
         return _wfc.Grid;
     }
+    public bool IsCellQueued(int row, int col)
+    {
+        return _wfc.IsCellQueued(row, col);
+    }
 
     private void PlaceFixedCells()
     {
-        var BlankCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "BlankCell");
+        var BlankCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "BlankCell" && cell.AttachPoints.Count == 12);
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = _allCellTypes.Find(cell =>
@@ -236,6 +240,7 @@ public class GameCellWFC
         // First, check if any neighbors are parts of a bigger cell that would include this one, and narrow to that
         // type if needed. If that part isn't in our list of possibilities, that's a problem. Also remove any multi-cell
         // possibilities that wouldn't work next to current neighbors.
+        // (TODO: Implement this)
 
         // Then, reduce based on neighbor connections.
         //   If a neighbor _must_ connect, reduce to only connected types
@@ -254,6 +259,47 @@ public class GameCellWFC
         // Try to keep logic here focused on hard "cans" and "cannots." For example, the "filler" logic might do
         // something like define roads, and this reacts to update the surrounding cells to foot-only connections.
 
-        return null;
+        var possibleCells = new List<WFCCell>(cell.PossibleCells);
+
+        if (possibleCells.Count <= 1)
+        {
+            return null;
+        }
+
+        var neighbors = _wfc.Grid.GetNeighborCells(row, col);
+
+        foreach (var neighbor in neighbors)
+        {
+            ((var neighborRow, var neighborCol, var fromEdge), var neighborCell) = neighbor;
+            var neighborEdge = fromEdge.Opposite();
+
+            foreach (var mode in Enum.GetValues(typeof(AttachModeType)).Cast<AttachModeType>())
+            {
+                var matchingConnections = neighborCell.PossibleCells.Where(
+                    option => option.AttachPoints.Any(point => point.edge == neighborEdge && point.modeType == mode)
+                ).Count();
+
+                var mustConnect = matchingConnections == neighborCell.PossibleCells.Count;
+                var mustNotConnect = matchingConnections == 0;
+
+                if (mustConnect)
+                {
+                    possibleCells = possibleCells.Where(option => option.AttachPoints.Any(
+                        // point.modeType != mode || because we don't want to filter outside of this mode
+                        // (only apply edge check if modes ARE the same)
+                        point => point.modeType != mode || point.edge == fromEdge
+                    )).ToList();
+                }
+                else if (mustNotConnect)
+                {
+                    possibleCells = possibleCells.Where(option => !option.AttachPoints.Any(
+                        point => point.modeType == mode && point.edge == fromEdge
+                    )).ToList();
+                }
+            }
+
+        }
+
+        return possibleCells.Count == cell.PossibleCells.Count ? null : possibleCells;
     }
 }

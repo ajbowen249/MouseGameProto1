@@ -69,16 +69,16 @@ public class WFCGrid<TCell>
         return _grid[row][col];
     }
 
-    public List<((int, int), PendingCell<TCell>)> GetNeighborCells(int row, int col)
+    public List<((int, int, AttachEdge), PendingCell<TCell>)> GetNeighborCells(int row, int col)
     {
-        return new List<(int, int)>
+        return new List<(int, int, AttachEdge)>
         {
-            (row - 1, col),
-            (row + 1, col),
-            (row, col - 1),
-            (row, col + 1),
+            (row - 1, col, AttachEdge.SOUTH),
+            (row + 1, col, AttachEdge.NORTH),
+            (row, col - 1, AttachEdge.WEST),
+            (row, col + 1, AttachEdge.EAST),
         }
-        .Select(pair => ((row, col), GetCell(pair.Item1, pair.Item2)))
+        .Select(location => (location, GetCell(location.Item1, location.Item2)))
         .Where(pair => pair.Item2 != null)
         .ToList();
     }
@@ -139,7 +139,7 @@ public class WFCContext<TCell>
         {
             if (!neighbor.Item2.IsSettled() || revisitSettled)
             {
-                (int neighborRow, int neighborCol) = neighbor.Item1;
+                (int neighborRow, int neighborCol, AttachEdge edge) = neighbor.Item1;
                 QueueCell(neighborRow, neighborCol);
             }
         }
@@ -177,6 +177,11 @@ public class WFCContext<TCell>
         {
             SetCell(coord.row, coord.col, newTypes, false);
         }
+    }
+
+    public bool IsCellQueued(int row, int col)
+    {
+        return _queue.Any(location => location.Item1 == row && location.Item2 == col);
     }
 
     private void QueueCell(int row, int col)
