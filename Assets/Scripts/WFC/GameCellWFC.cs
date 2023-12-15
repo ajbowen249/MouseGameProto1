@@ -4,6 +4,12 @@ using System.Linq;
 using System;
 using UnityEngine;
 
+public struct AbsoluteAttachPoint
+{
+    public AttachEdge edge;
+    public AttachModeType modeType;
+}
+
 public class WFCCell
 {
     public GameCell BaseCell { get; private set; }
@@ -75,12 +81,6 @@ public class WFCCell
     }
 }
 
-public struct AbsoluteAttachPoint
-{
-    public AttachEdge edge;
-    public AttachModeType modeType;
-}
-
 public class GameCellWFC
 {
     private List<GameCell> _gameCells;
@@ -147,6 +147,51 @@ public class GameCellWFC
         _wfc.SetCell(6, 8, BlankCell, true);
 
         _wfc.SetCell(7, 6, CheeseStoreCell, true);
+
+        LayStrip(0, 0, 5, 1, 0, new List<AttachModeType> { AttachModeType.CAR });
+    }
+
+    private void LayStrip(
+        int startRow,
+        int startCol,
+        int length,
+        int rowStep,
+        int colStep,
+        IEnumerable<AttachModeType> modes
+    )
+    {
+        var row = startRow;
+        var col = startCol;
+        var step = 0;
+
+        var edge1 = rowStep != 0 ? (rowStep > 0 ? AttachEdge.SOUTH : AttachEdge.NORTH) :
+            (colStep > 0 ? AttachEdge.WEST : AttachEdge.EAST);
+
+        var edge2 = rowStep != 0 ? (rowStep > 0 ? AttachEdge.NORTH : AttachEdge.SOUTH) :
+            (colStep > 0 ? AttachEdge.EAST : AttachEdge.WEST);
+
+        var grid = GetGrid();
+
+        while (step < length)
+        {
+            var pendingCell = grid.GetCell(row, col);
+            if (pendingCell == null)
+            {
+                return;
+            }
+
+            _wfc.SetCell(row, col, pendingCell.PossibleCells.Where(option => {
+                var points = option.AttachPoints.Where(point => modes.Contains(point.modeType)).ToList();
+                var result = (step == 0 || points.Any(points => points.edge == edge1)) &&
+                    (step == length - 1 || points.Any(point => point.edge == edge2));
+
+                return result;
+            }).ToList(), true);
+
+            row += rowStep;
+            col += colStep;
+            step++;
+        }
     }
 
     private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)

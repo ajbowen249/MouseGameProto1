@@ -8,6 +8,7 @@ public class GameGenerator : MonoBehaviour
     public int Rows = 10;
     public int Cols = 10;
     public List<GameObject> GameCellPrefabs;
+    public GameObject PendingCellPrefab;
     public GameObject MrDebugObject;
 
     private GameCellWFC _wcf;
@@ -41,9 +42,18 @@ public class GameGenerator : MonoBehaviour
                 var z = row * GameCell.CellWidth;
 
                 var cell = grid.GetCell(row, col);
+                var spawnLocation = new Vector3(x, 0f, z);
+
                 if (cell.PossibleCells.Count != 1)
                 {
                     cellRow.Add(null);
+
+                    if (cell.PossibleCells.Count > 1)
+                    {
+                        var debugCell = Instantiate(PendingCellPrefab, spawnLocation, transform.rotation);
+                        debugCell.GetComponent<PendingCellGraphic>().SetOptions(cell);
+                    }
+
                     continue;
                 }
 
@@ -56,7 +66,7 @@ public class GameGenerator : MonoBehaviour
 
                 var cellObject = Instantiate(
                     cellDef.BaseCell.gameObject,
-                    new Vector3(x, 0f, z),
+                    spawnLocation,
                     transform.rotation
                 );
 

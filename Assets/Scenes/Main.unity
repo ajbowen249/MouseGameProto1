@@ -475,7 +475,7 @@ Transform:
   m_GameObject: {fileID: 144503624}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 100, y: -0.01, z: 80}
+  m_LocalPosition: {x: 90, y: -0.01, z: 90}
   m_LocalScale: {x: 20, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -939,6 +939,8 @@ MonoBehaviour:
   - {fileID: 4008398053108115855, guid: c136a4f2cf4331149bc460b0939e9c25, type: 3}
   - {fileID: 4008398053108115855, guid: ae9827ed8c2de4c46b83c0db7c755502, type: 3}
   - {fileID: 4008398053108115855, guid: 880a4d7926345a049bf31a155ffcb0f0, type: 3}
+  PendingCellPrefab: {fileID: 9059562679051767432, guid: e1a7c1466c970b24db355085c8622a30,
+    type: 3}
   MrDebugObject: {fileID: 1754471724}
 --- !u!4 &1071905003
 Transform:
