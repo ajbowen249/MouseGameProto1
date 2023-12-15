@@ -39,4 +39,9 @@ public class GeneratorHUD : MonoBehaviour
     {
         _isSteppingToEnd = true;
     }
+
+    public void OnClickGenerateInstant()
+    {
+        _generator.GenerateComplete();
+    }
 }

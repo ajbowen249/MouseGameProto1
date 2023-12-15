@@ -41,9 +41,14 @@ public class GameGenerator : MonoBehaviour
 
         if (GenerateImmediately)
         {
-            WCF.GenerateComplete();
-            OnWCFComplete();
+            GenerateComplete();
         }
+    }
+
+    public void GenerateComplete()
+    {
+        WCF.GenerateComplete();
+        OnWCFComplete();
     }
 
     public void Step()
@@ -61,7 +66,7 @@ public class GameGenerator : MonoBehaviour
         }
 
         OnWCFComplete();
-       UpdateDebugCells();
+        UpdateDebugCells();
     }
 
     delegate void PositionVisiter(int row, int col, Vector3 location);
