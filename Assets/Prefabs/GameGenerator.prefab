@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4042024155766593843
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1110586970408012959}
+  - component: {fileID: 6811030014162826452}
+  m_Layer: 0
+  m_Name: GameGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1110586970408012959
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4042024155766593843}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6811030014162826452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4042024155766593843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44920c37f6d02cf48ba50ff27bd65824, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rows: 10
+  Cols: 10
+  GameCellPrefabs:
+  - {fileID: 4008398053108115855, guid: 1290f239a074b454c80406f8f16fd0f3, type: 3}
+  - {fileID: 4008398053108115855, guid: 4dab0ca145fa2454b992f087ed8f1377, type: 3}
+  - {fileID: 3367333639008631512, guid: c68dfb872daa2d14494cbe0314d41ca6, type: 3}
+  - {fileID: 4008398053108115855, guid: c136a4f2cf4331149bc460b0939e9c25, type: 3}
+  - {fileID: 4008398053108115855, guid: ae9827ed8c2de4c46b83c0db7c755502, type: 3}
+  - {fileID: 4008398053108115855, guid: 880a4d7926345a049bf31a155ffcb0f0, type: 3}
+  PendingCellPrefab: {fileID: 9059562679051767432, guid: e1a7c1466c970b24db355085c8622a30,
+    type: 3}
+  MrDebugObject: {fileID: 0}

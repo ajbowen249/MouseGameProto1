@@ -81,8 +81,20 @@ public class WFCCell
     }
 }
 
+public enum GenerationPhase
+{
+    INIT,
+    PLACE_FIXED_CELLS,
+    COLLAPSE,
+    FILL,
+    DONE,
+}
+
 public class GameCellWFC
 {
+    public GenerationPhase Phase { get; private set; }
+    public bool CanIterate { get { return Phase != GenerationPhase.DONE; } }
+
     private List<GameCell> _gameCells;
 
     private int _rows;
@@ -101,12 +113,37 @@ public class GameCellWFC
         _allCellTypes = _gameCells.Select(cell => WFCCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
         _wfc = new WFCContext<WFCCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
+
+        Phase = GenerationPhase.INIT;
     }
 
-    public void Generate()
+    public void GenerateComplete()
     {
-        PlaceFixedCells();
-        _wfc.IterateComplete();
+        while (CanIterate)
+        {
+            Iterate();
+        }
+    }
+
+    public void Iterate()
+    {
+        switch (Phase)
+        {
+            case GenerationPhase.INIT:
+                Phase = GenerationPhase.PLACE_FIXED_CELLS;
+                break;
+            case GenerationPhase.PLACE_FIXED_CELLS:
+                PlaceFixedCells();
+                Phase = GenerationPhase.COLLAPSE;
+                break;
+            case GenerationPhase.COLLAPSE:
+                _wfc.Iterate();
+                Phase = _wfc.CanIterate ? GenerationPhase.COLLAPSE : GenerationPhase.DONE;
+                break;
+            case GenerationPhase.DONE:
+            default:
+                break;
+        }
     }
 
     public WFCGrid<WFCCell> GetGrid()

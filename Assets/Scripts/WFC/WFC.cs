@@ -112,6 +112,8 @@ public class WFCContext<TCell>
     private Reducer _reducer;
     private Queue<(int, int)> _queue = new Queue<(int, int)>();
 
+    public bool CanIterate { get { return _queue.Count > 0; } }
+
     public WFCContext(List<TCell> possibleCells, int rows, int cols, Reducer reducer)
     {
         Grid = new WFCGrid<TCell>(possibleCells, rows, cols);
@@ -145,7 +147,7 @@ public class WFCContext<TCell>
 
     public void IterateComplete()
     {
-        while (_queue.Count > 0)
+        while (CanIterate)
         {
             Iterate();
         }
@@ -156,7 +158,7 @@ public class WFCContext<TCell>
         return Grid.AllSettled();
     }
 
-    private void Iterate()
+    public void Iterate()
     {
         (int row, int col) coord;
         if (!_queue.TryDequeue(out coord))

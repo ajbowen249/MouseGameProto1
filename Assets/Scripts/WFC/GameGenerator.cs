@@ -9,72 +9,138 @@ public class GameGenerator : MonoBehaviour
     public int Cols = 10;
     public List<GameObject> GameCellPrefabs;
     public GameObject PendingCellPrefab;
+
+    public bool EnableDebug = true;
+    public bool GenerateImmediately = true;
+
     public GameObject MrDebugObject;
 
-    private GameCellWFC _wcf;
+    public GameCellWFC WCF { get; private set; }
+    public bool IsGenerationComplete { get; private set; } = false;
+
+    private List<List<PendingCellGraphic>> _debugCells = new List<List<PendingCellGraphic>>();
     private List<List<GameObject>> _liveCells = new List<List<GameObject>>();
 
     void Start()
     {
-        _wcf = new GameCellWFC(Rows, Cols, GameCellPrefabs.Select(prefab => prefab.GetComponent<GameCell>()).ToList());
-        _wcf.Generate();
-        SpawnCells();
-        ConnectCells();
-        NotifyGenerationComplete();
+        WCF = new GameCellWFC(Rows, Cols, GameCellPrefabs.Select(prefab => prefab.GetComponent<GameCell>()).ToList());
 
-        var mrDebug = MrDebugObject?.GetComponentInChildren<MrDebug>();
-        if (mrDebug != null)
+        if (EnableDebug)
         {
-            mrDebug.GameCells = _liveCells.SelectMany(row => row).Where(cell => cell != null).ToList();
+            ForEachPosition((row, col, location) =>
+            {
+                if (col == 0)
+                {
+                    _debugCells.Add(new List<PendingCellGraphic>());
+                }
+
+                var debugCell = Instantiate(PendingCellPrefab, location, transform.rotation);
+                _debugCells[row].Add(debugCell.GetComponent<PendingCellGraphic>());
+            });
+        }
+
+        if (GenerateImmediately)
+        {
+            WCF.GenerateComplete();
+            OnWCFComplete();
         }
     }
 
-    private void SpawnCells()
+    public void Step()
     {
-        var grid = _wcf.GetGrid();
+        if (IsGenerationComplete)
+        {
+            return;
+        }
 
+        if (WCF.CanIterate)
+        {
+            WCF.Iterate();
+            UpdateDebugCells();
+            return;
+        }
+
+        OnWCFComplete();
+       UpdateDebugCells();
+    }
+
+    delegate void PositionVisiter(int row, int col, Vector3 location);
+    private void ForEachPosition(PositionVisiter visiter)
+    {
         for (int row = 0; row < Rows; row++)
         {
-            var cellRow = new List<GameObject>();
             for (int col = 0; col < Cols; col++)
             {
                 var x = col * GameCell.CellWidth;
                 var z = row * GameCell.CellWidth;
 
-                var cell = grid.GetCell(row, col);
-                var spawnLocation = new Vector3(x, 0f, z);
+                visiter(row, col, new Vector3(x, 0f, z));
+            }
+        }
+    }
 
-                if (cell.PossibleCells.Count != 1)
-                {
-                    cellRow.Add(null);
+    private void OnWCFComplete()
+    {
+        SpawnCells();
+        ConnectCells();
+        UpdateDebugCells();
+        NotifyGenerationComplete();
 
-                    if (cell.PossibleCells.Count > 1)
-                    {
-                        var debugCell = Instantiate(PendingCellPrefab, spawnLocation, transform.rotation);
-                        debugCell.GetComponent<PendingCellGraphic>().SetOptions(cell);
-                    }
+        if (EnableDebug && MrDebugObject != null)
+        {
+            MrDebugObject.GetComponentInChildren<MrDebug>().GameCells = _liveCells.SelectMany(row => row).Where(cell => cell != null).ToList();
+        }
 
-                    continue;
-                }
+        IsGenerationComplete = true;
+    }
 
-                var cellDef = cell.PossibleCells[0];
-                if (cellDef.InnerRow != 0 || cellDef.InnerCol != 0)
-                {
-                    cellRow.Add(null);
-                    continue;
-                }
+    private void UpdateDebugCells()
+    {
+        if (!EnableDebug)
+        {
+            return;
+        }
 
-                var cellObject = Instantiate(
-                    cellDef.BaseCell.gameObject,
-                    spawnLocation,
-                    transform.rotation
-                );
+        var grid = WCF.GetGrid();
 
-                cellRow.Add(cellObject);
+        ForEachPosition((row, col, location) => _debugCells[row][col].SetOptions(grid.GetCell(row, col)));
+    }
+
+    private void SpawnCells()
+    {
+        var grid = WCF.GetGrid();
+
+        ForEachPosition((row, col, location) =>
+        {
+            if (col == 0)
+            {
+                _liveCells.Add(new List<GameObject>());
             }
 
-            _liveCells.Add(cellRow);
-        }
+
+            var cell = grid.GetCell(row, col);
+
+            if (cell.PossibleCells.Count != 1)
+            {
+                _liveCells[row].Add(null);
+                return;
+            }
+
+            var cellDef = cell.PossibleCells[0];
+            if (cellDef.InnerRow != 0 || cellDef.InnerCol != 0)
+            {
+                _liveCells[row].Add(null);
+                return;
+            }
+
+            var cellObject = Instantiate(
+                cellDef.BaseCell.gameObject,
+                location,
+                transform.rotation
+            );
+
+            _liveCells[row].Add(cellObject);
+        });
     }
 
     private void ConnectCells()
@@ -125,7 +191,6 @@ public class GameGenerator : MonoBehaviour
             }
         }
     }
-
     private void NotifyGenerationComplete()
     {
         for (int row = 0; row < Rows; row++)
