@@ -95,6 +95,22 @@ public class GameCellWFC
     public GenerationPhase Phase { get; private set; }
     public bool CanIterate { get { return Phase != GenerationPhase.DONE; } }
 
+    private int _randomSeed;
+    private System.Random _random;
+
+    public int RandomSeed
+    {
+        get
+        {
+            return _randomSeed;
+        }
+        set
+        {
+            _randomSeed = value;
+            _random = new System.Random(_randomSeed);
+        }
+    }
+
     private List<GameCell> _gameCells;
 
     private int _rows;
@@ -113,6 +129,7 @@ public class GameCellWFC
         _allCellTypes = _gameCells.Select(cell => WFCCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
         _wfc = new WFCContext<WFCCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
+        RandomSeed = 0;
 
         Phase = GenerationPhase.INIT;
     }
@@ -138,6 +155,10 @@ public class GameCellWFC
                 break;
             case GenerationPhase.COLLAPSE:
                 _wfc.Iterate();
+                Phase = _wfc.CanIterate ? GenerationPhase.COLLAPSE : GenerationPhase.FILL;
+                break;
+            case GenerationPhase.FILL:
+                RandomFill();
                 Phase = _wfc.CanIterate ? GenerationPhase.COLLAPSE : GenerationPhase.DONE;
                 break;
             case GenerationPhase.DONE:
@@ -190,6 +211,14 @@ public class GameCellWFC
         _wfc.SetCell(7, 6, CheeseStoreCell, true);
 
         LayStrip(0, 0, 5, 1, 0, new List<AttachModeType> { AttachModeType.CAR });
+    }
+
+    private void RandomFill()
+    {
+        // TODO: This should eventually have logic for things like sensible-looking roads and spawn rates for cells
+        // For now, it's honest-to-goodness random
+
+
     }
 
     private void LayStrip(

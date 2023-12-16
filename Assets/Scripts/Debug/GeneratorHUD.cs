@@ -7,6 +7,8 @@ public class GeneratorHUD : MonoBehaviour
 {
     public TMP_Text PhaseText;
     public GameObject GeneratorObject;
+    public TMP_InputField SeedInput;
+
     public float StepRateSeconds = 0.01f;
 
     private GameGenerator _generator;
@@ -28,6 +30,11 @@ public class GeneratorHUD : MonoBehaviour
             _generator.Step();
             _isSteppingToEnd = !_generator.IsGenerationComplete;
         }
+
+        if (SeedInput.text == "<seed>")
+        {
+            SeedInput.text = $"{_generator.WCF.RandomSeed}";
+        }
     }
 
     public void OnClickStep()
@@ -43,5 +50,10 @@ public class GeneratorHUD : MonoBehaviour
     public void OnClickGenerateInstant()
     {
         _generator.GenerateComplete();
+    }
+
+    public void OnClickSetSeed()
+    {
+        _generator.WCF.RandomSeed = int.Parse(SeedInput.text);
     }
 }
