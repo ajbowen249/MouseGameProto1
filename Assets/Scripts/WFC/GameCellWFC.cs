@@ -237,29 +237,8 @@ public class GameCellWFC
 
     private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)
     {
-        // First, check if any neighbors are parts of a bigger cell that would include this one, and narrow to that
-        // type if needed. If that part isn't in our list of possibilities, that's a problem. Also remove any multi-cell
-        // possibilities that wouldn't work next to current neighbors.
-        // (TODO: Implement this)
-
-        // Then, reduce based on neighbor connections.
-        //   If a neighbor _must_ connect, reduce to only connected types
-        //   If a neighbor _musn't_ connect, reduce to only unconnected types
-        //   If a neighbor _may_ connect, but retains possible non-connection, don't reduce
-
-        // That's for each neighbor, though, so if if the cell was narrowed down to:
-        //   connect north, east
-        //   connect west, south
-        // and we now discovered east was blocked, this cell would only be open to options that connect west, south.
-
-        // In that case, when the northern neighbor is re-visited as a result of this update, it will then reduce to
-        // options that don't connect south. The set of initial possibilities should include "empty" roads, all types of
-        // intersections, and non-connected cells (city greebling?).
-
-        // Try to keep logic here focused on hard "cans" and "cannots." For example, the "filler" logic might do
-        // something like define roads, and this reacts to update the surrounding cells to foot-only connections.
-
         var possibleCells = new List<WFCCell>(cell.PossibleCells);
+        var forceFootprintOptions = new List<WFCCell>();
 
         if (possibleCells.Count <= 1)
         {
@@ -272,6 +251,57 @@ public class GameCellWFC
         {
             ((var neighborRow, var neighborCol, var fromEdge), var neighborCell) = neighbor;
             var neighborEdge = fromEdge.Opposite();
+
+            // If the neighbor has been reduced down to sub-cell options, then reduce down to compatible cells
+            var subCellNeighborOptions = neighborCell.PossibleCells.Where(option => option.IsSubCell).ToList();
+
+
+            if (subCellNeighborOptions.Count == neighborCell.PossibleCells.Count)
+            {
+                foreach (var option in subCellNeighborOptions)
+                {
+                    var relativeRowFromNeighbor = row - neighborRow;
+                    var relativeColFromNeighbor = col - neighborCol;
+
+                    var thisSubRow = option.InnerRow + relativeRowFromNeighbor;
+                    var thisSubCol = option.InnerCol + relativeColFromNeighbor;
+
+                    var isInFootprint = option.BaseCell.Footprint.Any(sub => sub.row == thisSubRow && sub.col == thisSubCol);
+                    if (isInFootprint)
+                    {
+                        var matches = _allCellTypes.Where(
+                            cellType => cellType.IsSubCell && cellType.BaseCell == option.BaseCell &&
+                            cellType.InnerRow == thisSubRow && cellType.InnerCol == thisSubCol
+                        ).ToList();
+
+                        if (matches.Count() == 0)
+                        {
+                            Debug.LogWarning($"No known sub-cell option matching ({thisSubRow},{thisSubCol}) of {option.BaseCell.name}");
+                        }
+
+                        forceFootprintOptions.AddRange(matches);
+                    }
+                }
+
+                continue;
+            }
+
+            // Then, reduce based on neighbor connections.
+            //   If a neighbor _must_ connect, reduce to only connected types
+            //   If a neighbor _musn't_ connect, reduce to only unconnected types
+            //   If a neighbor _may_ connect, but retains possible non-connection, don't reduce
+
+            // That's for each neighbor, though, so if if the cell was narrowed down to:
+            //   connect north, east
+            //   connect west, south
+            // and we now discovered east was blocked, this cell would only be open to options that connect west, south.
+
+            // In that case, when the northern neighbor is re-visited as a result of this update, it will then reduce to
+            // options that don't connect south. The set of initial possibilities should include "empty" roads, all types of
+            // intersections, and non-connected cells (city greebling?).
+
+            // Try to keep logic here focused on hard "cans" and "cannots." For example, the "filler" logic might do
+            // something like define roads, and this reacts to update the surrounding cells to foot-only connections.
 
             foreach (var mode in Enum.GetValues(typeof(AttachModeType)).Cast<AttachModeType>())
             {
@@ -297,7 +327,11 @@ public class GameCellWFC
                     )).ToList();
                 }
             }
+        }
 
+        if (forceFootprintOptions.Count > 0)
+        {
+            possibleCells = forceFootprintOptions;
         }
 
         return possibleCells.Count == cell.PossibleCells.Count ? null : possibleCells;
