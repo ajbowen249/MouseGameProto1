@@ -63,6 +63,12 @@ public class PendingCellGraphic : MonoBehaviour
 
             foreach (var edge in map[mode].Keys)
             {
+                if (cell.IsUntouched())
+                {
+                    map[mode][edge].gameObject.SetActive(false);
+                    continue;
+                }
+
                 var mayConnect = modeOptions.Any(option => option.AttachPoints.Any(point => point.modeType == mode && point.edge == edge));
                 var mustConnect = modeOptions.All(option => option.AttachPoints.Any(point => point.modeType == mode && point.edge == edge));
 

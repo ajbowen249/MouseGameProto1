@@ -9,11 +9,8 @@ public class GeneratorHUD : MonoBehaviour
     public GameObject GeneratorObject;
     public TMP_InputField SeedInput;
 
-    public float StepRateSeconds = 0.01f;
-
     private GameGenerator _generator;
     private bool _isSteppingToEnd = false;
-    private float _lastStep = 0f;
 
     void Start()
     {
@@ -24,9 +21,8 @@ public class GeneratorHUD : MonoBehaviour
     {
         PhaseText.text = $"{_generator.WCF.Phase}";
 
-        if (_isSteppingToEnd && Time.time - _lastStep >= StepRateSeconds)
+        if (_isSteppingToEnd)
         {
-            _lastStep = Time.time;
             _generator.Step();
             _isSteppingToEnd = !_generator.IsGenerationComplete;
         }
@@ -45,6 +41,11 @@ public class GeneratorHUD : MonoBehaviour
     public void OnClickStepToEnd()
     {
         _isSteppingToEnd = true;
+    }
+
+    public void OnClickPauseStepToEnd()
+    {
+        _isSteppingToEnd = false;
     }
 
     public void OnClickGenerateInstant()

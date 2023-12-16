@@ -155,11 +155,16 @@ public class GameCellWFC
                 break;
             case GenerationPhase.COLLAPSE:
                 _wfc.Iterate();
-                Phase = _wfc.CanIterate ? GenerationPhase.COLLAPSE : GenerationPhase.FILL;
+                if (_wfc.CanIterate)
+                {
+                    Phase = GenerationPhase.COLLAPSE;
+                    break;
+                }
+                Phase = _wfc.AllSettled() ? GenerationPhase.DONE : GenerationPhase.FILL;
                 break;
             case GenerationPhase.FILL:
                 RandomFill();
-                Phase = _wfc.CanIterate ? GenerationPhase.COLLAPSE : GenerationPhase.DONE;
+                Phase = GenerationPhase.COLLAPSE;
                 break;
             case GenerationPhase.DONE:
             default:
@@ -218,7 +223,18 @@ public class GameCellWFC
         // TODO: This should eventually have logic for things like sensible-looking roads and spawn rates for cells
         // For now, it's honest-to-goodness random
 
+        var pickableCells = _wfc.Grid.GetCells().SelectMany(
+            (row, rowIndex) => row.Select((cell, colIndex) => (cell, rowIndex, colIndex)))
+                .Where(cell => cell.Item1.PossibleCells.Count > 1
+        ).ToList();
 
+        var randomIndex = _random.Next(pickableCells.Count);
+        var selectedCell = pickableCells[randomIndex];
+
+        var randomOptionIndex = _random.Next(selectedCell.cell.PossibleCells.Count);
+        var selectedOption = selectedCell.cell.PossibleCells[randomOptionIndex];
+
+        _wfc.SetCell(selectedCell.rowIndex, selectedCell.colIndex, selectedOption, false);
     }
 
     private void LayStrip(
@@ -250,7 +266,8 @@ public class GameCellWFC
                 return;
             }
 
-            _wfc.SetCell(row, col, pendingCell.PossibleCells.Where(option => {
+            _wfc.SetCell(row, col, pendingCell.PossibleCells.Where(option =>
+            {
                 var points = option.AttachPoints.Where(point => modes.Contains(point.modeType)).ToList();
                 var result = (step == 0 || points.Any(points => points.edge == edge1)) &&
                     (step == length - 1 || points.Any(point => point.edge == edge2));
@@ -344,9 +361,7 @@ public class GameCellWFC
                 if (mustConnect)
                 {
                     possibleCells = possibleCells.Where(option => option.AttachPoints.Any(
-                        // point.modeType != mode || because we don't want to filter outside of this mode
-                        // (only apply edge check if modes ARE the same)
-                        point => point.modeType != mode || point.edge == fromEdge
+                        point => point.modeType == mode && point.edge == fromEdge
                     )).ToList();
                 }
                 else if (mustNotConnect)

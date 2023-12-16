@@ -143,6 +143,35 @@ public class GameGenerator : MonoBehaviour
                 transform.rotation
             );
 
+            var connections = cellDef.AttachPoints.Select(point => (point, 0, 0)).ToList();
+
+            if (cellDef.IsSubCell)
+            {
+                foreach (var additionalCell in cellDef.BaseCell.Footprint)
+                {
+                    if (additionalCell.row == 0 && additionalCell.col == 0)
+                    {
+                        continue;
+                    }
+
+                    var subRow = row + additionalCell.row;
+                    var subCol = col + additionalCell.col;
+
+                    var subCell = grid.GetCell(subRow, subCol)?.PossibleCells.First();
+                    if (subCell == null || subCell.BaseCell != cellDef.BaseCell)
+                    {
+                        Debug.LogError($"Expected ({subRow},{subCol}) to share base with ({row},{col}) ({cellDef.BaseCell.name} != {subCell.BaseCell.name})");
+                    }
+
+                    connections.AddRange(subCell.AttachPoints.Select(point => (point, additionalCell.row, additionalCell.col)));
+                }
+            }
+
+            var gameCell = cellObject.GetComponent<GameCell>();
+            gameCell.Row = row;
+            gameCell.Col = col;
+            gameCell.DeterminedConnections(connections);
+
             _liveCells[row].Add(cellObject);
         });
     }

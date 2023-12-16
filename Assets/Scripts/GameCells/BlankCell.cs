@@ -15,8 +15,10 @@ public class BlankCell : MonoBehaviour
     public GameObject EastExit;
     public GameObject WestExit;
 
-    void OnGenerationComplete(GameCell cell)
+    void OnDeterminedConnections(List<(AbsoluteAttachPoint point, int row, int col)> attachPoints)
     {
+        var gameCell = GetComponent<GameCell>();
+
         // Clear them all so we set active if at least one point is connected
         NorthRoad.SetActive(false);
         SouthRoad.SetActive(false);
@@ -28,23 +30,12 @@ public class BlankCell : MonoBehaviour
         EastExit.SetActive(false);
         WestExit.SetActive(false);
 
-        foreach (var point in cell.AllExitPoints.Where(point => point.toCell != null))
+        foreach (var point in attachPoints)
         {
-            var toCell = point.toCell.GetComponent<GameCell>();
-            var toPoint = toCell.EntryPoints.Find(toPoint =>
-                point.mode.type == toPoint.mode.type &&
-                point.edge == toPoint.edge.Opposite()
-            );
-
-            if (toPoint == null)
-            {
-                continue;
-            }
-
-            switch (point.mode.type)
+            switch (point.point.modeType)
             {
                 case AttachModeType.CAR:
-                    switch (point.edge)
+                    switch (point.point.edge)
                     {
                         case AttachEdge.NORTH:
                             NorthRoad.SetActive(true);
@@ -61,7 +52,7 @@ public class BlankCell : MonoBehaviour
                     }
                     break;
                 case AttachModeType.FOOT:
-                    switch (point.edge)
+                    switch (point.point.edge)
                     {
                         case AttachEdge.NORTH:
                             NorthExit.SetActive(true);

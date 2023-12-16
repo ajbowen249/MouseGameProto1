@@ -53,6 +53,11 @@ public class WFCGrid<TCell>
         }
     }
 
+    public List<List<PendingCell<TCell>>> GetCells()
+    {
+        return _grid;
+    }
+
     /// <summary>
     /// Gets cell by row and column. Returns null if the cell is off the grid.
     ///

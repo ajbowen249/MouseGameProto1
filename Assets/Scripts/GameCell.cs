@@ -51,6 +51,10 @@ public class GameCell : MonoBehaviour
     public List<CellAttachPoint> EntryPoints;
     public bool DestroyOnExit = false;
 
+    [HideInInspector]
+    public int Row { get; set; }
+    public int Col { get; set; }
+
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
 
@@ -140,6 +144,19 @@ public class GameCell : MonoBehaviour
         {
             FadeOutAndDie();
         }
+    }
+
+    public void DeterminedConnections(List<(AbsoluteAttachPoint point, int row, int col)> attachPoints)
+    {
+        foreach (var exit in GetComponentsInChildren<Exit>())
+        {
+            exit.AttachPointOptions = exit.AttachPointOptions.Where(option => !option.mode.isOptional || attachPoints.Any(
+                point => point.row == option.row && point.col == option.col &&
+                    point.point.edge == option.edge && point.point.modeType == option.mode.type
+            )).ToList();
+        }
+
+        BroadcastMessage("OnDeterminedConnections", attachPoints, SendMessageOptions.DontRequireReceiver);
     }
 
     public void GenerationComplete()
