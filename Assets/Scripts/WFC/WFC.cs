@@ -74,7 +74,12 @@ public class WFCGrid<TCell>
         return _grid[row][col];
     }
 
-    public List<((int, int, AttachEdge), PendingCell<TCell>)> GetNeighborCells(int row, int col)
+    public IEnumerable<((int, int, AttachEdge), PendingCell<TCell>)> GetLiveNeighborCells(int row, int col)
+    {
+        return GetAllNeighborCells(row, col).Where(pair => pair.Item2 != null);
+    }
+
+    public IEnumerable<((int, int, AttachEdge), PendingCell<TCell>)> GetAllNeighborCells(int row, int col)
     {
         return new List<(int, int, AttachEdge)>
         {
@@ -83,9 +88,7 @@ public class WFCGrid<TCell>
             (row, col - 1, AttachEdge.WEST),
             (row, col + 1, AttachEdge.EAST),
         }
-        .Select(location => (location, GetCell(location.Item1, location.Item2)))
-        .Where(pair => pair.Item2 != null)
-        .ToList();
+        .Select(location => (location, GetCell(location.Item1, location.Item2)));
     }
 
     public bool AllSettled()
@@ -139,7 +142,7 @@ public class WFCContext<TCell>
         }
 
         cell.PossibleCells = possibleCells;
-        var neighbors = Grid.GetNeighborCells(row, col);
+        var neighbors = Grid.GetLiveNeighborCells(row, col);
         foreach (var neighbor in neighbors)
         {
             if (!neighbor.Item2.IsSettled() || revisitSettled)

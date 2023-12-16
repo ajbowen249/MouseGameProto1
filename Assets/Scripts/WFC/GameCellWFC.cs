@@ -231,8 +231,9 @@ public class GameCellWFC
         var randomIndex = _random.Next(pickableCells.Count);
         var selectedCell = pickableCells[randomIndex];
 
-        var randomOptionIndex = _random.Next(selectedCell.cell.PossibleCells.Count);
-        var selectedOption = selectedCell.cell.PossibleCells[randomOptionIndex];
+        var possibleCells = selectedCell.cell.PossibleCells;
+        var randomOptionIndex = _random.Next(possibleCells.Count);
+        var selectedOption = possibleCells[randomOptionIndex];
 
         _wfc.SetCell(selectedCell.rowIndex, selectedCell.colIndex, selectedOption, false);
     }
@@ -291,16 +292,21 @@ public class GameCellWFC
             return null;
         }
 
-        var neighbors = _wfc.Grid.GetNeighborCells(row, col);
+        var neighbors = _wfc.Grid.GetAllNeighborCells(row, col);
 
         foreach (var neighbor in neighbors)
         {
             ((var neighborRow, var neighborCol, var fromEdge), var neighborCell) = neighbor;
             var neighborEdge = fromEdge.Opposite();
 
+            if (neighborCell == null)
+            {
+                possibleCells = possibleCells.Where(option => !option.AttachPoints.Any(point => point.edge == fromEdge)).ToList();
+                continue;
+            }
+
             // If the neighbor has been reduced down to sub-cell options, then reduce down to compatible cells
             var subCellNeighborOptions = neighborCell.PossibleCells.Where(option => option.IsSubCell).ToList();
-
 
             if (subCellNeighborOptions.Count == neighborCell.PossibleCells.Count)
             {
