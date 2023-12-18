@@ -139,6 +139,7 @@ public class GameCellWFC
 
     private List<WFCCell> _allCellTypes;
     private List<WFCCell> _randomCellTypes;
+    private List<WFCCell> _allRoadCellTypes;
     private WFCContext<WFCCell> _wfc;
 
     public GameCellWFC(int rows, int cols, List<GameCell> gameCells)
@@ -149,6 +150,7 @@ public class GameCellWFC
 
         _allCellTypes = _gameCells.Select(cell => WFCCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
+        _allRoadCellTypes = _allCellTypes.Where(t => t.BaseCell.gameObject.name == "RoadCell").ToList();
         _wfc = new WFCContext<WFCCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
         RandomSeed = 0;
 
@@ -204,7 +206,6 @@ public class GameCellWFC
 
     private void PlaceFixedCells()
     {
-        var RoadCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "RoadCell" && cell.AttachPoints.Count == 8);
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = _allCellTypes.Find(cell =>
@@ -214,29 +215,30 @@ public class GameCellWFC
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
         var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");
 
+        Func<List<AttachEdge>, bool, WFCCell> randomRoadCell = (edges, allowFoot) => RandomElement(_allRoadCellTypes.Where(
+            t => edges.All(edge => t.AttachPoints.Any(point => (allowFoot || point.modeType == AttachModeType.CAR) && point.edge == edge)
+        )).ToList());
+
         _wfc.SetCell(0, 5, HomeCell, true);
         _wfc.SetCell(1, 5, YardCell, true);
         _wfc.SetCell(2, 5, BlockedRoadCell, true);
         _wfc.SetCell(2, 7, HotDogStandCell, true);
 
-        _wfc.SetCell(2, 8, RoadCell, true);
-        _wfc.SetCell(2, 9, RoadCell, true);
-        _wfc.SetCell(3, 8, RoadCell, true);
-        _wfc.SetCell(4, 8, RoadCell, true);
-        _wfc.SetCell(4, 7, RoadCell, true);
-        _wfc.SetCell(4, 6, RoadCell, true);
-
-        _wfc.SetCell(5, 6, RoadCell, true);
-        _wfc.SetCell(6, 6, RoadCell, true);
-
-        _wfc.SetCell(6, 5, RoadCell, true);
-        _wfc.SetCell(6, 4, RoadCell, true);
-        _wfc.SetCell(6, 7, RoadCell, true);
-        _wfc.SetCell(6, 8, RoadCell, true);
+        _wfc.SetCell(2, 8, randomRoadCell(new List<AttachEdge> { AttachEdge.WEST, AttachEdge.NORTH }, false), true);
+        _wfc.SetCell(3, 8, randomRoadCell(new List<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, false), true);
+        _wfc.SetCell(4, 8, randomRoadCell(new List<AttachEdge> { AttachEdge.WEST, AttachEdge.SOUTH }, false), true);
+        _wfc.SetCell(4, 7, randomRoadCell(new List<AttachEdge> { AttachEdge.EAST, AttachEdge.WEST }, false), true);
+        _wfc.SetCell(4, 6, randomRoadCell(new List<AttachEdge> { AttachEdge.EAST, AttachEdge.NORTH }, false), true);
+        _wfc.SetCell(5, 6, randomRoadCell(new List<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, false), true);
+        _wfc.SetCell(6, 6, randomRoadCell(new List<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, true), true);
 
         _wfc.SetCell(7, 6, CheeseStoreCell, true);
+    }
 
-        LayStrip(0, 0, 5, 1, 0, new List<AttachModeType> { AttachModeType.CAR });
+    private T RandomElement<T>(IList<T> elements)
+    {
+        var randomIndex = _random.Next(elements.Count);
+        return elements[randomIndex];
     }
 
     private void RandomFill()
