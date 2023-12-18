@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BlankCell : MonoBehaviour
+public class RoadCell : MonoBehaviour
 {
     public GameObject NorthRoad;
     public GameObject SouthRoad;

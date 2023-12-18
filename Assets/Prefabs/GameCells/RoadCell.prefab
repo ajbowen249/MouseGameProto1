@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 7340330147554968974}
   - component: {fileID: 9159411606054223360}
   m_Layer: 0
-  m_Name: BlankCell
+  m_Name: RoadCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

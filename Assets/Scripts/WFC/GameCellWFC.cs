@@ -186,7 +186,7 @@ public class GameCellWFC
 
     private void PlaceFixedCells()
     {
-        var BlankCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "BlankCell" && cell.AttachPoints.Count == 8);
+        var RoadCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "RoadCell" && cell.AttachPoints.Count == 8);
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = _allCellTypes.Find(cell =>
@@ -201,20 +201,20 @@ public class GameCellWFC
         _wfc.SetCell(2, 5, BlockedRoadCell, true);
         _wfc.SetCell(2, 7, HotDogStandCell, true);
 
-        _wfc.SetCell(2, 8, BlankCell, true);
-        _wfc.SetCell(2, 9, BlankCell, true);
-        _wfc.SetCell(3, 8, BlankCell, true);
-        _wfc.SetCell(4, 8, BlankCell, true);
-        _wfc.SetCell(4, 7, BlankCell, true);
-        _wfc.SetCell(4, 6, BlankCell, true);
+        _wfc.SetCell(2, 8, RoadCell, true);
+        _wfc.SetCell(2, 9, RoadCell, true);
+        _wfc.SetCell(3, 8, RoadCell, true);
+        _wfc.SetCell(4, 8, RoadCell, true);
+        _wfc.SetCell(4, 7, RoadCell, true);
+        _wfc.SetCell(4, 6, RoadCell, true);
 
-        _wfc.SetCell(5, 6, BlankCell, true);
-        _wfc.SetCell(6, 6, BlankCell, true);
+        _wfc.SetCell(5, 6, RoadCell, true);
+        _wfc.SetCell(6, 6, RoadCell, true);
 
-        _wfc.SetCell(6, 5, BlankCell, true);
-        _wfc.SetCell(6, 4, BlankCell, true);
-        _wfc.SetCell(6, 7, BlankCell, true);
-        _wfc.SetCell(6, 8, BlankCell, true);
+        _wfc.SetCell(6, 5, RoadCell, true);
+        _wfc.SetCell(6, 4, RoadCell, true);
+        _wfc.SetCell(6, 7, RoadCell, true);
+        _wfc.SetCell(6, 8, RoadCell, true);
 
         _wfc.SetCell(7, 6, CheeseStoreCell, true);
 
