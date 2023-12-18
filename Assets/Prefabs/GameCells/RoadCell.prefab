@@ -438,6 +438,34 @@ MonoBehaviour:
       type: 0
       isOptional: 1
     toCell: {fileID: 0}
+  - row: 0
+    col: 0
+    edge: 0
+    mode:
+      type: 1
+      isOptional: 1
+    toCell: {fileID: 0}
+  - row: 0
+    col: 0
+    edge: 0
+    mode:
+      type: 1
+      isOptional: 1
+    toCell: {fileID: 0}
+  - row: 0
+    col: 0
+    edge: 2
+    mode:
+      type: 1
+      isOptional: 1
+    toCell: {fileID: 0}
+  - row: 0
+    col: 0
+    edge: 3
+    mode:
+      type: 1
+      isOptional: 1
+    toCell: {fileID: 0}
   DestroyOnExit: 0
 --- !u!114 &9159411606054223360
 MonoBehaviour:
