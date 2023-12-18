@@ -334,7 +334,10 @@ public class GameCellWFC
                         forceFootprintOptions.AddRange(matches);
                     }
                 }
+            }
 
+            if (forceFootprintOptions.Count > 0)
+            {
                 continue;
             }
 
