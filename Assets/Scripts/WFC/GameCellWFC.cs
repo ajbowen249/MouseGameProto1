@@ -45,6 +45,9 @@ public class WFCCell
                 (point.mode.isOptional ? optionalPoints : requiredPoints).Add(absolutePoint);
             }
 
+            optionalPoints = optionalPoints.Distinct().ToList();
+            requiredPoints = requiredPoints.Distinct().ToList();
+
             // Attach points can be optional. So, to make the reducer function simpler, generate the full set of
             // possibilities as a set of cell types. It should be rare for this to generate a ton of options. The full
             // 4-way blank cell is the worst one.
@@ -183,7 +186,7 @@ public class GameCellWFC
 
     private void PlaceFixedCells()
     {
-        var BlankCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "BlankCell" && cell.AttachPoints.Count == 12);
+        var BlankCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "BlankCell" && cell.AttachPoints.Count == 8);
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = _allCellTypes.Find(cell =>
