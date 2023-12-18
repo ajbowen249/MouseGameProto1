@@ -71,6 +71,24 @@ public class WFCCell
                 absoluteSets.Add(points);
             }
 
+            // If there are no required points and  optional, we don't want to include the fully-disconnected variant.
+            // This may make sense as a GameCell property at some point.
+
+            if (optionalPoints.Count > 0 && requiredPoints.Count == 0)
+            {
+                absoluteSets = absoluteSets.Where(set => set.Count > 0).ToList();
+            }
+
+            // TODO: This is a hack. Don't allow foot-only connections for road cells. That possible future prop might
+            // be a function instead...
+
+            if (gameCell.name == "RoadCell")
+            {
+                absoluteSets = absoluteSets.Where(
+                    set => set.Count(option => option.modeType == AttachModeType.CAR) > 0
+                ).ToList();
+            }
+
             return absoluteSets.Select(attachPoints => new WFCCell
             {
                 BaseCell = gameCell,
