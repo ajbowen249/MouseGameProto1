@@ -79,16 +79,6 @@ public class WFCCell
                 absoluteSets = absoluteSets.Where(set => set.Count > 0).ToList();
             }
 
-            // TODO: This is a hack. Don't allow foot-only connections for road cells. That possible future prop might
-            // be a function instead...
-
-            if (gameCell.name == "RoadCell")
-            {
-                absoluteSets = absoluteSets.Where(
-                    set => set.Count(option => option.modeType == AttachModeType.CAR) > 0
-                ).ToList();
-            }
-
             return absoluteSets.Select(attachPoints => new WFCCell
             {
                 BaseCell = gameCell,
@@ -246,19 +236,22 @@ public class GameCellWFC
         // TODO: This should eventually have logic for things like sensible-looking roads and spawn rates for cells
         // For now, it's honest-to-goodness random
 
-        var pickableCells = _wfc.Grid.GetCells().SelectMany(
-            (row, rowIndex) => row.Select((cell, colIndex) => (cell, rowIndex, colIndex)))
-                .Where(cell => cell.Item1.PossibleCells.Count > 1
-        ).ToList();
+        var pickableCells = _wfc.Grid.GetCells()
+            .SelectMany((row, rowIndex) => row.Select((cell, colIndex) => (cell, rowIndex, colIndex)))
+            .Where(cell => cell.Item1.PossibleCells.Count > 1)
+            .ToList();
 
-        var randomIndex = _random.Next(pickableCells.Count);
-        var selectedCell = pickableCells[randomIndex];
+        var randomCell = RandomElement(pickableCells);
 
-        var possibleCells = selectedCell.cell.PossibleCells;
-        var randomOptionIndex = _random.Next(possibleCells.Count);
-        var selectedOption = possibleCells[randomOptionIndex];
+        // Placeholder until more advanced logic is available. Pick from distinct types so connection variants don't
+        // boost likelihood.
+        var baseTypeOptions = randomCell.cell.PossibleCells.Select(point => point.BaseCell)
+            .Distinct().ToList();
 
-        _wfc.SetCell(selectedCell.rowIndex, selectedCell.colIndex, selectedOption, false);
+        var randomBase = RandomElement(baseTypeOptions);
+        var randomType = RandomElement(randomCell.cell.PossibleCells.Where(cell => cell.BaseCell == randomBase).ToList());
+
+        _wfc.SetCell(randomCell.rowIndex, randomCell.colIndex, randomType, false);
     }
 
     private void LayStrip(
