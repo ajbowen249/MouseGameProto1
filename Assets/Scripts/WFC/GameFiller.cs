@@ -8,6 +8,9 @@ public class GameFiller
 {
     private WFCContext<WFCCell> _wfc;
     private List<WFCCell> _allCellTypes;
+    private Dictionary<Biome, List<WFCCell>> _cellsByBiome;
+
+    // Road as in "RoadCell," not the Road biome!
     private List<WFCCell> _allRoadCellTypes;
 
     private int _randomSeed;
@@ -31,10 +34,28 @@ public class GameFiller
         _wfc = wfc;
         _allCellTypes = allCellTypes;
         _allRoadCellTypes = _allCellTypes.Where(t => t.BaseCell.gameObject.name == "RoadCell").ToList();
+        _cellsByBiome = new Dictionary<Biome, List<WFCCell>>();
+        foreach (var cell in _allRoadCellTypes)
+        {
+            foreach (var biome in cell.BaseCell.Biomes)
+            {
+                if (!_cellsByBiome.ContainsKey(biome))
+                {
+                    _cellsByBiome[biome] = new List<WFCCell>();
+                }
+
+                _cellsByBiome[biome].Add(cell);
+            }
+        }
     }
 
     public void PlaceFixedCells()
     {
+        var residentialHeight = 3;
+
+        DefineBiomes(residentialHeight);
+        DefineRoads(residentialHeight);
+
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = RandomElement(_allCellTypes.Where(cell =>
@@ -44,24 +65,13 @@ public class GameFiller
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
         var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");
 
-        Func<List<AttachEdge>, bool, WFCCell> randomRoadCell = (edges, allowFoot) => RandomElement(_allRoadCellTypes.Where(
-            t => edges.All(edge => t.AttachPoints.Any(point => (allowFoot || point.modeType == AttachModeType.CAR) && point.edge == edge)
-        )).ToList());
+        _wfc.SetCell(0, 4, HomeCell, true);
+        _wfc.SetCell(1, 4, YardCell, true);
+        _wfc.SetCell(2, 4, BlockedRoadCell, true);
+        _wfc.SetCell(2, 6, HotDogStandCell, true);
 
-        _wfc.SetCell(0, 5, HomeCell, true);
-        _wfc.SetCell(1, 5, YardCell, true);
-        _wfc.SetCell(2, 5, BlockedRoadCell, true);
-        _wfc.SetCell(2, 7, HotDogStandCell, true);
-
-        _wfc.SetCell(2, 8, randomRoadCell(new List<AttachEdge> { AttachEdge.WEST, AttachEdge.NORTH }, false), true);
-        _wfc.SetCell(3, 8, randomRoadCell(new List<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, false), true);
-        _wfc.SetCell(4, 8, randomRoadCell(new List<AttachEdge> { AttachEdge.WEST, AttachEdge.SOUTH }, false), true);
-        _wfc.SetCell(4, 7, randomRoadCell(new List<AttachEdge> { AttachEdge.EAST, AttachEdge.WEST }, false), true);
-        _wfc.SetCell(4, 6, randomRoadCell(new List<AttachEdge> { AttachEdge.EAST, AttachEdge.NORTH }, false), true);
-        _wfc.SetCell(5, 6, randomRoadCell(new List<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, false), true);
-        _wfc.SetCell(6, 6, randomRoadCell(new List<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, true), true);
-
-        _wfc.SetCell(7, 6, CheeseStoreCell, true);
+        // Temporary; Stick the cheese shop on the top row guaranteed earlier
+        _wfc.SetCell(_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2, CheeseStoreCell, true);
     }
 
     public void RandomFill()
@@ -87,20 +97,194 @@ public class GameFiller
         _wfc.SetCell(randomCell.rowIndex, randomCell.colIndex, randomType, false);
     }
 
+    private void DefineBiomes(int residentialHeight)
+    {
+        // This should eventually be more random. Just testing stuff for now.
+
+        // First phase is large and doesn't exclude roads, since some roads are exclusive to certain biomes.
+        // Second phase excludes roads to define actual "blocks."
+
+        var urbanList = new List<Biome> { Biome.URBAN };
+        var suburbanList = new List<Biome> { Biome.SUBURBAN};
+        var roadList = new List<Biome> { Biome.ROAD };
+        var emptyList = new List<Biome> { };
+
+        // Residential at the bottom
+        DefineBiomeBlock(
+            0,
+            0,
+            residentialHeight,
+            _wfc.Grid.Cols,
+            suburbanList,
+            emptyList
+        );
+
+        // Set the rest to urban
+        DefineBiomeBlock(
+            residentialHeight,
+            0,
+            _wfc.Grid.Rows - residentialHeight,
+            _wfc.Grid.Cols,
+            urbanList,
+            emptyList
+        );
+
+        // Drop roads along the edges
+        // NO WAY IN. NO WAY OUT.
+        DefineBiomeBlock(
+            0,
+            0,
+            _wfc.Grid.Rows,
+            1,
+            emptyList,
+            roadList
+        );
+
+        DefineBiomeBlock(
+            0,
+            _wfc.Grid.Cols - 1,
+            _wfc.Grid.Rows,
+            1,
+            emptyList,
+            roadList
+        );
+
+        DefineBiomeBlock(
+            0,
+            0,
+            1,
+            _wfc.Grid.Cols,
+            emptyList,
+            roadList
+        );
+
+        DefineBiomeBlock(
+            _wfc.Grid.Rows - 1,
+            0,
+            1,
+            _wfc.Grid.Cols,
+            emptyList,
+            roadList
+        );
+    }
+
+    private void DefineRoads(int residentialHeight)
+    {
+        // Ensure a southern "home street"
+        // Using road specifically instead of biomes so ensure any point is walkable
+        var emptyTypeList = new List<WFCCell>();
+        var carMode = new List<AttachModeType> { AttachModeType.CAR };
+
+        DefineTypeBlock(
+            residentialHeight - 1,
+            1,
+            1,
+            _wfc.Grid.Cols - 3,
+            _allRoadCellTypes,
+            emptyTypeList
+        );
+
+        ConnectStrip(
+            residentialHeight - 1,
+            1,
+            _wfc.Grid.Cols - 3,
+            0,
+            1,
+            carMode
+        );
+
+        // Ensure a southern road. The target shop can at least go here
+        DefineTypeBlock(
+            _wfc.Grid.Rows - 2,
+            1,
+            1,
+            _wfc.Grid.Cols - 2,
+            _allRoadCellTypes,
+            emptyTypeList
+        );
+
+        ConnectStrip(
+            _wfc.Grid.Rows - 2,
+            1,
+            _wfc.Grid.Cols - 3,
+            0,
+            1,
+            carMode
+        );
+
+        // Temporary; Make a basic road connecting the eastern edges
+
+        DefineTypeBlock(
+            residentialHeight - 1,
+            _wfc.Grid.Cols - 3,
+            _wfc.Grid.Rows - 3,
+            1,
+            _allRoadCellTypes,
+            emptyTypeList
+        );
+
+        ConnectStrip(
+            residentialHeight - 1,
+            _wfc.Grid.Cols - 3,
+            _wfc.Grid.Rows - 3,
+            1,
+            0,
+            carMode
+        );
+    }
+
     private T RandomElement<T>(IList<T> elements)
     {
         var randomIndex = _random.Next(elements.Count);
         return elements[randomIndex];
     }
 
-    private void LayStrip(
-    int startRow,
-    int startCol,
-    int length,
-    int rowStep,
-    int colStep,
-    IEnumerable<AttachModeType> modes
-)
+    private void DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)
+    {
+        NarrowBlockByCondition(startRow, startCol, height, width,
+            option => (includeBiomes.Count == 0 || option.BaseCell.Biomes.Any(biome => includeBiomes.Contains(biome))) &&
+                        !option.BaseCell.Biomes.Any(biome => excludeBiomes.Contains(biome))
+        );
+    }
+
+    private void DefineTypeBlock(int startRow, int startCol, int height, int width, List<WFCCell> includeTypes, List<WFCCell> excludeTypes)
+    {
+        NarrowBlockByCondition(startRow, startCol, height, width,
+            option => (includeTypes.Count == 0 || includeTypes.Contains(option)) && !excludeTypes.Contains(option)
+        );
+    }
+
+    private void NarrowBlockByCondition(int startRow, int startCol, int height, int width, Func<WFCCell, bool> condition)
+    {
+        for (var row = startRow; row < startRow + height; row++)
+        {
+            for (var col = startCol; col < startCol + width; col++)
+            {
+                var cell = _wfc.Grid.GetCell(row, col);
+                if (cell == null)
+                {
+                    Debug.LogWarning($"Tried to get cell {row}, {col}");
+                    continue;
+                }
+
+                var narrowedOptions = cell.PossibleCells.Where(condition).ToList();
+
+                if (narrowedOptions.Count > 0)
+                {
+                    _wfc.SetCell(row, col, narrowedOptions, true);
+                }
+            }
+        }
+    }
+
+    private void ConnectStrip(
+        int startRow,
+        int startCol,
+        int length,
+        int rowStep,
+        int colStep,
+        IEnumerable<AttachModeType> modes
+    )
     {
         var row = startRow;
         var col = startCol;
