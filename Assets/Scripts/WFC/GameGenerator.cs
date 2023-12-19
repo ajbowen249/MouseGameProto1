@@ -23,6 +23,7 @@ public class GameGenerator : MonoBehaviour
 
     void Start()
     {
+        RandomInstances.SetSeed(RandomInstances.Names.Generator, 0);
         WCF = new GameCellWFC(Rows, Cols, GameCellPrefabs.Select(prefab => prefab.GetComponent<GameCell>()).ToList());
 
         if (EnableDebug)

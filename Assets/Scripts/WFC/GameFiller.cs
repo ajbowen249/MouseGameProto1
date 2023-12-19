@@ -13,24 +13,11 @@ public class GameFiller
     // Road as in "RoadCell," not the Road biome!
     private List<WFCCell> _allRoadCellTypes;
 
-    private int _randomSeed;
-    private System.Random _random;
-
-    public int RandomSeed
-    {
-        get
-        {
-            return _randomSeed;
-        }
-        set
-        {
-            _randomSeed = value;
-            _random = new System.Random(_randomSeed);
-        }
-    }
+    SeededRandom _random;
 
     public GameFiller(WFCContext<WFCCell> wfc, List<WFCCell> allCellTypes)
     {
+        _random = RandomInstances.GetInstance(RandomInstances.Names.Generator);
         _wfc = wfc;
         _allCellTypes = allCellTypes;
         _allRoadCellTypes = _allCellTypes.Where(t => t.BaseCell.gameObject.name == "RoadCell").ToList();
@@ -58,9 +45,9 @@ public class GameFiller
 
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
-        var BlockedRoadCell = RandomElement(_allCellTypes.Where(cell =>
+        var BlockedRoadCell = RandomUtil.RandomElement(_allCellTypes.Where(cell =>
             cell.BaseCell.gameObject.name == "BlockedRoadCell" && cell.InnerRow == 0 && cell.InnerCol == 0
-        ).ToList());
+        ).ToList(), _random.Random);
 
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
         var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");
@@ -84,15 +71,18 @@ public class GameFiller
             .Where(cell => cell.Item1.PossibleCells.Count > 1)
             .ToList();
 
-        var randomCell = RandomElement(pickableCells);
+        var randomCell = RandomUtil.RandomElement(pickableCells, _random.Random);
 
         // Placeholder until more advanced logic is available. Pick from distinct types so connection variants don't
         // boost likelihood.
         var baseTypeOptions = randomCell.cell.PossibleCells.Select(point => point.BaseCell)
             .Distinct().ToList();
 
-        var randomBase = RandomElement(baseTypeOptions);
-        var randomType = RandomElement(randomCell.cell.PossibleCells.Where(cell => cell.BaseCell == randomBase).ToList());
+        var randomBase = RandomUtil.RandomElement(baseTypeOptions, _random.Random);
+        var randomType = RandomUtil.RandomElement(
+            randomCell.cell.PossibleCells.Where(cell => cell.BaseCell == randomBase).ToList(),
+            _random.Random
+        );
 
         _wfc.SetCell(randomCell.rowIndex, randomCell.colIndex, randomType, false);
     }
@@ -231,12 +221,6 @@ public class GameFiller
             0,
             carMode
         );
-    }
-
-    private T RandomElement<T>(IList<T> elements)
-    {
-        var randomIndex = _random.Next(elements.Count);
-        return elements[randomIndex];
     }
 
     private void DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)

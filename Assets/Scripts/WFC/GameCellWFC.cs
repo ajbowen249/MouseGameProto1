@@ -108,18 +108,6 @@ public class GameCellWFC
 
     public bool GranularCollapse { get; set; }
 
-    public int RandomSeed
-    {
-        get
-        {
-            return _filler.RandomSeed;
-        }
-        set
-        {
-            _filler.RandomSeed = value;
-        }
-    }
-
     private List<GameCell> _gameCells;
 
     private int _rows;
@@ -140,7 +128,6 @@ public class GameCellWFC
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
         _wfc = new WFCContext<WFCCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
         _filler = new GameFiller(_wfc, _allCellTypes);
-        RandomSeed = 0;
 
         Phase = GenerationPhase.INIT;
     }

@@ -30,7 +30,7 @@ public class GeneratorHUD : MonoBehaviour
 
         if (SeedInput.text == "<seed>")
         {
-            SeedInput.text = $"{_generator.WCF.RandomSeed}";
+            SeedInput.text = $"{RandomInstances.GetInstance(RandomInstances.Names.Generator).Seed}";
         }
     }
 
@@ -56,7 +56,7 @@ public class GeneratorHUD : MonoBehaviour
 
     public void OnClickSetSeed()
     {
-        _generator.WCF.RandomSeed = int.Parse(SeedInput.text);
+        RandomInstances.SetSeed(RandomInstances.Names.Generator, int.Parse(SeedInput.text));
     }
 
     public void OnGranularCollapseChanged(Toggle toggle)
