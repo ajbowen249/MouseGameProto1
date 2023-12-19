@@ -40,12 +40,20 @@ public class CellFootprint
     public int col;
 }
 
+[Serializable]
+public enum Biome
+{
+    URBAN,
+    SUBURBAN,
+}
+
 public class GameCell : MonoBehaviour
 {
     public const float CellWidth = 20;
     public const float HalfWidth = CellWidth / 2;
 
     public GameObject EntryPoint;
+    public List<Biome> Biomes;
     public List<CellFootprint> Footprint;
     public bool CanBeRandom;
     public List<CellAttachPoint> EntryPoints;

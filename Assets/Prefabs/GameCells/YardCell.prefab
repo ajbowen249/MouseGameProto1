@@ -376,6 +376,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 3262305771490578596}
+  Biomes: 01000000
   Footprint:
   - row: 0
     col: 0
@@ -388,6 +389,7 @@ MonoBehaviour:
       type: 1
       isOptional: 0
     toCell: {fileID: 0}
+  DestroyOnExit: 0
 --- !u!114 &4687476456762673512
 MonoBehaviour:
   m_ObjectHideFlags: 0
