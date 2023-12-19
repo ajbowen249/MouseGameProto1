@@ -106,6 +106,8 @@ public class GameCellWFC
     public GenerationPhase Phase { get; private set; }
     public bool CanIterate { get { return Phase != GenerationPhase.DONE; } }
 
+    public bool GranularCollapse { get; set; }
+
     private int _randomSeed;
     private System.Random _random;
 
@@ -167,7 +169,15 @@ public class GameCellWFC
                 Phase = GenerationPhase.COLLAPSE;
                 break;
             case GenerationPhase.COLLAPSE:
-                _wfc.Iterate();
+                if (GranularCollapse)
+                {
+                    _wfc.Iterate();
+                }
+                else
+                {
+                    _wfc.IterateComplete();
+                }
+
                 if (_wfc.CanIterate)
                 {
                     Phase = GenerationPhase.COLLAPSE;

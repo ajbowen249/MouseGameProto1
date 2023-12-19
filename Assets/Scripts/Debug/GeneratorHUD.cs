@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GeneratorHUD : MonoBehaviour
 {
@@ -56,5 +57,10 @@ public class GeneratorHUD : MonoBehaviour
     public void OnClickSetSeed()
     {
         _generator.WCF.RandomSeed = int.Parse(SeedInput.text);
+    }
+
+    public void OnGranularCollapseChanged(Toggle toggle)
+    {
+        _generator.WCF.GranularCollapse = toggle.isOn;
     }
 }
