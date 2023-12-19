@@ -208,9 +208,9 @@ public class GameCellWFC
     {
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
-        var BlockedRoadCell = _allCellTypes.Find(cell =>
+        var BlockedRoadCell = RandomElement(_allCellTypes.Where(cell =>
             cell.BaseCell.gameObject.name == "BlockedRoadCell" && cell.InnerRow == 0 && cell.InnerCol == 0
-        );
+        ).ToList());
 
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
         var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");

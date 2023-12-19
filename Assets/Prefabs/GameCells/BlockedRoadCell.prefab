@@ -964,6 +964,13 @@ MonoBehaviour:
       type: 0
       isOptional: 0
     toCell: {fileID: 0}
+  - row: 0
+    col: 0
+    edge: 3
+    mode:
+      type: 0
+      isOptional: 1
+    toCell: {fileID: 0}
   DestroyOnExit: 0
 --- !u!114 &1407636662527619101
 MonoBehaviour:
