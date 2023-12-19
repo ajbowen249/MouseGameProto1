@@ -45,6 +45,7 @@ public enum Biome
 {
     URBAN,
     SUBURBAN,
+    ROAD,
 }
 
 public class GameCell : MonoBehaviour

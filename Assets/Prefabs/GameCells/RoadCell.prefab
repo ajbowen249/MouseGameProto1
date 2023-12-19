@@ -405,7 +405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 8205984596072932669}
-  Biomes: 0000000001000000
+  Biomes: 000000000100000002000000
   Footprint:
   - row: 0
     col: 0
