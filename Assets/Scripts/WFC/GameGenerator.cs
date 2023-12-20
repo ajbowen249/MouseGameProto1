@@ -23,27 +23,7 @@ public class GameGenerator : MonoBehaviour
 
     void Start()
     {
-        RandomInstances.SetSeed(RandomInstances.Names.Generator, 0);
-        WCF = new GameCellWFC(Rows, Cols, GameCellPrefabs.Select(prefab => prefab.GetComponent<GameCell>()).ToList());
-
-        if (EnableDebug)
-        {
-            ForEachPosition((row, col, location) =>
-            {
-                if (col == 0)
-                {
-                    _debugCells.Add(new List<PendingCellGraphic>());
-                }
-
-                var debugCell = Instantiate(PendingCellPrefab, location, transform.rotation);
-                _debugCells[row].Add(debugCell.GetComponent<PendingCellGraphic>());
-            });
-        }
-
-        if (GenerateImmediately)
-        {
-            GenerateComplete();
-        }
+        Init();
     }
 
     public void GenerateComplete()
@@ -68,6 +48,58 @@ public class GameGenerator : MonoBehaviour
 
         OnWCFComplete();
         UpdateDebugCells();
+    }
+
+    public void ResetSelf()
+    {
+        foreach (var row in _liveCells)
+        {
+            foreach (var cell in row)
+            {
+                Destroy(cell);
+            }
+        }
+
+        _liveCells = new List<List<GameObject>>();
+
+        foreach (var row in _debugCells)
+        {
+            foreach (var cell in row)
+            {
+                Destroy(cell.gameObject);
+            }
+        }
+
+        IsGenerationComplete = false;
+
+        _debugCells = new List<List<PendingCellGraphic>>();
+
+        Init();
+    }
+
+    private void Init()
+    {
+        RandomInstances.SetSeed(RandomInstances.Names.Generator, 0);
+        WCF = new GameCellWFC(Rows, Cols, GameCellPrefabs.Select(prefab => prefab.GetComponent<GameCell>()).ToList());
+
+        if (EnableDebug)
+        {
+            ForEachPosition((row, col, location) =>
+            {
+                if (col == 0)
+                {
+                    _debugCells.Add(new List<PendingCellGraphic>());
+                }
+
+                var debugCell = Instantiate(PendingCellPrefab, location, transform.rotation);
+                _debugCells[row].Add(debugCell.GetComponent<PendingCellGraphic>());
+            });
+        }
+
+        if (GenerateImmediately)
+        {
+            GenerateComplete();
+        }
     }
 
     delegate void PositionVisiter(int row, int col, Vector3 location);

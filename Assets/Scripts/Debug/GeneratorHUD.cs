@@ -12,6 +12,7 @@ public class GeneratorHUD : MonoBehaviour
 
     private GameGenerator _generator;
     private bool _isSteppingToEnd = false;
+    private bool _granularCollapse;
 
     void Start()
     {
@@ -36,11 +37,15 @@ public class GeneratorHUD : MonoBehaviour
 
     public void OnClickStep()
     {
+        ResetIfDone();
+        UpdateSeed();
         _generator.Step();
     }
 
     public void OnClickStepToEnd()
     {
+        ResetIfDone();
+        UpdateSeed();
         _isSteppingToEnd = true;
     }
 
@@ -51,16 +56,41 @@ public class GeneratorHUD : MonoBehaviour
 
     public void OnClickGenerateInstant()
     {
+        ResetIfDone();
         _generator.GenerateComplete();
-    }
-
-    public void OnClickSetSeed()
-    {
-        RandomInstances.SetSeed(RandomInstances.Names.Generator, int.Parse(SeedInput.text));
     }
 
     public void OnGranularCollapseChanged(Toggle toggle)
     {
         _generator.WCF.GranularCollapse = toggle.isOn;
+        _granularCollapse = toggle.isOn;
+    }
+
+    public void OnCLickReset()
+    {
+        _generator.ResetSelf();
+        UpdateSeed();
+        _generator.WCF.GranularCollapse = _granularCollapse;
+    }
+
+    public void OnClickInDecSeed(bool isIncrement)
+    {
+        var seedValue = int.Parse(SeedInput.text);
+        seedValue += isIncrement ? 1 : -1;
+        SeedInput.text = $"{seedValue}";
+        UpdateSeed();
+    }
+
+    private void UpdateSeed()
+    {
+        RandomInstances.SetSeed(RandomInstances.Names.Generator, int.Parse(SeedInput.text));
+    }
+
+    private void ResetIfDone()
+    {
+        if (_generator.WCF.Phase == GenerationPhase.DONE)
+        {
+            OnCLickReset();
+        }
     }
 }
