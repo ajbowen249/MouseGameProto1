@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GeneratorHUD : MonoBehaviour
@@ -20,6 +21,9 @@ public class GeneratorHUD : MonoBehaviour
     public Button DecrementButton;
 
     public Toggle GranularCollapseToggle;
+
+    public Button MainMenuButton;
+    public Button ExitButton;
 
     private GameGenerator _generator;
     private bool _isSteppingToEnd = false;
@@ -72,6 +76,16 @@ public class GeneratorHUD : MonoBehaviour
         GranularCollapseToggle.onValueChanged.AddListener(value =>
         {
             _generator.WCF.GranularCollapse = GranularCollapseToggle.isOn;
+        });
+
+        MainMenuButton.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("MainMenu");
+        });
+
+        ExitButton.onClick.AddListener(() =>
+        {
+            Application.Quit();
         });
     }
 

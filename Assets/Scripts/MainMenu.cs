@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
 {
     public Button StartGameButton;
     public Button GenerationSandboxButton;
+    public Button ExitButton;
 
     private void Start()
     {
@@ -17,6 +18,11 @@ public class MainMenu : MonoBehaviour
 
         GenerationSandboxButton.onClick.AddListener(() => {
             SceneManager.LoadScene("GenerationSandbox");
+        });
+
+        ExitButton.onClick.AddListener(() =>
+        {
+            Application.Quit();
         });
     }
 }
