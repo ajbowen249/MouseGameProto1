@@ -473,19 +473,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 98473452}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnClickGenerateInstant
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &98473452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,19 +594,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 116629094}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnClickPauseStepToEnd
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &116629094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -993,19 +969,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 216592630}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnClickStepToEnd
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &216592630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1267,6 +1231,14 @@ MonoBehaviour:
   PhaseText: {fileID: 1531414215}
   GeneratorObject: {fileID: 695784248}
   SeedInput: {fileID: 223457371}
+  StepButton: {fileID: 839615593}
+  StepToEndButton: {fileID: 216592629}
+  PauseStepButton: {fileID: 116629093}
+  GenerateButton: {fileID: 98473451}
+  ResetButton: {fileID: 1595725516}
+  IncrementButton: {fileID: 2146653737}
+  DecrementButton: {fileID: 1563464382}
+  GranularCollapseToggle: {fileID: 1450310529}
 --- !u!1001 &329928804
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1902,19 +1874,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 839615594}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnClickStep
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &839615594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3188,19 +3148,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1563464383}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnClickInDecSeed
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1563464383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3321,19 +3269,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1595725517}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnCLickReset
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1595725517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3956,19 +3892,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2146653738}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 324795795}
-        m_TargetAssemblyTypeName: GeneratorHUD, Assembly-CSharp
-        m_MethodName: OnClickInDecSeed
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2146653738
 MonoBehaviour:
   m_ObjectHideFlags: 0

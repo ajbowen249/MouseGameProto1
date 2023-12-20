@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -10,13 +11,68 @@ public class GeneratorHUD : MonoBehaviour
     public GameObject GeneratorObject;
     public TMP_InputField SeedInput;
 
+    public Button StepButton;
+    public Button StepToEndButton;
+    public Button PauseStepButton;
+    public Button GenerateButton;
+    public Button ResetButton;
+    public Button IncrementButton;
+    public Button DecrementButton;
+
+    public Toggle GranularCollapseToggle;
+
     private GameGenerator _generator;
     private bool _isSteppingToEnd = false;
-    private bool _granularCollapse;
 
     void Start()
     {
         _generator = GeneratorObject.GetComponent<GameGenerator>();
+
+        StepButton.onClick.AddListener(() =>
+        {
+            ResetIfDone();
+            UpdateSeed();
+            _generator.Step();
+        });
+
+        StepToEndButton.onClick.AddListener(() =>
+        {
+            ResetIfDone();
+            UpdateSeed();
+            _isSteppingToEnd = true;
+        });
+
+        PauseStepButton.onClick.AddListener(() =>
+        {
+            _isSteppingToEnd = false;
+        });
+
+        GenerateButton.onClick.AddListener(() =>
+        {
+            ResetIfDone();
+            _generator.GenerateComplete();
+        });
+
+        ResetButton.onClick.AddListener(() =>
+        {
+            ResetGenerator();
+        });
+
+        Action<bool> incDec = isIncrement =>
+        {
+            var seedValue = int.Parse(SeedInput.text);
+            seedValue += isIncrement ? 1 : -1;
+            SeedInput.text = $"{seedValue}";
+            UpdateSeed();
+        };
+
+        IncrementButton.onClick.AddListener(() => incDec(true));
+        DecrementButton.onClick.AddListener(() => incDec(false));
+
+        GranularCollapseToggle.onValueChanged.AddListener(value =>
+        {
+            _generator.WCF.GranularCollapse = GranularCollapseToggle.isOn;
+        });
     }
 
     void Update()
@@ -35,50 +91,11 @@ public class GeneratorHUD : MonoBehaviour
         }
     }
 
-    public void OnClickStep()
-    {
-        ResetIfDone();
-        UpdateSeed();
-        _generator.Step();
-    }
-
-    public void OnClickStepToEnd()
-    {
-        ResetIfDone();
-        UpdateSeed();
-        _isSteppingToEnd = true;
-    }
-
-    public void OnClickPauseStepToEnd()
-    {
-        _isSteppingToEnd = false;
-    }
-
-    public void OnClickGenerateInstant()
-    {
-        ResetIfDone();
-        _generator.GenerateComplete();
-    }
-
-    public void OnGranularCollapseChanged(Toggle toggle)
-    {
-        _generator.WCF.GranularCollapse = toggle.isOn;
-        _granularCollapse = toggle.isOn;
-    }
-
-    public void OnCLickReset()
+    private void ResetGenerator()
     {
         _generator.ResetSelf();
         UpdateSeed();
-        _generator.WCF.GranularCollapse = _granularCollapse;
-    }
-
-    public void OnClickInDecSeed(bool isIncrement)
-    {
-        var seedValue = int.Parse(SeedInput.text);
-        seedValue += isIncrement ? 1 : -1;
-        SeedInput.text = $"{seedValue}";
-        UpdateSeed();
+        _generator.WCF.GranularCollapse = GranularCollapseToggle.isOn;
     }
 
     private void UpdateSeed()
@@ -90,7 +107,7 @@ public class GeneratorHUD : MonoBehaviour
     {
         if (_generator.WCF.Phase == GenerationPhase.DONE)
         {
-            OnCLickReset();
+            ResetGenerator();
         }
     }
 }
