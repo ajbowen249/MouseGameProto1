@@ -131,6 +131,15 @@ public class GameCell : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (GameManager.Instance.FollowingPlayer != null)
+        {
+            var playerPosition = GameManager.Instance.FollowingPlayer.transform.position;
+            SetVisible(playerPosition.z <= transform.position.z + HalfWidth);
+        }
+    }
+
     public void SetExitRequirement(ExitRequirement requirement)
     {
         _exitRequirement = requirement;
@@ -208,6 +217,14 @@ public class GameCell : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private void SetVisible(bool visible)
+    {
+        foreach (var renderer in gameObject.GetComponentsInChildren<Renderer>())
+        {
+            renderer.enabled = visible;
+        }
     }
 
     void OnDrawGizmos()

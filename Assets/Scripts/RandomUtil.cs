@@ -63,7 +63,12 @@ public static class RandomUtil
 {
     public static T RandomElement<T>(IList<T> elements, string instanceName)
     {
-        return RandomElement(elements, RandomInstances.GetInstance(instanceName).Random);
+        return RandomElement(elements, RandomInstances.GetInstance(instanceName));
+    }
+
+    public static T RandomElement<T>(IList<T> elements, SeededRandom random)
+    {
+        return RandomElement(elements, random.Random);
     }
 
     public static T RandomElement<T>(IList<T> elements, System.Random random)

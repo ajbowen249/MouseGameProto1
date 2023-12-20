@@ -47,7 +47,7 @@ public class GameFiller
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
         var BlockedRoadCell = RandomUtil.RandomElement(_allCellTypes.Where(cell =>
             cell.BaseCell.gameObject.name == "BlockedRoadCell" && cell.InnerRow == 0 && cell.InnerCol == 0
-        ).ToList(), _random.Random);
+        ).ToList(), _random);
 
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
         var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");
@@ -71,17 +71,17 @@ public class GameFiller
             .Where(cell => cell.Item1.PossibleCells.Count > 1)
             .ToList();
 
-        var randomCell = RandomUtil.RandomElement(pickableCells, _random.Random);
+        var randomCell = RandomUtil.RandomElement(pickableCells, _random);
 
         // Placeholder until more advanced logic is available. Pick from distinct types so connection variants don't
         // boost likelihood.
         var baseTypeOptions = randomCell.cell.PossibleCells.Select(point => point.BaseCell)
             .Distinct().ToList();
 
-        var randomBase = RandomUtil.RandomElement(baseTypeOptions, _random.Random);
+        var randomBase = RandomUtil.RandomElement(baseTypeOptions, _random);
         var randomType = RandomUtil.RandomElement(
             randomCell.cell.PossibleCells.Where(cell => cell.BaseCell == randomBase).ToList(),
-            _random.Random
+            _random
         );
 
         _wfc.SetCell(randomCell.rowIndex, randomCell.colIndex, randomType, false);
