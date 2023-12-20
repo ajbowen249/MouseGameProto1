@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3537536543986715848}
   - component: {fileID: 3351271706443841591}
   m_Layer: 0
-  m_Name: SuburbanFiller
+  m_Name: UrbanFiller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntryPoint: {fileID: 7825944576596499859}
-  Biomes: 01000000
+  Biomes: 00000000
   Footprint:
   - row: 0
     col: 0
@@ -67,9 +67,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FillerGraphicPrefabs:
-  - {fileID: 1639692459855847967, guid: 05ae9d8ad2bc632499b5c01d9bcb8485, type: 3}
-  - {fileID: 1639692459855847967, guid: 1905bcbc3df478a41acad264e80ead5c, type: 3}
-  - {fileID: 1639692459855847967, guid: a67f44ef8921aaf4fb2c4cd0fbb742a7, type: 3}
+  - {fileID: 1639692459855847967, guid: 4cc77d55b43928949b6df18ca430eaa7, type: 3}
+  - {fileID: 1639692459855847967, guid: 78400224b1d1d2c44838a94796322774, type: 3}
+  - {fileID: 1639692459855847967, guid: 029fc5c840693c1418b08749ac7a18e1, type: 3}
 --- !u!1 &7825944576596499859
 GameObject:
   m_ObjectHideFlags: 0
