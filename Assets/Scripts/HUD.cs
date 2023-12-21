@@ -4,10 +4,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
+using System;
 
 public class HUD : MonoBehaviour
 {
-    public GameObject Canvas;
     public TMP_Text Prompt;
     public TMP_Text MessageLog;
 
@@ -20,6 +21,12 @@ public class HUD : MonoBehaviour
     public TMP_Text DialogOptions;
 
     public GameObject PlayerObject;
+
+    public GameObject ConsoleContainer;
+    public TMP_InputField ConsoleInput;
+    public GameObject ConsoleBaseLine;
+    public Scrollbar ConsoleScrollBar;
+    public GameObject ConsoleRect;
 
     public int MessageLogLines = 5;
     public int MessageLogTimeSeconds = 7;
@@ -34,6 +41,8 @@ public class HUD : MonoBehaviour
 
     private MouseController _player;
 
+    private bool _isConsoleOpen = false;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -47,6 +56,8 @@ public class HUD : MonoBehaviour
 
     void Start()
     {
+        ConsoleContainer.SetActive(false);
+        _isConsoleOpen = false;
         ClearInteractionPrompt();
         MessageLog.text = "";
         DialogText.text = "";
@@ -57,10 +68,13 @@ public class HUD : MonoBehaviour
         MoneyMeter.text = "";
 
         _player = PlayerObject.GetComponent<MouseController>();
+
+        ConsoleInput.onSubmit.AddListener(value => HandleConsoleInput(value));
     }
 
     void Update()
     {
+        Cursor.lockState = _isConsoleOpen ? CursorLockMode.None : CursorLockMode.Locked;
         if (_lastNewLog < Time.fixedTime - MessageLogTimeSeconds && MessageLog.text != "")
         {
             MessageLog.text = "";
@@ -75,6 +89,18 @@ public class HUD : MonoBehaviour
         {
             DialogText.text = "";
             DialogOptions.text = "";
+        }
+
+        if (Keyboard.current[Key.Backquote].wasPressedThisFrame)
+        {
+            if (!_isConsoleOpen)
+            {
+                OpenConsole();
+            }
+            else
+            {
+                CloseConsole();
+            }
         }
     }
 
@@ -109,6 +135,8 @@ public class HUD : MonoBehaviour
         MessageLog.text = string.Join("\n", toRender.ToArray());
 
         _lastNewLog = Time.fixedTime;
+
+        WriteConsole(message);
     }
 
     public void SetMeters(float gas, float energy, float time, float money)
@@ -167,5 +195,84 @@ public class HUD : MonoBehaviour
         }
 
         return $"{(isSelected ? "<b>" : "")}<color={color}>{text}</color>{(isSelected ? "</b>" : "")}";
+    }
+
+    private void OpenConsole()
+    {
+        _player.Suspend();
+        ConsoleContainer.SetActive(true);
+        ConsoleInput.Select();
+        ConsoleInput.ActivateInputField();
+        _isConsoleOpen = true;
+    }
+
+    private void CloseConsole()
+    {
+        ConsoleInput.text = "";
+        ConsoleContainer.SetActive(false);
+        _isConsoleOpen = false;
+        _player.Resume();
+    }
+
+    private void WriteConsole(string text)
+    {
+        var lineObject = Instantiate(ConsoleBaseLine, ConsoleRect.transform);
+        var textComponent = lineObject.GetComponent<TMP_Text>();
+        textComponent.text = text;
+    }
+
+    private void HandleConsoleInput(string inputText)
+    {
+        ConsoleInput.text = "";
+        WriteConsole(inputText);
+
+        var parts = inputText.Split(' ');
+        switch (parts[0])
+        {
+            case "teleport":
+                Teleport(parts);
+                break;
+            default:
+                break;
+        }
+
+        ConsoleScrollBar.value = 0;
+        ConsoleInput.Select();
+        ConsoleInput.ActivateInputField();
+    }
+
+    private void Teleport(string[] parts)
+    {
+        if (parts.Length != 3)
+        {
+            WriteConsole("Usage: teleport <row> <col>");
+            return;
+        }
+
+        try
+        {
+            var row = int.Parse(parts[1]);
+            var col = int.Parse(parts[2]);
+
+            var cellObject = GameGenerator.Instance.GameCellGrid[row][col];
+            var cell = cellObject.GetComponent<GameCell>();
+            var maybeSpawner = cell.GetComponentInChildren<CarExitSpawner>();
+            if (maybeSpawner != null)
+            {
+                maybeSpawner.SpawnCarExit();
+            }
+
+            var gameCell = cell.GetComponent<GameCell>();
+
+            var entryPoint = gameCell.EntryPoint.gameObject.transform.position;
+
+            _player.Teleport(entryPoint);
+
+            gameCell.PlayerEntered(_player.gameObject);
+        }
+        catch (Exception e)
+        {
+            WriteConsole(e.Message);
+        }
     }
 }

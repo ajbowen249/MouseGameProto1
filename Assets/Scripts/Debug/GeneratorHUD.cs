@@ -30,6 +30,7 @@ public class GeneratorHUD : MonoBehaviour
 
     void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
         _generator = GeneratorObject.GetComponent<GameGenerator>();
 
         StepButton.onClick.AddListener(() =>

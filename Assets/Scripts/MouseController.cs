@@ -282,6 +282,10 @@ public class MouseController : MonoBehaviour
                 Move();
                 Interaction();
                 break;
+            case ControlState.SUSPENDED:
+                _input.jump = false;
+                _input.interact = false;
+                break;
         }
 
     }

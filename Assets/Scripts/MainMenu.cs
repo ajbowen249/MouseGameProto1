@@ -12,6 +12,8 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+
         StartGameButton.onClick.AddListener(() => {
             SceneManager.LoadScene("Main");
         });

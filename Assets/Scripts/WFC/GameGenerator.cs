@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GameGenerator : MonoBehaviour
 {
+    public static GameGenerator Instance;
+
     public int Rows = 10;
     public int Cols = 10;
     public List<GameObject> GameCellPrefabs;
@@ -17,9 +19,20 @@ public class GameGenerator : MonoBehaviour
 
     public GameCellWFC WCF { get; private set; }
     public bool IsGenerationComplete { get; private set; } = false;
+    public List<List<GameObject>> GameCellGrid { get; private set; } = new List<List<GameObject>>();
 
     private List<List<PendingCellGraphic>> _debugCells = new List<List<PendingCellGraphic>>();
-    private List<List<GameObject>> _liveCells = new List<List<GameObject>>();
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        Instance = this;
+    }
 
     void Start()
     {
@@ -52,7 +65,7 @@ public class GameGenerator : MonoBehaviour
 
     public void ResetSelf()
     {
-        foreach (var row in _liveCells)
+        foreach (var row in GameCellGrid)
         {
             foreach (var cell in row)
             {
@@ -60,7 +73,7 @@ public class GameGenerator : MonoBehaviour
             }
         }
 
-        _liveCells = new List<List<GameObject>>();
+        GameCellGrid = new List<List<GameObject>>();
 
         foreach (var row in _debugCells)
         {
@@ -126,7 +139,7 @@ public class GameGenerator : MonoBehaviour
 
         if (EnableDebug && MrDebugObject != null)
         {
-            MrDebugObject.GetComponentInChildren<MrDebug>().GameCells = _liveCells.SelectMany(row => row).Where(cell => cell != null).ToList();
+            MrDebugObject.GetComponentInChildren<MrDebug>().GameCells = GameCellGrid.SelectMany(row => row).Where(cell => cell != null).ToList();
         }
 
         IsGenerationComplete = true;
@@ -151,7 +164,7 @@ public class GameGenerator : MonoBehaviour
         {
             if (col == 0)
             {
-                _liveCells.Add(new List<GameObject>());
+                GameCellGrid.Add(new List<GameObject>());
             }
 
 
@@ -159,14 +172,14 @@ public class GameGenerator : MonoBehaviour
 
             if (cell.PossibleCells.Count != 1)
             {
-                _liveCells[row].Add(null);
+                GameCellGrid[row].Add(null);
                 return;
             }
 
             var cellDef = cell.PossibleCells[0];
             if (cellDef.InnerRow != 0 || cellDef.InnerCol != 0)
             {
-                _liveCells[row].Add(null);
+                GameCellGrid[row].Add(null);
                 return;
             }
 
@@ -205,7 +218,7 @@ public class GameGenerator : MonoBehaviour
             gameCell.Col = col;
             gameCell.DeterminedConnections(connections);
 
-            _liveCells[row].Add(cellObject);
+            GameCellGrid[row].Add(cellObject);
         });
     }
 
@@ -215,7 +228,7 @@ public class GameGenerator : MonoBehaviour
         {
             for (int col = 0; col < Cols; col++)
             {
-                var cellObject = _liveCells[row][col];
+                var cellObject = GameCellGrid[row][col];
                 if (cellObject == null)
                 {
                     continue;
@@ -252,7 +265,7 @@ public class GameGenerator : MonoBehaviour
                         continue;
                     }
 
-                    point.toCell = _liveCells[neighborRow][neighborCol];
+                    point.toCell = GameCellGrid[neighborRow][neighborCol];
                 }
             }
         }
@@ -263,7 +276,7 @@ public class GameGenerator : MonoBehaviour
         {
             for (int col = 0; col < Cols; col++)
             {
-                var cellObject = _liveCells[row][col];
+                var cellObject = GameCellGrid[row][col];
                 var cell = cellObject?.GetComponent<GameCell>();
                 if (cell == null)
                 {
