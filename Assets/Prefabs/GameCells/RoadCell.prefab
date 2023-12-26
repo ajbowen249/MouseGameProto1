@@ -480,6 +480,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e8fb4dbd995fb94e9cfc7a066571045, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StraightSidewalkPrefab: {fileID: 4059700369280993363, guid: b0aa3b8f5add670428111b4ce1dccdd3,
+    type: 3}
+  CornerSidewalkPrefab: {fileID: 4059700369280993363, guid: 7d58ad590dc14ed46ada261f045ce01d,
+    type: 3}
   NorthRoad: {fileID: 6882141380093384152}
   SouthRoad: {fileID: 3265537383512356532}
   EastRoad: {fileID: 5799475996546869517}

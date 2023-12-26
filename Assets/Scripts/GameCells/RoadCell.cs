@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class RoadCell : MonoBehaviour
 {
+    public GameObject StraightSidewalkPrefab;
+    public GameObject CornerSidewalkPrefab;
+
     public GameObject NorthRoad;
     public GameObject SouthRoad;
     public GameObject EastRoad;
