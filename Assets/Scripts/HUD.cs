@@ -232,6 +232,9 @@ public class HUD : MonoBehaviour
             case "teleport":
                 Teleport(parts);
                 break;
+            case "exit":
+                Application.Quit();
+                break;
             default:
                 break;
         }
