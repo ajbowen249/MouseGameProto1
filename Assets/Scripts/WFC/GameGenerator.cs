@@ -90,6 +90,16 @@ public class GameGenerator : MonoBehaviour
         Init();
     }
 
+    public GameObject GetGameCell(int row, int col)
+    {
+        if (row < 0 || col < 0 || row > Rows - 1 || col > Cols - 1)
+        {
+            return null;
+        }
+
+        return GameCellGrid[row][col];
+    }    
+
     private void Init()
     {
         RandomInstances.SetSeed(RandomInstances.Names.Generator, 0);
