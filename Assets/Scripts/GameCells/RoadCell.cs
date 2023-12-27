@@ -10,6 +10,7 @@ public class RoadCell : MonoBehaviour
 
     public GameObject StraightSidewalkPrefab;
     public GameObject CornerSidewalkPrefab;
+    public GameObject InnerCornerSidewalkPrefab;
 
     public GameObject NorthRoad;
     public GameObject SouthRoad;
@@ -113,18 +114,22 @@ public class RoadCell : MonoBehaviour
             );
         };
 
-        Action<Vector3, Quaternion> SpawnStraightSegment = (offset, rotation) => {
+        Action<Vector3, Quaternion> AddStraight = (offset, rotation) => {
             SpawnSegment(StraightSidewalkPrefab, offset, rotation);
         };
 
-        Action<Vector3, Quaternion> SpawnCornerSegment = (offset, rotation) => {
+        Action<Vector3, Quaternion> AddCorner = (offset, rotation) => {
             SpawnSegment(CornerSidewalkPrefab, offset, rotation);
+        };
+
+        Action<Vector3, Quaternion> AddInnerCorner = (offset, rotation) => {
+            SpawnSegment(InnerCornerSidewalkPrefab, offset, rotation);
         };
 
         Action<int, Quaternion, Func<int, Vector3>> drawSidewalk = (segments, rotation, offsetGetter) => {
             for (int i = 0; i < segments; i++)
             {
-                SpawnStraightSegment(offsetGetter(i), rotation);
+                AddStraight(offsetGetter(i), rotation);
             }
         };
 
@@ -140,12 +145,12 @@ public class RoadCell : MonoBehaviour
 
             if (carConnectsEast)
             {
-                SpawnStraightSegment(new Vector3(insetFromEdge, 0f, insetFromEdge), northRotation);
+                AddStraight(new Vector3(insetFromEdge, 0f, insetFromEdge), northRotation);
             }
 
             if (carConnectsWest)
             {
-                SpawnStraightSegment(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), northRotation);
+                AddStraight(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), northRotation);
             }
         }
 
@@ -161,12 +166,12 @@ public class RoadCell : MonoBehaviour
 
             if (carConnectsEast)
             {
-                SpawnStraightSegment(new Vector3(insetFromEdge, 0f, -1 * insetFromEdge), southRotation);
+                AddStraight(new Vector3(insetFromEdge, 0f, -1 * insetFromEdge), southRotation);
             }
 
             if (carConnectsWest)
             {
-                SpawnStraightSegment(new Vector3(-1f * insetFromEdge, 0f, -1 * insetFromEdge), southRotation);
+                AddStraight(new Vector3(-1f * insetFromEdge, 0f, -1 * insetFromEdge), southRotation);
             }
         }
 
@@ -182,12 +187,12 @@ public class RoadCell : MonoBehaviour
 
             if (carConnectsNorth)
             {
-                SpawnStraightSegment(new Vector3(insetFromEdge, 0f, insetFromEdge), eastRotation);
+                AddStraight(new Vector3(insetFromEdge, 0f, insetFromEdge), eastRotation);
             }
 
             if (carConnectsSouth)
             {
-                SpawnStraightSegment(new Vector3(insetFromEdge, 0f, -1f * insetFromEdge), eastRotation);
+                AddStraight(new Vector3(insetFromEdge, 0f, -1f * insetFromEdge), eastRotation);
             }
         }
 
@@ -203,33 +208,49 @@ public class RoadCell : MonoBehaviour
 
             if (carConnectsNorth)
             {
-                SpawnStraightSegment(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), westRotation);
+                AddStraight(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), westRotation);
             }
 
             if (carConnectsSouth)
             {
-                SpawnStraightSegment(new Vector3(-1f * insetFromEdge, 0f, -1f * insetFromEdge), westRotation);
+                AddStraight(new Vector3(-1f * insetFromEdge, 0f, -1f * insetFromEdge), westRotation);
             }
         }
 
         if (carConnectsNorth && carConnectsEast)
         {
-            SpawnCornerSegment(new Vector3(insetFromEdge, 0f, insetFromEdge), northRotation);
+            AddCorner(new Vector3(insetFromEdge, 0f, insetFromEdge), northRotation);
+        }
+        else if (!carConnectsNorth && !carConnectsEast)
+        {
+            AddInnerCorner(new Vector3(insetFromEdge, 0f, insetFromEdge), eastRotation);
         }
 
         if (carConnectsNorth && carConnectsWest)
         {
-            SpawnCornerSegment(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), westRotation);
+            AddCorner(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), westRotation);
+        }
+        else if (!carConnectsNorth && !carConnectsWest)
+        {
+            AddInnerCorner(new Vector3(-1f * insetFromEdge, 0f, insetFromEdge), northRotation);
         }
 
         if (carConnectsSouth && carConnectsEast)
         {
-            SpawnCornerSegment(new Vector3(insetFromEdge, 0f, -1f * insetFromEdge), eastRotation);
+            AddCorner(new Vector3(insetFromEdge, 0f, -1f * insetFromEdge), eastRotation);
+        }
+        else if (!carConnectsSouth && !carConnectsEast)
+        {
+            AddInnerCorner(new Vector3(insetFromEdge, 0f, -1f * insetFromEdge), southRotation);
         }
 
         if (carConnectsSouth && carConnectsWest)
         {
-            SpawnCornerSegment(new Vector3(-1f * insetFromEdge, 0f, -1f * insetFromEdge), southRotation);
+            AddCorner(new Vector3(-1f * insetFromEdge, 0f, -1f * insetFromEdge), southRotation);
+        }
+        else if (!carConnectsSouth && !carConnectsWest)
+        {
+            AddInnerCorner(new Vector3(-1f * insetFromEdge, 0f, -1f * insetFromEdge), westRotation);
         }
     }
 }
