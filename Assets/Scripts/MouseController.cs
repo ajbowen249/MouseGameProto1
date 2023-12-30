@@ -100,15 +100,8 @@ public class MouseController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
-    // animation IDs
-    private int _animIDSpeed;
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
-
     private PlayerInput _playerInput;
-    private Animator _animator;
+    private MouseAvatar _mouseAvatar;
     private CharacterController _controller;
     private StarterAssetsInputs _input;
     private GameObject _mainCamera;
@@ -266,10 +259,7 @@ public class MouseController : MonoBehaviour
     private void Start()
     {
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-        _animator = GetComponentInChildren<Animator>();
-
-        AssignAnimationIDs();
-
+        _mouseAvatar = GetComponentInChildren<MouseAvatar>();
 
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<StarterAssetsInputs>();
@@ -278,15 +268,6 @@ public class MouseController : MonoBehaviour
         // reset our timeouts on start
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
-    }
-
-    private void AssignAnimationIDs()
-    {
-        _animIDSpeed = Animator.StringToHash("Speed");
-        _animIDGrounded = Animator.StringToHash("Grounded");
-        _animIDJump = Animator.StringToHash("Jump");
-        _animIDFreeFall = Animator.StringToHash("FreeFall");
-        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
     }
 
     private void Update()
@@ -341,7 +322,7 @@ public class MouseController : MonoBehaviour
             QueryTriggerInteraction.Ignore
         );
 
-        _animator.SetBool(_animIDGrounded, Grounded);
+        _mouseAvatar.SetGrounded(Grounded);
     }
 
     private void CameraRotation()
@@ -430,8 +411,7 @@ public class MouseController : MonoBehaviour
                 new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime
         );
 
-        _animator.SetFloat(_animIDSpeed, _animationBlend);
-        _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+        _mouseAvatar.SetWalkRun(_animationBlend, inputMagnitude);
     }
 
     private void Interaction()
@@ -454,8 +434,8 @@ public class MouseController : MonoBehaviour
             // reset the fall timeout timer
             _fallTimeoutDelta = FallTimeout;
 
-            _animator.SetBool(_animIDJump, false);
-            _animator.SetBool(_animIDFreeFall, false);
+            _mouseAvatar.SetJumping(false);
+            _mouseAvatar.SetFalling(false);
 
             // stop our velocity dropping infinitely when grounded
             if (_verticalVelocity < 0.0f)
@@ -469,7 +449,7 @@ public class MouseController : MonoBehaviour
                 // the square root of H * -2 * G = how much velocity needed to reach desired height
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
 
-                _animator.SetBool(_animIDJump, true);
+                _mouseAvatar.SetJumping(true);
             }
 
             // jump timeout
@@ -490,7 +470,7 @@ public class MouseController : MonoBehaviour
             }
             else
             {
-                _animator.SetBool(_animIDFreeFall, true);
+                _mouseAvatar.SetFalling(true);
             }
 
             // if we are not grounded, do not jump
