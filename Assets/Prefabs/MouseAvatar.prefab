@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6285465342218544311}
   m_Layer: 0
-  m_Name: TestMouse
+  m_Name: MouseAvatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
