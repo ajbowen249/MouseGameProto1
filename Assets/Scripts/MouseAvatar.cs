@@ -12,6 +12,7 @@ public class MouseAvatar : MonoBehaviour
     private int _animIDJump;
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
+    private int _animIDWaving;
 
     private void Start()
     {
@@ -22,6 +23,7 @@ public class MouseAvatar : MonoBehaviour
         _animIDJump = Animator.StringToHash("Jump");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        _animIDWaving = Animator.StringToHash("Waving");
     }
 
     public void SetGrounded(bool grounded)
@@ -45,11 +47,21 @@ public class MouseAvatar : MonoBehaviour
         _animator.SetFloat(_animIDMotionSpeed, magnitude);
     }
 
+    public void Wave()
+    {
+        _animator.SetBool(_animIDWaving, true);
+    }
+
     private void OnFootstep(AnimationEvent animationEvent)
     {
     }
 
     private void OnLand(AnimationEvent animationEvent)
     {
+    }
+
+    private void OnWaveEnd()
+    {
+        _animator.SetBool(_animIDWaving, false);
     }
 }
