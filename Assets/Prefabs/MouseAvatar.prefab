@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4358ba983d0569c4899cc9f177cac61a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Tint: {r: 0, g: 0, b: 0, a: 1}
 --- !u!4 &7540381502318566361 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b154055c8f38bbc409666dec5055b829,

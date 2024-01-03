@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
 public class MouseAvatar : MonoBehaviour
 {
+    [SerializeField]
+    public Color Tint = new Color(0, 0, 0);
+
     private Animator _animator;
 
     private int _animIDSpeed;
@@ -24,6 +28,11 @@ public class MouseAvatar : MonoBehaviour
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         _animIDWaving = Animator.StringToHash("Waving");
+
+        var renderer = GetComponentInChildren<Renderer>();
+        var block = new MaterialPropertyBlock();
+        block.SetColor("_Tint", Tint);
+        renderer.SetPropertyBlock(block);
     }
 
     public void SetGrounded(bool grounded)
