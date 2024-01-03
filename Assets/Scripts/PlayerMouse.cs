@@ -1,9 +1,6 @@
 using StarterAssets;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
 public enum ControlState
 {
@@ -53,7 +50,9 @@ public class PlayerMouse : MonoBehaviour
     private ControlState? _suspendedState;
 
     private PlayerInput _playerInput;
-    private StarterAssetsInputs _input;
+
+    [HideInInspector]
+    public StarterAssetsInputs Input { get; private set; }
 
     private bool IsCurrentDeviceMouse
     {
@@ -66,10 +65,10 @@ public class PlayerMouse : MonoBehaviour
     void Start()
     {
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-        _input = GetComponent<StarterAssetsInputs>();
+        Input = GetComponent<StarterAssetsInputs>();
         _playerInput = GetComponent<PlayerInput>();
         MouseController = GetComponent<MouseController>();
-        MouseController.Input = _input;
+        MouseController.Input = Input;
     }
 
     void Update()
@@ -85,8 +84,8 @@ public class PlayerMouse : MonoBehaviour
                 MouseController.BasicUpdate();
                 break;
             case ControlState.SUSPENDED:
-                _input.jump = false;
-                _input.interact = false;
+                Input.jump = false;
+                Input.interact = false;
                 break;
         }
     }
@@ -120,19 +119,19 @@ public class PlayerMouse : MonoBehaviour
 
     public StarterAssetsInputs GetInputController()
     {
-        return _input;
+        return Input;
     }
 
     private void CameraRotation()
     {
         // if there is an input and camera position is not fixed
-        if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+        if (Input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
         {
             //Don't multiply mouse input by Time.deltaTime;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-            _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+            _cinemachineTargetYaw += Input.look.x * deltaTimeMultiplier;
+            _cinemachineTargetPitch += Input.look.y * deltaTimeMultiplier;
         }
 
         // clamp our rotations so our values are limited 360 degrees

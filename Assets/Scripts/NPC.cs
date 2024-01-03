@@ -13,8 +13,12 @@ public class NPC : MonoBehaviour
 
     public bool DisableDefaultWaveOnDialog;
 
+    private MouseController _controller;
+
     void Start()
     {
+        _controller = GetComponent<MouseController>();
+
         if (TalkCamera != null)
         {
             TalkCamera.SetActive(false);
@@ -26,12 +30,9 @@ public class NPC : MonoBehaviour
 
     public void Update()
     {
-        if (Avatar != null)
+        if (_controller != null)
         {
-            Avatar.SetGrounded(false);
-            Avatar.SetFalling(false);
-            Avatar.SetJumping(false);
-            Avatar.SetWalkRun(0, 1);
+            _controller.BasicUpdate();
         }
     }
 
