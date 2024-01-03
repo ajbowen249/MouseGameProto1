@@ -9,6 +9,11 @@ public class MrsMouse : MonoBehaviour
 
     void Start()
     {
+        var renderer = GetComponentInChildren<Renderer>();
+        var block = new MaterialPropertyBlock();
+        block.SetColor("_Tint", new Color(0.4f, 0f, 0.1f));
+        renderer.SetPropertyBlock(block);
+
         _npc = gameObject.GetComponent<NPC>();
         _npc.DialogTree = new DialogNode
         {
