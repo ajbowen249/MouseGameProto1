@@ -66,6 +66,11 @@ public class MouseAvatar : MonoBehaviour
         renderer.SetPropertyBlock(block);
     }
 
+    public void CancelEmotes()
+    {
+        _animator.SetBool(_animIDWaving, false);
+    }
+
     private void OnFootstep(AnimationEvent animationEvent)
     {
     }

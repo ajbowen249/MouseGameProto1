@@ -6,8 +6,10 @@ using UnityEngine.UI;
 
 public class Neighbor1 : MonoBehaviour
 {
-    public GameObject PlowPath;
-    public GameObject ReturnPath;
+    public GameObject PlowTarget;
+    public GameObject ReturnTarget1;
+    public GameObject ReturnTarget2;
+
     public GameObject SnowBank;
 
     private NPC _npc;
@@ -78,26 +80,39 @@ public class Neighbor1 : MonoBehaviour
             return;
         }
 
-        PathFollower.SendObjectAlongPath(gameObject, PlowPath, () =>
-        {
-            if (tag == "positive")
-            {
-                _player.ExpendResources(GetSnowClearCost(PlayerHasShovel()));
-            }
-            else
-            {
-                _player.ExpendResources(new ActionCost
+        _npc.WalkTo(new NPC.WalkTarget {
+            position = PlowTarget.transform.position,
+            distance = 0.1f,
+            callback = () => {
+                if (tag == "positive")
                 {
-                    description = "You watch your neighbor clear the snow alone",
-                    time = 2,
+                    _player.ExpendResources(GetSnowClearCost(PlayerHasShovel()));
+                }
+                else
+                {
+                    _player.ExpendResources(new ActionCost
+                    {
+                        description = "You watch your neighbor clear the snow alone",
+                        time = 2,
+                    });
+                }
+
+                Destroy(SnowBank);
+
+                _npc.WalkTo(new NPC.WalkTarget
+                {
+                    position = ReturnTarget1.transform.position,
+                    distance = 0.1f,
+                    callback = () => {
+                        _npc.WalkTo(new NPC.WalkTarget
+                        {
+                            position = ReturnTarget2.transform.position,
+                            distance = 0.1f,
+                            callback = () => { },
+                        });
+                    },
                 });
-            }
-
-            Destroy(SnowBank);
-
-            PathFollower.SendObjectAlongPath(gameObject, ReturnPath, () =>
-            {
-            });
+            },
         });
     }
 

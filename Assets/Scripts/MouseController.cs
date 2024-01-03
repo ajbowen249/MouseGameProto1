@@ -218,7 +218,7 @@ public class MouseController : MonoBehaviour
 
     public void BasicUpdate()
     {
-        if (AttachedTo != null)
+        if (AttachedTo != null || !_controller.enabled)
         {
             return;
         }
