@@ -5,6 +5,7 @@ using StarterAssets;
 
 public class DialogController : MonoBehaviour
 {
+    private PlayerMouse _player;
     private MouseController _mouseController;
     private StarterAssetsInputs _input;
     private NPC _talkingTo;
@@ -13,6 +14,7 @@ public class DialogController : MonoBehaviour
 
     void Start()
     {
+        _player = gameObject.GetComponent<PlayerMouse>();
         _mouseController = gameObject.GetComponent<MouseController>();
         _input = gameObject.GetComponent<StarterAssetsInputs>();
     }
@@ -50,7 +52,7 @@ public class DialogController : MonoBehaviour
 
     void Update()
     {
-        if (_mouseController.State != ControlState.DIALOG)
+        if (_player.State != ControlState.DIALOG)
         {
             return;
         }

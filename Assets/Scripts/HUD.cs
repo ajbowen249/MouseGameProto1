@@ -39,7 +39,7 @@ public class HUD : MonoBehaviour
     private DialogNode _dialog;
     private int _dialogIndex;
 
-    private MouseController _player;
+    private PlayerMouse _player;
 
     private bool _isConsoleOpen = false;
 
@@ -67,7 +67,7 @@ public class HUD : MonoBehaviour
         TimeMeter.text = "";
         MoneyMeter.text = "";
 
-        _player = PlayerObject.GetComponent<MouseController>();
+        _player = PlayerObject.GetComponent<PlayerMouse>();
 
         ConsoleInput.onSubmit.AddListener(value => HandleConsoleInput(value));
     }
@@ -104,7 +104,7 @@ public class HUD : MonoBehaviour
         }
     }
 
-    public void SetPlayer(MouseController player)
+    public void SetPlayer(PlayerMouse player)
     {
         _player = player;
     }
@@ -168,7 +168,7 @@ public class HUD : MonoBehaviour
 
     private string FormatDialogOption(DialogOption option, bool isSelected)
     {
-        var color = _player.CanSelectDialogOption(option) ?
+        var color = _player.MouseController.CanSelectDialogOption(option) ?
             (isSelected ? "yellow" : "white") :
             (isSelected ? "#5c5c01" : "#505050");
 
@@ -269,7 +269,7 @@ public class HUD : MonoBehaviour
 
             var entryPoint = gameCell.EntryPoint.gameObject.transform.position;
 
-            _player.Teleport(entryPoint);
+            _player.MouseController.Teleport(entryPoint);
 
             gameCell.PlayerEntered(_player.gameObject);
         }

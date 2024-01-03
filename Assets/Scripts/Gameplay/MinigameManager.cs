@@ -7,7 +7,7 @@ public class MinigameManager : MonoBehaviour
     public static MinigameManager Instance;
 
     private Minigame _activeMinigame;
-    private MouseController _activePlayer;
+    private PlayerMouse _activePlayer;
     private GameObject _activeMinigameOwner;
 
     void Awake()
@@ -21,7 +21,7 @@ public class MinigameManager : MonoBehaviour
         Instance = this;
     }
 
-    public void StartMinigame(GameObject minigamePrefab, MouseController player, GameObject minigameOwner)
+    public void StartMinigame(GameObject minigamePrefab, PlayerMouse player, GameObject minigameOwner)
     {
         EndMinigame();
         _activeMinigameOwner = minigameOwner;

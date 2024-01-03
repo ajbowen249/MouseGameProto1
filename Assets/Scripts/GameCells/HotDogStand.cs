@@ -28,8 +28,15 @@ public class HotDogStand : MonoBehaviour
         });
     }
 
-    public void StartMinigame(MouseController player)
+    public void StartMinigame(GameObject playerObject)
     {
+        var player = playerObject.GetComponent<PlayerMouse>();
+        if (player == null)
+        {
+            Debug.LogWarning("Tried to start minigame with non-player object.");
+            return;
+        }
+
         MinigameCamera.SetActive(true);
         MinigameManager.Instance.StartMinigame(MinigamePrefab, player, gameObject);
     }

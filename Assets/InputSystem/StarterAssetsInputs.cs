@@ -1,25 +1,23 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 namespace StarterAssets
 {
-    public class StarterAssetsInputs : MonoBehaviour
+    public class StarterAssetsInputs : MonoBehaviour, IMouseControllerInput
     {
-        [Header("Character Input Values")]
-        public Vector2 move;
-        public Vector2 look;
-        public bool jump;
-        public bool sprint;
-        public bool interact;
-        public bool dialogUp;
-        public bool dialogDown;
+        public Vector2 move { get; set; }
+        public Vector2 look { get; set; }
+        public bool jump { get; set; }
+        public bool sprint { get; set; }
+        public bool interact { get; set; }
+        public bool dialogUp { get; set; }
+        public bool dialogDown { get; set; }
 
-        [Header("Movement Settings")]
-        public bool analogMovement;
+        public bool analogMovement { get; set; }
 
-        [Header("Mouse Cursor Settings")]
-        public bool cursorLocked = true;
-        public bool cursorInputForLook = true;
+        public bool cursorLocked { get; set; } = true;
+        public bool cursorInputForLook { get; set; } = true;
 
         public void OnMove(InputValue value)
         {

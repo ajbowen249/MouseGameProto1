@@ -91,7 +91,7 @@ public class HotDogVendor : MonoBehaviour
     {
         if (_startMinigame)
         {
-            GameCellObject.GetComponent<HotDogStand>().StartMinigame(_player);
+            GameCellObject.GetComponent<HotDogStand>().StartMinigame(player);
             _startMinigame = false;
         }
     }

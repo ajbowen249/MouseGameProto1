@@ -29,10 +29,7 @@ public class MouseAvatar : MonoBehaviour
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         _animIDWaving = Animator.StringToHash("Waving");
 
-        var renderer = GetComponentInChildren<Renderer>();
-        var block = new MaterialPropertyBlock();
-        block.SetColor("_Tint", Tint);
-        renderer.SetPropertyBlock(block);
+        ApplyTint();
     }
 
     public void SetGrounded(bool grounded)
@@ -59,6 +56,14 @@ public class MouseAvatar : MonoBehaviour
     public void Wave()
     {
         _animator.SetBool(_animIDWaving, true);
+    }
+
+    public void ApplyTint()
+    {
+        var renderer = GetComponentInChildren<Renderer>();
+        var block = new MaterialPropertyBlock();
+        block.SetColor("_Tint", Tint);
+        renderer.SetPropertyBlock(block);
     }
 
     private void OnFootstep(AnimationEvent animationEvent)

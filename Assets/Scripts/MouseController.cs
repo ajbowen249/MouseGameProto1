@@ -1,29 +1,40 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using StarterAssets;
 using System.Collections.Generic;
 
-public enum ControlState
+public interface IMouseControllerInput
 {
-    EXPLORATION,
-    DIALOG,
-    SUSPENDED,
+    public Vector2 move { get; set; }
+    public Vector2 look { get; set; }
+    public bool jump { get; set; }
+    public bool sprint { get; set; }
+    public bool interact { get; set; }
+    public bool dialogUp { get; set; }
+    public bool dialogDown { get; set; }
+    public bool analogMovement { get; set; }
+    public bool cursorLocked { get; set; }
+    public bool cursorInputForLook { get; set; }
 }
 
-public struct ActionCost
+public class MouseControllerInput : IMouseControllerInput
 {
-    public string description;
-    public float? gas;
-    public float? energy;
-    public float? time;
-    public float? money;
+    public Vector2 move { get; set; }
+    public Vector2 look { get; set; }
+    public bool jump { get; set; }
+    public bool sprint { get; set; }
+    public bool interact { get; set; }
+    public bool dialogUp { get; set; }
+    public bool dialogDown { get; set; }
+    public bool analogMovement { get; set; }
+    public bool cursorLocked { get; set; }
+    public bool cursorInputForLook { get; set; }
 }
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
 public class MouseController : MonoBehaviour
 {
-    [Header("Player")]
+    [Header("Character")]
     [Tooltip("Move speed of the character in m/s")]
     public float MoveSpeed = 2.0f;
 
@@ -64,29 +75,7 @@ public class MouseController : MonoBehaviour
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
-    [Header("Cinemachine")]
-    [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
-    public GameObject CinemachineCameraTarget;
-
-    [Tooltip("How far in degrees can you move the camera up")]
-    public float TopClamp = 70.0f;
-
-    [Tooltip("How far in degrees can you move the camera down")]
-    public float BottomClamp = -30.0f;
-
-    [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
-    public float CameraAngleOverride = 0.0f;
-
-    [Tooltip("For locking the camera position on all axis")]
-    public bool LockCameraPosition = false;
-
-    public ControlState State { get; private set; } = ControlState.EXPLORATION;
-
-    // cinemachine
-    private float _cinemachineTargetYaw;
-    private float _cinemachineTargetPitch;
-
-    // player
+    // character
     private float _speed;
     private float _animationBlend;
     private float _targetRotation = 0.0f;
@@ -94,33 +83,21 @@ public class MouseController : MonoBehaviour
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
 
-    private ControlState? _suspendedState;
-
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
-    private PlayerInput _playerInput;
     private MouseAvatar _mouseAvatar;
     private CharacterController _controller;
-    private StarterAssetsInputs _input;
     private GameObject _mainCamera;
-
-    private const float _threshold = 0.01f;
 
     private InteractionVolume _inInteractionVolume;
 
     private Vector3? _teleportTo;
 
-    private GameObject _attachedTo;
+    public GameObject AttachedTo { get; private set; }
 
-    private bool IsCurrentDeviceMouse
-    {
-        get
-        {
-            return _playerInput.currentControlScheme == "KeyboardMouse";
-        }
-    }
+    public IMouseControllerInput Input { get; set; } = new MouseControllerInput();
 
     public float Gas { get; private set; } = 20f;
     public float Energy { get; private set; } = 100f;
@@ -182,36 +159,9 @@ public class MouseController : MonoBehaviour
         HUD.Instance.AddMessage($"Picked up {name} (x{quantity})");
     }
 
-    public void OnStartedDialog(GameObject talkingTo)
-    {
-        State = ControlState.DIALOG;
-    }
-
-    public void OnEndedDialog(GameObject talkingTo)
-    {
-        State = ControlState.EXPLORATION;
-    }
-
-    public void Suspend(ControlState? returnState = null)
-    {
-        _suspendedState = returnState ?? State;
-        State = ControlState.SUSPENDED;
-    }
-
-    public void Resume()
-    {
-        State = _suspendedState ?? ControlState.EXPLORATION;
-        _suspendedState = null;
-    }
-
-    public StarterAssetsInputs GetInputController()
-    {
-        return _input;
-    }
-
     public void AttachTo(GameObject parent, Transform target)
     {
-        _attachedTo = parent;
+        AttachedTo = parent;
         _controller.enabled = false;
         transform.SetParent(parent.transform);
         transform.position = target.position;
@@ -224,7 +174,7 @@ public class MouseController : MonoBehaviour
         transform.rotation = target.rotation;
         transform.SetParent(null);
         _controller.enabled = true;
-        _attachedTo = null;
+        AttachedTo = null;
     }
 
     public bool CanSelectDialogOption(DialogOption option)
@@ -258,45 +208,29 @@ public class MouseController : MonoBehaviour
 
     private void Start()
     {
-        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
         _mouseAvatar = GetComponentInChildren<MouseAvatar>();
-
         _controller = GetComponent<CharacterController>();
-        _input = GetComponent<StarterAssetsInputs>();
-        _playerInput = GetComponent<PlayerInput>();
 
         // reset our timeouts on start
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
     }
 
-    private void Update()
+    public void BasicUpdate()
     {
-        if (_attachedTo != null)
+        if (AttachedTo != null)
         {
             return;
         }
 
-        switch (State)
-        {
-            case ControlState.EXPLORATION:
-                GroundedCheck();
-                JumpAndGravity();
-                Move();
-                Interaction();
-                break;
-            case ControlState.SUSPENDED:
-                _input.jump = false;
-                _input.interact = false;
-                break;
-        }
-
+        GroundedCheck();
+        JumpAndGravity();
+        Move();
+        Interaction();
     }
 
     private void LateUpdate()
     {
-        CameraRotation();
-
         if (_teleportTo != null)
         {
             _controller.enabled = false;
@@ -325,43 +259,22 @@ public class MouseController : MonoBehaviour
         _mouseAvatar.SetGrounded(Grounded);
     }
 
-    private void CameraRotation()
-    {
-        // if there is an input and camera position is not fixed
-        if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
-        {
-            //Don't multiply mouse input by Time.deltaTime;
-            float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-
-            _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
-        }
-
-        // clamp our rotations so our values are limited 360 degrees
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-        // Cinemachine will follow this target
-        CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-            _cinemachineTargetYaw, 0.0f);
-    }
-
     private void Move()
     {
         // set target speed based on move speed, sprint speed and if sprint is pressed
-        float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+        float targetSpeed = Input.sprint ? SprintSpeed : MoveSpeed;
 
         // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
         // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
         // if there is no input, set the target speed to 0
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+        if (Input.move == Vector2.zero) targetSpeed = 0.0f;
 
         // a reference to the players current horizontal velocity
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
         float speedOffset = 0.1f;
-        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+        float inputMagnitude = Input.analogMovement ? Input.move.magnitude : 1f;
 
         // accelerate or decelerate to target speed
         if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -387,11 +300,11 @@ public class MouseController : MonoBehaviour
         }
 
         // normalise input direction
-        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+        Vector3 inputDirection = new Vector3(Input.move.x, 0.0f, Input.move.y).normalized;
 
         // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
         // if there is a move input rotate player when the player is moving
-        if (_input.move != Vector2.zero)
+        if (Input.move != Vector2.zero)
         {
             _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                 _mainCamera.transform.eulerAngles.y;
@@ -416,9 +329,9 @@ public class MouseController : MonoBehaviour
 
     private void Interaction()
     {
-        if (_input.interact)
+        if (Input.interact)
         {
-            _input.interact = false;
+            Input.interact = false;
             if (_inInteractionVolume != null)
             {
                 _inInteractionVolume.Interact(gameObject);
@@ -444,7 +357,7 @@ public class MouseController : MonoBehaviour
             }
 
             // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            if (Input.jump && _jumpTimeoutDelta <= 0.0f)
             {
                 // the square root of H * -2 * G = how much velocity needed to reach desired height
                 _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
@@ -474,7 +387,7 @@ public class MouseController : MonoBehaviour
             }
 
             // if we are not grounded, do not jump
-            _input.jump = false;
+            Input.jump = false;
         }
 
         // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -482,13 +395,6 @@ public class MouseController : MonoBehaviour
         {
             _verticalVelocity += Gravity * Time.deltaTime;
         }
-    }
-
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-    {
-        if (lfAngle < -360f) lfAngle += 360f;
-        if (lfAngle > 360f) lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
     private void OnDrawGizmosSelected()

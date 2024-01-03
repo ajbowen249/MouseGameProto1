@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 2859532756409783153}
   - component: {fileID: 1226246727788734624}
   - component: {fileID: 8167667135440660546}
+  - component: {fileID: 1021787701415653773}
   m_Layer: 8
   m_Name: PlayerMouse
   m_TagString: Untagged
@@ -89,13 +90,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.31
-  m_Radius: 0.91
+  m_Height: 3.966
+  m_Radius: 1.1
   m_SlopeLimit: 45
   m_StepOffset: 0.25
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.88, z: 0}
 --- !u!114 &1329016825213035179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,16 +109,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e087ecce43ebbff45a1b360637807d93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  move: {x: 0, y: 0}
-  look: {x: 0, y: 0}
-  jump: 0
-  sprint: 0
-  interact: 0
-  dialogUp: 0
-  dialogDown: 0
-  analogMovement: 0
-  cursorLocked: 1
-  cursorInputForLook: 1
 --- !u!114 &6206004760290105021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,11 +166,6 @@ MonoBehaviour:
   GroundLayers:
     serializedVersion: 2
     m_Bits: 513
-  CinemachineCameraTarget: {fileID: 2508211525175755154}
-  TopClamp: 70
-  BottomClamp: -30
-  CameraAngleOverride: 0
-  LockCameraPosition: 0
 --- !u!114 &1226246727788734624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,6 +195,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4702e9ac08996754f84adc83e4c06481, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1021787701415653773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7646408992045724113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6b079656938bf04fb8d94ef37e7628c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CinemachineCameraTarget: {fileID: 2508211525175755154}
+  TopClamp: 70
+  BottomClamp: -30
+  CameraAngleOverride: 0
+  LockCameraPosition: 0
+  MouseController: {fileID: 0}
 --- !u!1001 &6576415300494052509
 PrefabInstance:
   m_ObjectHideFlags: 0
