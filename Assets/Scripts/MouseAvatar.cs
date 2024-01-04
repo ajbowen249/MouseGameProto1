@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
@@ -24,7 +25,8 @@ public class MouseAvatar : MonoBehaviour
     private int _animIDJump;
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
-    private int _animIDWaving;
+
+    private Action _emoteEndCallback;
 
     private void Start()
     {
@@ -61,7 +63,13 @@ public class MouseAvatar : MonoBehaviour
     }
     public void Emote(int emoteHash)
     {
+        Emote(emoteHash, () => { });
+    }
+
+    public void Emote(int emoteHash, Action callback)
+    {
         _animator.SetBool(emoteHash, true);
+        _emoteEndCallback = callback;
     }
 
     public void ApplyTint()
@@ -91,5 +99,16 @@ public class MouseAvatar : MonoBehaviour
     private void OnEmoteEnd(string name)
     {
         _animator.SetBool(Animator.StringToHash(name), false);
+        NotifyEmoteComplete();
+    }
+
+    private void NotifyEmoteComplete()
+    {
+        if (_emoteEndCallback != null)
+        {
+            var callback = _emoteEndCallback;
+            _emoteEndCallback = null;
+            callback();
+        }
     }
 }

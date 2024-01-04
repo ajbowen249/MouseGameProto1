@@ -80,37 +80,43 @@ public class Neighbor1 : MonoBehaviour
             return;
         }
 
-        _npc.WalkTo(new NPC.WalkTarget {
+        _npc.WalkTo(new NPC.WalkTarget
+        {
             position = PlowTarget.transform.position,
             distance = 0.1f,
-            callback = () => {
-                if (tag == "positive")
+            callback = () =>
+            {
+                _npc.Avatar.Emote(MouseEmotes.NondescriptAction1, () =>
                 {
-                    _player.ExpendResources(GetSnowClearCost(PlayerHasShovel()));
-                }
-                else
-                {
-                    _player.ExpendResources(new ActionCost
+                    if (tag == "positive")
                     {
-                        description = "You watch your neighbor clear the snow alone",
-                        time = 2,
-                    });
-                }
-
-                Destroy(SnowBank);
-
-                _npc.WalkTo(new NPC.WalkTarget
-                {
-                    position = ReturnTarget1.transform.position,
-                    distance = 0.1f,
-                    callback = () => {
-                        _npc.WalkTo(new NPC.WalkTarget
+                        _player.ExpendResources(GetSnowClearCost(PlayerHasShovel()));
+                    }
+                    else
+                    {
+                        _player.ExpendResources(new ActionCost
                         {
-                            position = ReturnTarget2.transform.position,
-                            distance = 0.1f,
-                            callback = () => { },
+                            description = "You watch your neighbor clear the snow alone",
+                            time = 2,
                         });
-                    },
+                    }
+
+                    Destroy(SnowBank);
+
+                    _npc.WalkTo(new NPC.WalkTarget
+                    {
+                        position = ReturnTarget1.transform.position,
+                        distance = 0.1f,
+                        callback = () =>
+                        {
+                            _npc.WalkTo(new NPC.WalkTarget
+                            {
+                                position = ReturnTarget2.transform.position,
+                                distance = 0.1f,
+                                callback = () => { },
+                            });
+                        },
+                    });
                 });
             },
         });
