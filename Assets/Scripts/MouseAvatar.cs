@@ -4,6 +4,14 @@ using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
+public static class MouseEmotes
+{
+    public static int Wave = Animator.StringToHash("Wave");
+    public static int NondescriptAction1 = Animator.StringToHash("NondescriptAction1");
+
+    public static List<int> AllEmotes = new List<int> { Wave, NondescriptAction1 };
+}
+
 public class MouseAvatar : MonoBehaviour
 {
     [SerializeField]
@@ -27,7 +35,6 @@ public class MouseAvatar : MonoBehaviour
         _animIDJump = Animator.StringToHash("Jump");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-        _animIDWaving = Animator.StringToHash("Waving");
 
         ApplyTint();
     }
@@ -52,10 +59,9 @@ public class MouseAvatar : MonoBehaviour
         _animator.SetFloat(_animIDSpeed, blend);
         _animator.SetFloat(_animIDMotionSpeed, magnitude);
     }
-
-    public void Wave()
+    public void Emote(int emoteHash)
     {
-        _animator.SetBool(_animIDWaving, true);
+        _animator.SetBool(emoteHash, true);
     }
 
     public void ApplyTint()
@@ -68,7 +74,10 @@ public class MouseAvatar : MonoBehaviour
 
     public void CancelEmotes()
     {
-        _animator.SetBool(_animIDWaving, false);
+        foreach (var emoteHash in MouseEmotes.AllEmotes)
+        {
+            _animator.SetBool(emoteHash, false);
+        }
     }
 
     private void OnFootstep(AnimationEvent animationEvent)
@@ -79,8 +88,8 @@ public class MouseAvatar : MonoBehaviour
     {
     }
 
-    private void OnWaveEnd()
+    private void OnEmoteEnd(string name)
     {
-        _animator.SetBool(_animIDWaving, false);
+        _animator.SetBool(Animator.StringToHash(name), false);
     }
 }

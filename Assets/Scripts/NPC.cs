@@ -72,7 +72,7 @@ public class NPC : MonoBehaviour
     {
         if (Avatar != null && !DisableDefaultWaveOnDialog)
         {
-            Avatar.Wave();
+            Avatar.Emote(MouseEmotes.Wave);
         }
 
         talkingTo.BroadcastMessage("OnStartedDialog", gameObject);
