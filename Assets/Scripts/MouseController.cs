@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using System;
 
 public interface IMouseControllerInput
 {
@@ -334,8 +335,20 @@ public class MouseController : MonoBehaviour
             Input.interact = false;
             if (_inInteractionVolume != null)
             {
-                _inInteractionVolume.Interact(gameObject);
-                _inInteractionVolume = null;
+                Action interact = () =>
+                {
+                    _inInteractionVolume.Interact(gameObject);
+                    _inInteractionVolume = null;
+                };
+
+                if (_inInteractionVolume.EmoteHash is int emoteHash)
+                {
+                    _mouseAvatar.Emote(emoteHash, interact);
+                }
+                else
+                {
+                    interact();
+                }
             }
         }
     }

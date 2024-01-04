@@ -1518,6 +1518,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610843093833128056, guid: 2f182c561a0500c4c959c5909d6bb049,
         type: 3}
+      propertyPath: EmoteName
+      value: NondescriptAction1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7610843093833128056, guid: 2f182c561a0500c4c959c5909d6bb049,
+        type: 3}
       propertyPath: Interactable
       value: 
       objectReference: {fileID: 2768907613247579766}

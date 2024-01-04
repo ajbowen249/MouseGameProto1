@@ -10,6 +10,26 @@ public class InteractionVolume : MonoBehaviour
     [Tooltip("Receiver of OnInteraction")]
     public GameObject Interactable;
 
+    public string EmoteName;
+
+    public int? EmoteHash { get; private set; } = null;
+
+    private void Start()
+    {
+        if (!string.IsNullOrEmpty(EmoteName))
+        {
+            var emoteHash = Animator.StringToHash(EmoteName);
+            if (!MouseEmotes.AllEmotes.Contains(emoteHash))
+            {
+                Debug.LogError($"Unknown emote \"{EmoteName}\"!");
+            }
+            else
+            {
+                EmoteHash = emoteHash;
+            }
+        }
+    }
+
     public void Interact(GameObject interactor)
     {
         if (Interactable != null)
