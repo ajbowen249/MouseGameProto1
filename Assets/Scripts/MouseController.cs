@@ -37,6 +37,7 @@ public struct WalkTarget
     public Vector3 position;
     public float distance;
     public Action callback;
+    public bool? allowIndefinite;
 }
 
 [RequireComponent(typeof(CharacterController))]
@@ -251,13 +252,9 @@ public class MouseController : MonoBehaviour
 
     public void InteractWith(InteractionVolume interactable)
     {
-        Action interact = () =>
-        {
-            _inInteractionVolume.Interact(gameObject);
-            _inInteractionVolume = null;
-        };
+        Action interact = () => interactable.Interact(gameObject);
 
-        if (_inInteractionVolume.EmoteHash is int emoteHash)
+        if (interactable.EmoteHash is int emoteHash)
         {
             _mouseAvatar.Emote(emoteHash, interact);
         }
@@ -473,10 +470,22 @@ public class MouseController : MonoBehaviour
         Vector3 toTarget3D;
         var originalInput = Input;
         Input = new MouseControllerInput();
+        var startTime = Time.time;
+        var initialDistance = (target.position - transform.position).magnitude;
+        var expectedTime = initialDistance / MoveSpeed;
+        // Add a slight buffer
+        expectedTime *= 1.1f;
+
         while ((toTarget3D = (target.position - transform.position)).magnitude >= target.distance)
         {
             var toTarget2D = new Vector2(toTarget3D.normalized.x, toTarget3D.normalized.z);
             Input.move = toTarget2D;
+
+            if (target.allowIndefinite != true && Time.time - startTime > expectedTime)
+            {
+                break;
+            }
+
             yield return null;
         }
 
