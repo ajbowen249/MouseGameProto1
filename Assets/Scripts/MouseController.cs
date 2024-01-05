@@ -467,18 +467,18 @@ public class MouseController : MonoBehaviour
 
     private IEnumerator WalkToCoroutine(WalkTarget target)
     {
-        Vector3 toTarget3D;
         var originalInput = Input;
         Input = new MouseControllerInput();
         var startTime = Time.time;
-        var initialDistance = (target.position - transform.position).magnitude;
+        var initialDistance = Vector3.Distance(target.position, transform.position);
         var expectedTime = initialDistance / MoveSpeed;
         // Add a slight buffer
         expectedTime *= 1.1f;
 
-        while ((toTarget3D = (target.position - transform.position)).magnitude >= target.distance)
+        while (Vector3.Distance(target.position, transform.position) >= target.distance)
         {
-            var toTarget2D = new Vector2(toTarget3D.normalized.x, toTarget3D.normalized.z);
+            var toTarget3D = (target.position - transform.position).normalized;
+            var toTarget2D = new Vector2(toTarget3D.x, toTarget3D.z);
             Input.move = toTarget2D;
 
             if (target.allowIndefinite != true && Time.time - startTime > expectedTime)

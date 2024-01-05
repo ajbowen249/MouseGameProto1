@@ -86,6 +86,7 @@ public class Neighbor1 : MonoBehaviour
         {
             position = PlowTarget.transform.position,
             distance = 0.1f,
+            allowIndefinite = true,
             callback = () =>
             {
                 _npc.Avatar.Emote(MouseEmotes.NondescriptAction1, () =>
@@ -109,12 +110,14 @@ public class Neighbor1 : MonoBehaviour
                     {
                         position = ReturnTarget1.transform.position,
                         distance = 0.1f,
+                        allowIndefinite = true,
                         callback = () =>
                         {
                             _controller.WalkTo(new WalkTarget
                             {
                                 position = ReturnTarget2.transform.position,
                                 distance = 0.1f,
+                                allowIndefinite = true,
                                 callback = () => { },
                             });
                         },
