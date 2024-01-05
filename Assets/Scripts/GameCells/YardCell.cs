@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class YardCell : MonoBehaviour
 {
-    public GameObject Car;
     public GameObject SnowBank;
+
+    private GameCell _cell;
 
     void Start()
     {
-        var cell = gameObject.GetComponent<GameCell>();
-        cell.SetExitRequirement(attachPoint => {
+        _cell = gameObject.GetComponent<GameCell>();
+        _cell.SetExitRequirement(attachPoint => {
             if (SnowBank == null)
             {
                 return true;
@@ -26,5 +27,13 @@ public class YardCell : MonoBehaviour
     {
         var spawner = GetComponentInChildren<CarExitSpawner>();
         spawner.SpawnCarExit();
+    }
+
+    private void Update()
+    {
+        if (SnowBank == null && !_cell.IsComplete)
+        {
+            _cell.OnCellComplete();
+        }
     }
 }

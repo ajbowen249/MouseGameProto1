@@ -390,6 +390,7 @@ MonoBehaviour:
       isOptional: 0
     toCell: {fileID: 0}
   DestroyOnExit: 0
+  InteractWithOnCellComplete: {fileID: 8588311802418449014}
 --- !u!114 &4687476456762673512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1730,3 +1731,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8865161627560847498}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8588311802418449014 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 876145372647547644, guid: 8f822c789818b3644ad1d282af07637c,
+    type: 3}
+  m_PrefabInstance: {fileID: 8865161627560847498}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acc029f02ea8ef8459f3b6a0a714b807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

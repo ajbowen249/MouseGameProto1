@@ -8,6 +8,8 @@ public class HotDogStand : MonoBehaviour
     public GameObject MinigameCamera;
     public GameObject MinigamePrefab;
 
+    private GameCell _cell;
+
     void Start()
     {
         MinigameCamera.SetActive(false);
@@ -15,8 +17,8 @@ public class HotDogStand : MonoBehaviour
 
     void OnPlayerEnter(GameObject player)
     {
-        var cell = gameObject.GetComponent<GameCell>();
-        cell.SetExitRequirement(attachPoint => {
+         _cell = gameObject.GetComponent<GameCell>();
+        _cell.SetExitRequirement(attachPoint => {
             if (Crowd == null)
             {
                 return true;
@@ -45,5 +47,13 @@ public class HotDogStand : MonoBehaviour
     {
         MinigameCamera.SetActive(false);
         Destroy(Crowd);
+    }
+
+    private void Update()
+    {
+        if (Crowd == null && !_cell.IsComplete)
+        {
+            _cell.OnCellComplete();
+        }
     }
 }

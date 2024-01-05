@@ -249,6 +249,24 @@ public class MouseController : MonoBehaviour
         StartCoroutine(WalkToCoroutine(target));
     }
 
+    public void InteractWith(InteractionVolume interactable)
+    {
+        Action interact = () =>
+        {
+            _inInteractionVolume.Interact(gameObject);
+            _inInteractionVolume = null;
+        };
+
+        if (_inInteractionVolume.EmoteHash is int emoteHash)
+        {
+            _mouseAvatar.Emote(emoteHash, interact);
+        }
+        else
+        {
+            interact();
+        }
+    }
+
     private void LateUpdate()
     {
         if (_teleportTo != null)
@@ -354,20 +372,7 @@ public class MouseController : MonoBehaviour
             Input.interact = false;
             if (_inInteractionVolume != null)
             {
-                Action interact = () =>
-                {
-                    _inInteractionVolume.Interact(gameObject);
-                    _inInteractionVolume = null;
-                };
-
-                if (_inInteractionVolume.EmoteHash is int emoteHash)
-                {
-                    _mouseAvatar.Emote(emoteHash, interact);
-                }
-                else
-                {
-                    interact();
-                }
+                InteractWith(_inInteractionVolume);
             }
         }
     }
@@ -475,12 +480,11 @@ public class MouseController : MonoBehaviour
             yield return null;
         }
 
+        Input = originalInput;
         Input.move = new Vector2(0, 0);
         if (target.callback != null)
         {
             target.callback();
         }
-
-        Input = originalInput;
     }
 }

@@ -19,16 +19,16 @@ public static class AttachEdgeExtensions
     {
         switch (edge)
         {
-        case AttachEdge.NORTH:
-            return AttachEdge.SOUTH;
-        case AttachEdge.SOUTH:
-            return AttachEdge.NORTH;
-        case AttachEdge.EAST:
-            return AttachEdge.WEST;
-        case AttachEdge.WEST:
-            return AttachEdge.EAST;
-        default:
-            throw new Exception("Unknown edge value");
+            case AttachEdge.NORTH:
+                return AttachEdge.SOUTH;
+            case AttachEdge.SOUTH:
+                return AttachEdge.NORTH;
+            case AttachEdge.EAST:
+                return AttachEdge.WEST;
+            case AttachEdge.WEST:
+                return AttachEdge.EAST;
+            default:
+                throw new Exception("Unknown edge value");
         }
     }
 }
@@ -59,10 +59,13 @@ public class GameCell : MonoBehaviour
     public bool CanBeRandom;
     public List<CellAttachPoint> EntryPoints;
     public bool DestroyOnExit = false;
+    public InteractionVolume InteractWithOnCellComplete;
 
     [HideInInspector]
     public int Row { get; set; }
     public int Col { get; set; }
+
+    public bool IsComplete { get; private set; } = false;
 
     public delegate bool ExitRequirement(CellAttachPoint attachPoint);
     private ExitRequirement _exitRequirement;
@@ -119,11 +122,11 @@ public class GameCell : MonoBehaviour
     {
         get
         {
-            return ActiveExitPoints.Where(point =>point.toCell != null && point.mode.type == AttachModeType.CAR);
+            return ActiveExitPoints.Where(point => point.toCell != null && point.mode.type == AttachModeType.CAR);
         }
     }
 
-        private IEnumerable<CellAttachPoint> ActiveFootExits
+    private IEnumerable<CellAttachPoint> ActiveFootExits
     {
         get
         {
@@ -162,6 +165,29 @@ public class GameCell : MonoBehaviour
         {
             FadeOutAndDie();
         }
+    }
+
+    public void OnCellComplete()
+    {
+        if (InteractWithOnCellComplete == null || GameManager.Instance.FollowingPlayer == null)
+        {
+            return;
+        }
+
+        IsComplete = true;
+
+        var playerController = GameManager.Instance.FollowingPlayer.GetComponent<MouseController>();
+        var collider = InteractWithOnCellComplete.GetComponent<CapsuleCollider>();
+        var distance = collider == null ? 4f : collider.radius;
+        playerController.WalkTo(new WalkTarget
+        {
+            position = InteractWithOnCellComplete.transform.position,
+            distance = distance,
+            callback = () =>
+            {
+                playerController.InteractWith(InteractWithOnCellComplete);
+            }
+        });
     }
 
     public void DeterminedConnections(List<(AbsoluteAttachPoint point, int row, int col)> attachPoints)
@@ -238,18 +264,18 @@ public class GameCell : MonoBehaviour
 
             switch (attachPoint.edge)
             {
-            case AttachEdge.NORTH:
-                z += HalfWidth;
-                break;
-            case AttachEdge.SOUTH:
-                z -= HalfWidth;
-                break;
-            case AttachEdge.EAST:
-                x += HalfWidth;
-                break;
-            case AttachEdge.WEST:
-                x -= HalfWidth;
-                break;
+                case AttachEdge.NORTH:
+                    z += HalfWidth;
+                    break;
+                case AttachEdge.SOUTH:
+                    z -= HalfWidth;
+                    break;
+                case AttachEdge.EAST:
+                    x += HalfWidth;
+                    break;
+                case AttachEdge.WEST:
+                    x -= HalfWidth;
+                    break;
             }
 
             Gizmos.DrawWireSphere(transform.position + new Vector3(x, HalfWidth / 2, z), 1);

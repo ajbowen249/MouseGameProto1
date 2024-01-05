@@ -6,10 +6,13 @@ public class BlockedRoad : MonoBehaviour
 {
     public GameObject SnowBank;
 
+    private GameCell _cell;
+
     void Start()
     {
-        var cell = gameObject.GetComponent<GameCell>();
-        cell.SetExitRequirement(attachPoint => {
+        _cell = gameObject.GetComponent<GameCell>();
+        _cell.SetExitRequirement(attachPoint =>
+        {
             if (SnowBank == null)
             {
                 return true;
@@ -19,5 +22,13 @@ public class BlockedRoad : MonoBehaviour
 
             return false;
         });
+    }
+
+    private void Update()
+    {
+        if (SnowBank == null && !_cell.IsComplete)
+        {
+            _cell.OnCellComplete();
+        }
     }
 }
