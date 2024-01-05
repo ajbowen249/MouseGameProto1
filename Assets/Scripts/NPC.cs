@@ -23,8 +23,6 @@ public class NPC : MonoBehaviour
         public Action callback;
     }
 
-    private WalkTarget? _walkingTo;
-
     void Start()
     {
         _controller = GetComponent<MouseController>();
@@ -43,26 +41,6 @@ public class NPC : MonoBehaviour
         if (_controller == null)
         {
             return;
-        }
-
-        // Doing this in two separate blocks allows the callback to set a new walk target.
-        if (_walkingTo is WalkTarget walkingTo1)
-        {
-            var toTarget3D = (walkingTo1.position - transform.position);
-            var distance = toTarget3D.magnitude;
-            if (distance < walkingTo1.distance)
-            {
-                _walkingTo = null;
-                _controller.Input.move = new Vector2(0, 0);
-                walkingTo1.callback();
-            }
-        }
-
-        if (_walkingTo is WalkTarget walkingTo2)
-        {
-            var toTarget3D = (walkingTo2.position - transform.position);
-            var toTarget2D = new Vector2(toTarget3D.normalized.x, toTarget3D.normalized.z);
-            _controller.Input.move = toTarget2D;
         }
 
         _controller.BasicUpdate();
@@ -85,7 +63,24 @@ public class NPC : MonoBehaviour
             Debug.LogWarning("Tried to walk an NPC without a controller.");
         }
 
-        _walkingTo = target;
         Avatar.CancelEmotes();
+        StartCoroutine(WalkToCoroutine(target));
+    }
+
+    private IEnumerator WalkToCoroutine(WalkTarget target)
+    {
+        Vector3 toTarget3D;
+        while ((toTarget3D = (target.position - transform.position)).magnitude >= target.distance)
+        {
+            var toTarget2D = new Vector2(toTarget3D.normalized.x, toTarget3D.normalized.z);
+            _controller.Input.move = toTarget2D;
+            yield return null;
+        }
+
+        _controller.Input.move = new Vector2(0, 0);
+        if (target.callback != null)
+        {
+            target.callback();
+        }
     }
 }
