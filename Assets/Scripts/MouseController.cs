@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 public interface IMouseControllerInput
 {
@@ -29,6 +30,13 @@ public class MouseControllerInput : IMouseControllerInput
     public bool analogMovement { get; set; }
     public bool cursorLocked { get; set; }
     public bool cursorInputForLook { get; set; }
+}
+
+public struct WalkTarget
+{
+    public Vector3 position;
+    public float distance;
+    public Action callback;
 }
 
 [RequireComponent(typeof(CharacterController))]
@@ -228,6 +236,17 @@ public class MouseController : MonoBehaviour
         JumpAndGravity();
         Move();
         Interaction();
+    }
+
+    public void WalkTo(WalkTarget target)
+    {
+        if (_controller == null)
+        {
+            Debug.LogWarning("Tried to walk an NPC without a controller.");
+        }
+
+        _mouseAvatar.CancelEmotes();
+        StartCoroutine(WalkToCoroutine(target));
     }
 
     private void LateUpdate()
@@ -442,5 +461,26 @@ public class MouseController : MonoBehaviour
             _inInteractionVolume = null;
             HUD.Instance.ClearInteractionPrompt();
         }
+    }
+
+    private IEnumerator WalkToCoroutine(WalkTarget target)
+    {
+        Vector3 toTarget3D;
+        var originalInput = Input;
+        Input = new MouseControllerInput();
+        while ((toTarget3D = (target.position - transform.position)).magnitude >= target.distance)
+        {
+            var toTarget2D = new Vector2(toTarget3D.normalized.x, toTarget3D.normalized.z);
+            Input.move = toTarget2D;
+            yield return null;
+        }
+
+        Input.move = new Vector2(0, 0);
+        if (target.callback != null)
+        {
+            target.callback();
+        }
+
+        Input = originalInput;
     }
 }

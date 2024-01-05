@@ -16,13 +16,6 @@ public class NPC : MonoBehaviour
 
     private MouseController _controller;
 
-    public struct WalkTarget
-    {
-        public Vector3 position;
-        public float distance;
-        public Action callback;
-    }
-
     void Start()
     {
         _controller = GetComponent<MouseController>();
@@ -54,33 +47,5 @@ public class NPC : MonoBehaviour
         }
 
         talkingTo.BroadcastMessage("OnStartedDialog", gameObject);
-    }
-
-    public void WalkTo(WalkTarget target)
-    {
-        if (_controller == null)
-        {
-            Debug.LogWarning("Tried to walk an NPC without a controller.");
-        }
-
-        Avatar.CancelEmotes();
-        StartCoroutine(WalkToCoroutine(target));
-    }
-
-    private IEnumerator WalkToCoroutine(WalkTarget target)
-    {
-        Vector3 toTarget3D;
-        while ((toTarget3D = (target.position - transform.position)).magnitude >= target.distance)
-        {
-            var toTarget2D = new Vector2(toTarget3D.normalized.x, toTarget3D.normalized.z);
-            _controller.Input.move = toTarget2D;
-            yield return null;
-        }
-
-        _controller.Input.move = new Vector2(0, 0);
-        if (target.callback != null)
-        {
-            target.callback();
-        }
     }
 }

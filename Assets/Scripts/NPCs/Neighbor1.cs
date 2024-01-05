@@ -15,9 +15,11 @@ public class Neighbor1 : MonoBehaviour
     private NPC _npc;
 
     private MouseController _player;
+    private MouseController _controller;
 
     void OnInteraction(GameObject interactor)
     {
+        _controller = GetComponent<MouseController>();
         _player = interactor.GetComponent<MouseController>();
         _npc = gameObject.GetComponent<NPC>();
 
@@ -80,7 +82,7 @@ public class Neighbor1 : MonoBehaviour
             return;
         }
 
-        _npc.WalkTo(new NPC.WalkTarget
+        _controller.WalkTo(new WalkTarget
         {
             position = PlowTarget.transform.position,
             distance = 0.1f,
@@ -103,13 +105,13 @@ public class Neighbor1 : MonoBehaviour
 
                     Destroy(SnowBank);
 
-                    _npc.WalkTo(new NPC.WalkTarget
+                    _controller.WalkTo(new WalkTarget
                     {
                         position = ReturnTarget1.transform.position,
                         distance = 0.1f,
                         callback = () =>
                         {
-                            _npc.WalkTo(new NPC.WalkTarget
+                            _controller.WalkTo(new WalkTarget
                             {
                                 position = ReturnTarget2.transform.position,
                                 distance = 0.1f,
