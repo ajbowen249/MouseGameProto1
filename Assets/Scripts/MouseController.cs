@@ -471,6 +471,7 @@ public class MouseController : MonoBehaviour
         Input = new MouseControllerInput();
         var startTime = Time.time;
         var initialDistance = Vector3.Distance(target.position, transform.position);
+        initialDistance -= _controller.radius;
         var expectedTime = initialDistance / MoveSpeed;
         // Add a slight buffer
         expectedTime *= 1.1f;
