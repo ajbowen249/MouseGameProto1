@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
 
@@ -12,10 +13,11 @@ public class RoadCell : MonoBehaviour
     public GameObject CornerSidewalkPrefab;
     public GameObject InnerCornerSidewalkPrefab;
 
-    public GameObject NorthRoad;
-    public GameObject SouthRoad;
-    public GameObject EastRoad;
-    public GameObject WestRoad;
+    public GameObject StraightRoad;
+    public GameObject TurnRoad;
+    public GameObject Intersection3Way;
+    public GameObject Intersection4Way;
+    public GameObject UnpaintedRoad;
 
     public GameObject NorthExit;
     public GameObject SouthExit;
@@ -29,58 +31,95 @@ public class RoadCell : MonoBehaviour
         _attachPoints = attachPoints;
         var gameCell = GetComponent<GameCell>();
 
-        // Clear them all so we set active if at least one point is connected
-        NorthRoad.SetActive(false);
-        SouthRoad.SetActive(false);
-        EastRoad.SetActive(false);
-        WestRoad.SetActive(false);
-
         NorthExit.SetActive(false);
         SouthExit.SetActive(false);
         EastExit.SetActive(false);
         WestExit.SetActive(false);
 
-        foreach (var point in attachPoints)
+        foreach (var footExit in attachPoints.Where(point => point.point.modeType == AttachModeType.FOOT))
         {
-            switch (point.point.modeType)
+            switch (footExit.point.edge)
             {
-                case AttachModeType.CAR:
-                    switch (point.point.edge)
-                    {
-                        case AttachEdge.NORTH:
-                            NorthRoad.SetActive(true);
-                            break;
-                        case AttachEdge.SOUTH:
-                            SouthRoad.SetActive(true);
-                            break;
-                        case AttachEdge.EAST:
-                            EastRoad.SetActive(true);
-                            break;
-                        case AttachEdge.WEST:
-                            WestRoad.SetActive(true);
-                            break;
-                    }
+                case AttachEdge.NORTH:
+                    NorthExit.SetActive(true);
                     break;
-                case AttachModeType.FOOT:
-                    switch (point.point.edge)
-                    {
-                        case AttachEdge.NORTH:
-                            NorthExit.SetActive(true);
-                            break;
-                        case AttachEdge.SOUTH:
-                            SouthExit.SetActive(true);
-                            break;
-                        case AttachEdge.EAST:
-                            EastExit.SetActive(true);
-                            break;
-                        case AttachEdge.WEST:
-                            WestExit.SetActive(true);
-                            break;
-                    }
+                case AttachEdge.SOUTH:
+                    SouthExit.SetActive(true);
                     break;
-                default:
+                case AttachEdge.EAST:
+                    EastExit.SetActive(true);
+                    break;
+                case AttachEdge.WEST:
+                    WestExit.SetActive(true);
                     break;
             }
+        }
+
+        var carExits = attachPoints.Where(point => point.point.modeType == AttachModeType.CAR)
+            .Select(point => point.point.edge).Distinct().ToHashSet();
+
+        switch (carExits.Count)
+        {
+            case 2:
+                if (carExits.Contains(AttachEdge.EAST) && carExits.Contains(AttachEdge.WEST))
+                {
+                    StraightRoad.SetActive(true);
+                }
+                else if (carExits.Contains(AttachEdge.NORTH) && carExits.Contains(AttachEdge.SOUTH))
+                {
+                    StraightRoad.SetActive(true);
+                    var rotation = StraightRoad.transform.rotation;
+                    StraightRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 90, 0));
+                }
+                else if (carExits.Contains(AttachEdge.SOUTH) && carExits.Contains(AttachEdge.EAST))
+                {
+                    TurnRoad.SetActive(true);
+                }
+                else if (carExits.Contains(AttachEdge.SOUTH) && carExits.Contains(AttachEdge.WEST))
+                {
+                    TurnRoad.SetActive(true);
+                    var rotation = TurnRoad.transform.rotation;
+                    TurnRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 90, 0));
+                }
+                else if (carExits.Contains(AttachEdge.WEST) && carExits.Contains(AttachEdge.NORTH))
+                {
+                    TurnRoad.SetActive(true);
+                    var rotation = TurnRoad.transform.rotation;
+                    TurnRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 180, 0));
+                }
+                else if (carExits.Contains(AttachEdge.EAST) && carExits.Contains(AttachEdge.NORTH))
+                {
+                    TurnRoad.SetActive(true);
+                    var rotation = TurnRoad.transform.rotation;
+                    TurnRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 270, 0));
+                }
+
+                break;
+            case 3:
+                {
+                    Intersection3Way.SetActive(true);
+                    var rotation = Intersection3Way.transform.rotation;
+
+                    if (carExits.SetEquals(new HashSet<AttachEdge> { AttachEdge.NORTH, AttachEdge.EAST, AttachEdge.SOUTH }))
+                    {
+                        Intersection3Way.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 90, 0));
+                    }
+                    else if (carExits.SetEquals(new HashSet<AttachEdge> { AttachEdge.EAST, AttachEdge.SOUTH, AttachEdge.WEST }))
+                    {
+                        Intersection3Way.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 180, 0));
+                    }
+                    else if (carExits.SetEquals(new HashSet<AttachEdge> { AttachEdge.SOUTH, AttachEdge.WEST, AttachEdge.NORTH }))
+                    {
+                        Intersection3Way.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 270, 0));
+                    }
+                    break;
+                }
+            case 4:
+                Intersection4Way.SetActive(true);
+                break;
+            default:
+                UnpaintedRoad.SetActive(true);
+                break;
         }
     }
 
@@ -105,7 +144,8 @@ public class RoadCell : MonoBehaviour
 
         float insetFromEdge = GameCell.HalfWidth - (SidewalkSize / 2f);
 
-        Action<GameObject, Vector3, Quaternion> SpawnSegment = (prefab, offset, rotation) => {
+        Action<GameObject, Vector3, Quaternion> SpawnSegment = (prefab, offset, rotation) =>
+        {
             Instantiate(
                 prefab,
                 transform.position + new Vector3(0f, 0.03f, 0f) + offset,
@@ -114,19 +154,23 @@ public class RoadCell : MonoBehaviour
             );
         };
 
-        Action<Vector3, Quaternion> AddStraight = (offset, rotation) => {
+        Action<Vector3, Quaternion> AddStraight = (offset, rotation) =>
+        {
             SpawnSegment(StraightSidewalkPrefab, offset, rotation);
         };
 
-        Action<Vector3, Quaternion> AddCorner = (offset, rotation) => {
+        Action<Vector3, Quaternion> AddCorner = (offset, rotation) =>
+        {
             SpawnSegment(CornerSidewalkPrefab, offset, rotation);
         };
 
-        Action<Vector3, Quaternion> AddInnerCorner = (offset, rotation) => {
+        Action<Vector3, Quaternion> AddInnerCorner = (offset, rotation) =>
+        {
             SpawnSegment(InnerCornerSidewalkPrefab, offset, rotation);
         };
 
-        Action<int, Quaternion, Func<int, Vector3>> drawSidewalk = (segments, rotation, offsetGetter) => {
+        Action<int, Quaternion, Func<int, Vector3>> drawSidewalk = (segments, rotation, offsetGetter) =>
+        {
             for (int i = 0; i < segments; i++)
             {
                 AddStraight(offsetGetter(i), rotation);
