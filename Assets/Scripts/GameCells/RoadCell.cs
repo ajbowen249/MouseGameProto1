@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using UnityEngine;
 
@@ -58,68 +56,46 @@ public class RoadCell : MonoBehaviour
         var carExits = attachPoints.Where(point => point.point.modeType == AttachModeType.CAR)
             .Select(point => point.point.edge).Distinct().ToHashSet();
 
-        switch (carExits.Count)
+        if (carExits.Count == 4)
         {
-            case 2:
-                if (carExits.Contains(AttachEdge.EAST) && carExits.Contains(AttachEdge.WEST))
-                {
-                    StraightRoad.SetActive(true);
-                }
-                else if (carExits.Contains(AttachEdge.NORTH) && carExits.Contains(AttachEdge.SOUTH))
-                {
-                    StraightRoad.SetActive(true);
-                    var rotation = StraightRoad.transform.rotation;
-                    StraightRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 90, 0));
-                }
-                else if (carExits.Contains(AttachEdge.SOUTH) && carExits.Contains(AttachEdge.EAST))
-                {
-                    TurnRoad.SetActive(true);
-                }
-                else if (carExits.Contains(AttachEdge.SOUTH) && carExits.Contains(AttachEdge.WEST))
-                {
-                    TurnRoad.SetActive(true);
-                    var rotation = TurnRoad.transform.rotation;
-                    TurnRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 90, 0));
-                }
-                else if (carExits.Contains(AttachEdge.WEST) && carExits.Contains(AttachEdge.NORTH))
-                {
-                    TurnRoad.SetActive(true);
-                    var rotation = TurnRoad.transform.rotation;
-                    TurnRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 180, 0));
-                }
-                else if (carExits.Contains(AttachEdge.EAST) && carExits.Contains(AttachEdge.NORTH))
-                {
-                    TurnRoad.SetActive(true);
-                    var rotation = TurnRoad.transform.rotation;
-                    TurnRoad.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 270, 0));
-                }
+            Intersection4Way.SetActive(true);
+        }
+        else
+        {
+            var foundMatch = false;
 
-                break;
-            case 3:
-                {
-                    Intersection3Way.SetActive(true);
-                    var rotation = Intersection3Way.transform.rotation;
+            var roadMapping = new List<(HashSet<AttachEdge> edges, GameObject obj, Vector3 rotation)>
+            {
+                (new HashSet<AttachEdge> { AttachEdge.EAST, AttachEdge.WEST }, StraightRoad, new Vector3(0, 0, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.NORTH, AttachEdge.SOUTH }, StraightRoad, new Vector3(0, 90, 0)),
 
-                    if (carExits.SetEquals(new HashSet<AttachEdge> { AttachEdge.NORTH, AttachEdge.EAST, AttachEdge.SOUTH }))
-                    {
-                        Intersection3Way.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 90, 0));
-                    }
-                    else if (carExits.SetEquals(new HashSet<AttachEdge> { AttachEdge.EAST, AttachEdge.SOUTH, AttachEdge.WEST }))
-                    {
-                        Intersection3Way.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 180, 0));
-                    }
-                    else if (carExits.SetEquals(new HashSet<AttachEdge> { AttachEdge.SOUTH, AttachEdge.WEST, AttachEdge.NORTH }))
-                    {
-                        Intersection3Way.transform.rotation = Quaternion.Euler(rotation.eulerAngles + new Vector3(0, 270, 0));
-                    }
-                    break;
+                (new HashSet<AttachEdge> { AttachEdge.SOUTH, AttachEdge.EAST }, TurnRoad, new Vector3(0, 0, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.SOUTH, AttachEdge.WEST }, TurnRoad, new Vector3(0, 90, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.WEST, AttachEdge.NORTH }, TurnRoad, new Vector3(0, 180, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.EAST, AttachEdge.NORTH }, TurnRoad, new Vector3(0, 270, 0)),
+
+                (new HashSet<AttachEdge> { AttachEdge.WEST, AttachEdge.NORTH, AttachEdge.EAST }, Intersection3Way, new Vector3(0, 0, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.NORTH, AttachEdge.EAST, AttachEdge.SOUTH }, Intersection3Way, new Vector3(0, 90, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.EAST, AttachEdge.SOUTH, AttachEdge.WEST }, Intersection3Way, new Vector3(0, 180, 0)),
+                (new HashSet<AttachEdge> { AttachEdge.SOUTH, AttachEdge.WEST, AttachEdge.NORTH }, Intersection3Way, new Vector3(0, 270, 0)),
+            };
+
+            foreach (var mapping in roadMapping)
+            {
+                if (carExits.SetEquals(mapping.edges))
+                {
+                    mapping.obj.SetActive(true);
+                    var rot = mapping.obj.transform.rotation;
+                    mapping.obj.transform.rotation = Quaternion.Euler(rot.eulerAngles + mapping.rotation);
+                    foundMatch = true;
                 }
-            case 4:
-                Intersection4Way.SetActive(true);
-                break;
-            default:
+            }
+
+            if (!foundMatch)
+            {
                 UnpaintedRoad.SetActive(true);
-                break;
+
+            }
         }
     }
 
