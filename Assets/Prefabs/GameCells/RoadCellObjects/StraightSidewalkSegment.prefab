@@ -72,7 +72,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8424854522173900466
 Transform:
   m_ObjectHideFlags: 0
@@ -149,17 +149,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 820c51aaa188aac4185e6c90b6832aa6,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 820c51aaa188aac4185e6c90b6832aa6,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 820c51aaa188aac4185e6c90b6832aa6,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 820c51aaa188aac4185e6c90b6832aa6,
         type: 3}
@@ -216,6 +216,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5e56326ac37f88b40883ffc9d4acecf6, type: 2}
+    - target: {fileID: -3641478254299928199, guid: 820c51aaa188aac4185e6c90b6832aa6,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3641478254299928199, guid: 820c51aaa188aac4185e6c90b6832aa6,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3641478254299928199, guid: 820c51aaa188aac4185e6c90b6832aa6,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 820c51aaa188aac4185e6c90b6832aa6,
         type: 3}
       propertyPath: m_Name
@@ -224,10 +239,16 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 820c51aaa188aac4185e6c90b6832aa6,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1776747558852274652, guid: 820c51aaa188aac4185e6c90b6832aa6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5e56326ac37f88b40883ffc9d4acecf6, type: 2}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 5246365917508204780, guid: 820c51aaa188aac4185e6c90b6832aa6, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 820c51aaa188aac4185e6c90b6832aa6, type: 3}
