@@ -48,7 +48,7 @@ public class CarExitSpawner : MonoBehaviour
         rotation.eulerAngles = rotation.eulerAngles + new Vector3(-90, 0, 0);
 
         Gizmos.DrawMesh(
-            CarExitPrefab.GetComponentInChildren<MeshFilter>().sharedMesh,
+            CarExitPrefab.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh,
             transform.position + new Vector3(0f, 1.51f, 0f),
             rotation
         );

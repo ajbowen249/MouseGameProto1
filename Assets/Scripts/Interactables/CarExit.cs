@@ -7,7 +7,16 @@ public class CarExit : MonoBehaviour
     public GameObject DriverSeat;
     public GameObject ExitPoint;
 
+    public GameObject FrontAxle;
+    public GameObject RearAxle;
+
     Exit _exit;
+
+    bool _isMoving = false;
+    Vector3 _lastPosition;
+    
+    const float _wheelDiameter = 1.53278f;
+    const float _wheelCircumference = _wheelDiameter * Mathf.PI;
 
     public void OnCreated(Exit exit)
     {
@@ -37,6 +46,8 @@ public class CarExit : MonoBehaviour
             var driver = interactor.GetComponent<MouseController>();
             driver.AttachTo(gameObject, DriverSeat.transform);
 
+            _isMoving = true;
+            _lastPosition = transform.position;
             PathFollower.SendObjectAlongPath(gameObject, exitPath, () => {
                 var maybeSpawner = toCell.GetComponentInChildren<CarExitSpawner>();
                 if (maybeSpawner == null)
@@ -59,6 +70,10 @@ public class CarExit : MonoBehaviour
                 {
                     nextExit.AutoContinue(driver.gameObject, exit.FromCell);
                 }
+                else
+                {
+                    _isMoving = false;
+                }
             });
         });
     }
@@ -67,5 +82,22 @@ public class CarExit : MonoBehaviour
     {
         var cell = _exit.FromCell.GetComponent<GameCell>();
         _exit.AttemptExit(driver, fromCell);
+    }
+
+    void Update()
+    {
+        if (_isMoving)
+        {
+            var traveled = Vector3.Distance(_lastPosition, transform.position);
+            var ratio = traveled / _wheelCircumference;
+            var degreesRotated = (ratio * 360f) * -1f;
+
+            var rotation = transform.localEulerAngles.y + degreesRotated;
+
+            FrontAxle.transform.Rotate(new Vector3(0f, rotation, 0f));
+            RearAxle.transform.Rotate(new Vector3(0f, rotation, 0f));
+
+            _lastPosition = transform.position;
+        }
     }
 }

@@ -176,6 +176,10 @@ public class MouseController : MonoBehaviour
         transform.SetParent(parent.transform);
         transform.position = target.position;
         transform.rotation = target.rotation;
+        if (parent.GetComponent<CarExit>() != null)
+        {
+            _mouseAvatar.SetDriving(true);
+        }
     }
 
     public void DetachFrom(Transform target)
@@ -185,6 +189,7 @@ public class MouseController : MonoBehaviour
         transform.SetParent(null);
         _controller.enabled = true;
         AttachedTo = null;
+        _mouseAvatar.SetDriving(false);
     }
 
     public bool CanSelectDialogOption(DialogOption option)

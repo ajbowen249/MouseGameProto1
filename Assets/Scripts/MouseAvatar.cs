@@ -20,24 +20,18 @@ public class MouseAvatar : MonoBehaviour
 
     private Animator _animator;
 
-    private int _animIDSpeed;
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
+    private int _animIDSpeed = Animator.StringToHash("Speed");
+    private int _animIDGrounded = Animator.StringToHash("Grounded");
+    private int _animIDJump = Animator.StringToHash("Jump");
+    private int _animIDFreeFall = Animator.StringToHash("FreeFall");
+    private int _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+    private int _animIDDriving = Animator.StringToHash("Driving");
 
     private Action _emoteEndCallback;
 
     private void Start()
     {
         _animator = GetComponent<Animator>();
-
-        _animIDSpeed = Animator.StringToHash("Speed");
-        _animIDGrounded = Animator.StringToHash("Grounded");
-        _animIDJump = Animator.StringToHash("Jump");
-        _animIDFreeFall = Animator.StringToHash("FreeFall");
-        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-
         ApplyTint();
     }
 
@@ -61,6 +55,12 @@ public class MouseAvatar : MonoBehaviour
         _animator.SetFloat(_animIDSpeed, blend);
         _animator.SetFloat(_animIDMotionSpeed, magnitude);
     }
+
+    public void SetDriving(bool driving)
+    {
+        _animator.SetBool(_animIDDriving, driving);
+    }
+
     public void Emote(int emoteHash)
     {
         Emote(emoteHash, () => { });

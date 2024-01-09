@@ -49,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CarExitPrefab: {fileID: 3899300397976599685, guid: 6ae3d1063b1d2034da132437db86e6c6,
     type: 3}
+  EnableAutoContinue: 0
 --- !u!114 &7306274163161537387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,6 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TalkCamera: {fileID: 0}
+  DisableDefaultWaveOnDialog: 0
 --- !u!1001 &7329490656771635844
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -92,7 +94,7 @@ PrefabInstance:
     - target: {fileID: 86902817354862268, guid: 2f182c561a0500c4c959c5909d6bb049,
         type: 3}
       propertyPath: m_Radius
-      value: 4.03
+      value: 5.16
       objectReference: {fileID: 0}
     - target: {fileID: 86902817354862268, guid: 2f182c561a0500c4c959c5909d6bb049,
         type: 3}
