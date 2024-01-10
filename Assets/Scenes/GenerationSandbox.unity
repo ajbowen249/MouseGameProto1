@@ -2345,22 +2345,22 @@ PrefabInstance:
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 154.7
+      value: 180.4
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -113.9
+      value: -150.1
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.94220537
+      value: 0.9527299
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.33503598
+      value: 0.30381876
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f,
         type: 3}
@@ -4507,6 +4507,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: GameGenerator
+      objectReference: {fileID: 0}
+    - target: {fileID: 6811030014162826452, guid: 611291fa9cb2ac14f9a420aa0e2eaf65,
+        type: 3}
+      propertyPath: Rows
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6811030014162826452, guid: 611291fa9cb2ac14f9a420aa0e2eaf65,
         type: 3}
