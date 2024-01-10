@@ -2086,7 +2086,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1950915767}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.71476376
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -3799,6 +3799,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: GameGenerator
+      objectReference: {fileID: 0}
+    - target: {fileID: 6811030014162826452, guid: 611291fa9cb2ac14f9a420aa0e2eaf65,
+        type: 3}
+      propertyPath: Rows
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6811030014162826452, guid: 611291fa9cb2ac14f9a420aa0e2eaf65,
         type: 3}

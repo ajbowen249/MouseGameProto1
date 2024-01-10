@@ -7,7 +7,7 @@ public class GameGenerator : MonoBehaviour
 {
     public static GameGenerator Instance;
 
-    public int Rows = 10;
+    public int Rows = 20;
     public int Cols = 10;
     public List<GameObject> GameCellPrefabs;
     public GameObject PendingCellPrefab;

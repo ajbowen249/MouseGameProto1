@@ -34,7 +34,7 @@ public class WFCGrid<TCell>
     public int Rows { get; private set; }
     public int Cols { get; private set; }
 
-    public WFCGrid(List<TCell> possibleCells, int cols, int rows)
+    public WFCGrid(List<TCell> possibleCells, int rows, int cols)
     {
         Rows = rows;
         Cols = cols;

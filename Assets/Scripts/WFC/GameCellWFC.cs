@@ -126,7 +126,7 @@ public class GameCellWFC
 
         _allCellTypes = _gameCells.Select(cell => WFCCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
-        _wfc = new WFCContext<WFCCell>(_randomCellTypes, rows, _cols, (row, col, cell) => Reduce(row, col, cell));
+        _wfc = new WFCContext<WFCCell>(_randomCellTypes, _rows, _cols, (row, col, cell) => Reduce(row, col, cell));
         _filler = new GameFiller(_wfc, _allCellTypes);
 
         Phase = GenerationPhase.INIT;
