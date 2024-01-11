@@ -190,12 +190,12 @@ public class GameCell : MonoBehaviour
         });
     }
 
-    public void DeterminedConnections(List<(AbsoluteAttachPoint point, int row, int col)> attachPoints)
+    public void DeterminedConnections(List<(AbsoluteAttachPoint point, GridLocation loc)> attachPoints)
     {
         foreach (var exit in GetComponentsInChildren<Exit>())
         {
             exit.AttachPointOptions = exit.AttachPointOptions.Where(option => !option.mode.isOptional || attachPoints.Any(
-                point => point.row == option.row && point.col == option.col &&
+                point => point.loc.row == option.row && point.loc.col == option.col &&
                     point.point.edge == option.edge && point.point.modeType == option.mode.type
             )).ToList();
         }

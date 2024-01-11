@@ -86,18 +86,17 @@ public class GameGenerator : MonoBehaviour
         IsGenerationComplete = false;
 
         _debugCells = new List<List<PendingCellGraphic>>();
-
         Init();
     }
 
-    public GameObject GetGameCell(int row, int col)
+    public GameObject GetGameCell(GridLocation loc)
     {
-        if (row < 0 || col < 0 || row > Rows - 1 || col > Cols - 1)
+        if (loc.row < 0 || loc.col < 0 || loc.row > Rows - 1 || loc.col > Cols - 1)
         {
             return null;
         }
 
-        return GameCellGrid[row][col];
+        return GameCellGrid[loc.row][loc.col];
     }    
 
     private void Init()
@@ -107,15 +106,15 @@ public class GameGenerator : MonoBehaviour
 
         if (EnableDebug)
         {
-            ForEachPosition((row, col, location) =>
+            ForEachPosition((loc, location) =>
             {
-                if (col == 0)
+                if (loc.col == 0)
                 {
                     _debugCells.Add(new List<PendingCellGraphic>());
                 }
 
                 var debugCell = Instantiate(PendingCellPrefab, location, transform.rotation);
-                _debugCells[row].Add(debugCell.GetComponent<PendingCellGraphic>());
+                _debugCells[loc.row].Add(debugCell.GetComponent<PendingCellGraphic>());
             });
         }
 
@@ -125,7 +124,7 @@ public class GameGenerator : MonoBehaviour
         }
     }
 
-    delegate void PositionVisiter(int row, int col, Vector3 location);
+    delegate void PositionVisiter(GridLocation loc, Vector3 location);
     private void ForEachPosition(PositionVisiter visiter)
     {
         for (int row = 0; row < Rows; row++)
@@ -135,7 +134,7 @@ public class GameGenerator : MonoBehaviour
                 var x = col * GameCell.CellWidth;
                 var z = row * GameCell.CellWidth;
 
-                visiter(row, col, new Vector3(x, 0f, z));
+                visiter((row, col), new Vector3(x, 0f, z));
             }
         }
     }
@@ -163,33 +162,33 @@ public class GameGenerator : MonoBehaviour
         }
 
         var grid = WCF.GetGrid();
-        ForEachPosition((row, col, location) => _debugCells[row][col].SetOptions(grid.GetCell(row, col), WCF.IsCellQueued(row, col)));
+        ForEachPosition((loc, location) => _debugCells[loc.row][loc.col].SetOptions(grid.GetCell(loc), WCF.IsCellQueued(loc)));
     }
 
     private void SpawnCells()
     {
         var grid = WCF.GetGrid();
 
-        ForEachPosition((row, col, location) =>
+        ForEachPosition((loc, location) =>
         {
-            if (col == 0)
+            if (loc.col == 0)
             {
                 GameCellGrid.Add(new List<GameObject>());
             }
 
 
-            var cell = grid.GetCell(row, col);
+            var cell = grid.GetCell(loc);
 
             if (cell.PossibleCells.Count != 1)
             {
-                GameCellGrid[row].Add(null);
+                GameCellGrid[loc.row].Add(null);
                 return;
             }
 
             var cellDef = cell.PossibleCells[0];
             if (cellDef.InnerRow != 0 || cellDef.InnerCol != 0)
             {
-                GameCellGrid[row].Add(null);
+                GameCellGrid[loc.row].Add(null);
                 return;
             }
 
@@ -199,7 +198,7 @@ public class GameGenerator : MonoBehaviour
                 transform.rotation
             );
 
-            var connections = cellDef.AttachPoints.Select(point => (point, 0, 0)).ToList();
+            var connections = cellDef.AttachPoints.Select(point => (point, new GridLocation(0, 0))).ToList();
 
             if (cellDef.IsSubCell)
             {
@@ -210,11 +209,10 @@ public class GameGenerator : MonoBehaviour
                         continue;
                     }
 
-                    var subRow = row + additionalCell.row;
-                    var subCol = col + additionalCell.col;
+                    var subLoc = (loc.row + additionalCell.row, loc.col + additionalCell.col);
 
                     WFCCell subCell = null;
-                    var subGridCell = grid.GetCell(subRow, subCol);
+                    var subGridCell = grid.GetCell(subLoc);
                     if (subGridCell != null)
                     {
                         subCell = subGridCell.PossibleCells.Count > 0 ? subGridCell.PossibleCells.First() : null;
@@ -222,19 +220,19 @@ public class GameGenerator : MonoBehaviour
 
                     if (subCell == null || subCell.BaseCell != cellDef.BaseCell)
                     {
-                        Debug.LogError($"Expected ({subRow},{subCol}) to share base with ({row},{col}) ({cellDef.BaseCell.name})");
+                        Debug.LogError($"Expected {subLoc} to share base with {loc} ({cellDef.BaseCell.name})");
                     }
 
-                    connections.AddRange(subCell.AttachPoints.Select(point => (point, additionalCell.row, additionalCell.col)));
+                    connections.AddRange(subCell.AttachPoints.Select(point => (point, new GridLocation(additionalCell.row, additionalCell.col))));
                 }
             }
 
             var gameCell = cellObject.GetComponent<GameCell>();
-            gameCell.Row = row;
-            gameCell.Col = col;
+            gameCell.Row = loc.row;
+            gameCell.Col = loc.col;
             gameCell.DeterminedConnections(connections);
 
-            GameCellGrid[row].Add(cellObject);
+            GameCellGrid[loc.row].Add(cellObject);
         });
     }
 

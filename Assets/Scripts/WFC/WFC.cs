@@ -1,7 +1,62 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+
+public struct GridLocation
+{
+    public int row;
+    public int col;
+
+    public GridLocation(int row, int col)
+    {
+        this.row = row;
+        this.col = col;
+    }
+
+    public bool Equals(GridLocation other)
+    {
+        return other.row == this.row && other.col == this.col;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is GridLocation)
+        {
+            return Equals((GridLocation)obj);
+        }
+
+        return false;
+    }
+
+    public static bool operator ==(GridLocation lhs, GridLocation rhs)
+    {
+        return lhs.Equals(rhs);
+    }
+
+    public static bool operator !=(GridLocation lhs, GridLocation rhs)
+    {
+        return !lhs.Equals(rhs);
+    }
+
+    public override int GetHashCode()
+    {
+        return $"{row},{col}".GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"({row},{col})";
+    }
+
+    public static implicit operator GridLocation((int row, int col) tuple)
+    {
+        return new GridLocation(tuple.row, tuple.col);
+    }
+
+    public static implicit operator (int row, int col)(GridLocation loc)
+    {
+        return (loc.row, loc.col);
+    }
+}
 
 public class PendingCell<TCell>
 {
@@ -64,31 +119,31 @@ public class WFCGrid<TCell>
     /// Note that grid size and coordinates are int, not uint, both because C# prefers int for indices, and for
     /// convenience of relative addressing.
     /// </summary>
-    public PendingCell<TCell> GetCell(int row, int col)
+    public PendingCell<TCell> GetCell(GridLocation loc)
     {
-        if (row < 0 || col < 0 || row > Rows - 1 || col > Cols - 1)
+        if (loc.row < 0 || loc.col < 0 || loc.row > Rows - 1 || loc.col > Cols - 1)
         {
             return null;
         }
 
-        return _grid[row][col];
+        return _grid[loc.row][loc.col];
     }
 
-    public IEnumerable<((int, int, AttachEdge), PendingCell<TCell>)> GetLiveNeighborCells(int row, int col)
+    public IEnumerable<((GridLocation loc, AttachEdge edge), PendingCell<TCell>)> GetLiveNeighborCells(GridLocation loc)
     {
-        return GetAllNeighborCells(row, col).Where(pair => pair.Item2 != null);
+        return GetAllNeighborCells(loc).Where(pair => pair.Item2 != null);
     }
 
-    public IEnumerable<((int, int, AttachEdge), PendingCell<TCell>)> GetAllNeighborCells(int row, int col)
+    public IEnumerable<((GridLocation loc, AttachEdge edge), PendingCell<TCell>)> GetAllNeighborCells(GridLocation loc)
     {
-        return new List<(int, int, AttachEdge)>
+        return new List<(GridLocation, AttachEdge)>
         {
-            (row - 1, col, AttachEdge.SOUTH),
-            (row + 1, col, AttachEdge.NORTH),
-            (row, col - 1, AttachEdge.WEST),
-            (row, col + 1, AttachEdge.EAST),
+            ((loc.row - 1, loc.col), AttachEdge.SOUTH),
+            ((loc.row + 1, loc.col), AttachEdge.NORTH),
+            ((loc.row, loc.col - 1), AttachEdge.WEST),
+            ((loc.row, loc.col + 1), AttachEdge.EAST),
         }
-        .Select(location => (location, GetCell(location.Item1, location.Item2)));
+        .Select(location => (location, GetCell(location.Item1)));
     }
 
     public bool AllSettled()
@@ -113,12 +168,12 @@ public class WFCContext<TCell>
     /// Given a cell, return an updated list of possible types (usually based on neighbors). Returning null means no
     /// change.
     /// </summary>
-    public delegate List<TCell> Reducer(int row, int col, PendingCell<TCell> cell);
+    public delegate List<TCell> Reducer(GridLocation loc, PendingCell<TCell> cell);
 
     public WFCGrid<TCell> Grid { get; private set; }
 
     private Reducer _reducer;
-    private Queue<(int, int)> _queue = new Queue<(int, int)>();
+    private Queue<GridLocation> _queue = new Queue<GridLocation>();
 
     public bool CanIterate { get { return _queue.Count > 0; } }
 
@@ -128,27 +183,27 @@ public class WFCContext<TCell>
         _reducer = reducer;
     }
 
-    public void SetCell(int row, int col, TCell possibleCell, bool revisitSettled)
+    public void SetCell(GridLocation loc, TCell possibleCell, bool revisitSettled)
     {
-        SetCell(row, col, new List<TCell> { possibleCell }, revisitSettled);
+        SetCell(loc, new List<TCell> { possibleCell }, revisitSettled);
     }
 
-    public void SetCell(int row, int col, List<TCell> possibleCells, bool revisitSettled)
+    public void SetCell(GridLocation loc, List<TCell> possibleCells, bool revisitSettled)
     {
-        var cell = Grid.GetCell(row, col);
+        var cell = Grid.GetCell(loc);
         if (cell == null)
         {
             return;
         }
 
         cell.PossibleCells = possibleCells;
-        var neighbors = Grid.GetLiveNeighborCells(row, col);
+        var neighbors = Grid.GetLiveNeighborCells(loc);
         foreach (var neighbor in neighbors)
         {
             if (!neighbor.Item2.IsSettled() || revisitSettled)
             {
-                (int neighborRow, int neighborCol, AttachEdge edge) = neighbor.Item1;
-                QueueCell(neighborRow, neighborCol);
+                (GridLocation neighborLoc, AttachEdge edge) = neighbor.Item1;
+                QueueCell(neighborLoc);
             }
         }
     }
@@ -168,36 +223,35 @@ public class WFCContext<TCell>
 
     public void Iterate()
     {
-        (int row, int col) coord;
+        GridLocation coord;
         if (!_queue.TryDequeue(out coord))
         {
             return;
         }
 
-        var cell = Grid.GetCell(coord.row, coord.col);
+        var cell = Grid.GetCell(coord);
         if (cell == null)
         {
             return;
         }
 
-        var newTypes = _reducer(coord.row, coord.col, cell);
+        var newTypes = _reducer(coord, cell);
         if (newTypes != null)
         {
-            SetCell(coord.row, coord.col, newTypes, false);
+            SetCell(coord, newTypes, false);
         }
     }
 
-    public bool IsCellQueued(int row, int col)
+    public bool IsCellQueued(GridLocation loc)
     {
-        return _queue.Any(location => location.Item1 == row && location.Item2 == col);
+        return _queue.Any(location => location == loc);
     }
 
-    private void QueueCell(int row, int col)
+    private void QueueCell(GridLocation location)
     {
-        var pair = (row, col);
-        if (!_queue.Contains(pair))
+        if (!_queue.Contains(location))
         {
-            _queue.Enqueue(pair);
+            _queue.Enqueue(location);
         }
     }
 }

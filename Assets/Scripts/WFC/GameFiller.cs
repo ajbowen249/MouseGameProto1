@@ -41,7 +41,7 @@ public class GameFiller
         var residentialHeight = 3;
 
         DefineBiomes(residentialHeight);
-        AddFixedRoads(residentialHeight);
+        var pathStart = AddFixedRoads(residentialHeight);
 
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
@@ -52,13 +52,15 @@ public class GameFiller
         var HotDogStandCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HotDogStandCell");
         var CheeseStoreCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "CheeseStoreCell");
 
-        _wfc.SetCell(0, 4, HomeCell, true);
-        _wfc.SetCell(1, 4, YardCell, true);
-        _wfc.SetCell(2, 4, BlockedRoadCell, true);
-        _wfc.SetCell(2, 6, HotDogStandCell, true);
+        _wfc.SetCell((0, 4), HomeCell, true);
+        _wfc.SetCell((1, 4), YardCell, true);
+        _wfc.SetCell((2, 4), BlockedRoadCell, true);
+        _wfc.SetCell((2, 6), HotDogStandCell, true);
 
         // Temporary; Stick the cheese shop on the top row guaranteed earlier
-        _wfc.SetCell(_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2, CheeseStoreCell, true);
+        _wfc.SetCell((_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2), CheeseStoreCell, true);
+
+        var path = CreateMeanderingPath(pathStart.row, pathStart.col, _wfc.Grid.Rows - 2);
     }
 
     public void RandomFill()
@@ -91,7 +93,7 @@ public class GameFiller
             _random
         );
 
-        _wfc.SetCell(randomCell.rowIndex, randomCell.colIndex, randomType, false);
+        _wfc.SetCell((randomCell.rowIndex, randomCell.colIndex), randomType, false);
     }
 
     private void DefineBiomes(int residentialHeight)
@@ -165,7 +167,7 @@ public class GameFiller
         );
     }
 
-    private void AddFixedRoads(int residentialHeight)
+    private GridLocation AddFixedRoads(int residentialHeight)
     {
         var emptyTypeList = new List<WFCCell>();
         var carMode = new List<AttachModeType> { AttachModeType.CAR };
@@ -239,6 +241,24 @@ public class GameFiller
             _allCellTypes.Where(cell => cell.AttachPoints.Count == 0).ToList(),
             emptyTypeList
         );
+
+        return (residentialHeight + 1, _wfc.Grid.Cols - 2);
+    }
+
+    private List<GridLocation> CreateMeanderingPath(int startRow, int startCol, int endRow)
+    {
+        var points = new List<GridLocation>();
+        return points;
+
+        //var currentRow = startRow;
+        //var currentCol = startCol;
+
+        //while (currentRow < endRow)
+        //{
+
+        //}
+
+        //return points;
     }
 
     private void DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)
@@ -262,7 +282,7 @@ public class GameFiller
         {
             for (var col = startCol; col < startCol + width; col++)
             {
-                var cell = _wfc.Grid.GetCell(row, col);
+                var cell = _wfc.Grid.GetCell((row, col));
                 if (cell == null)
                 {
                     Debug.LogWarning($"Tried to get cell {row}, {col}");
@@ -273,7 +293,7 @@ public class GameFiller
 
                 if (narrowedOptions.Count > 0)
                 {
-                    _wfc.SetCell(row, col, narrowedOptions, true);
+                    _wfc.SetCell((row, col), narrowedOptions, true);
                 }
             }
         }
@@ -302,13 +322,13 @@ public class GameFiller
 
         while (step < length)
         {
-            var pendingCell = grid.GetCell(row, col);
+            var pendingCell = grid.GetCell((row, col));
             if (pendingCell == null)
             {
                 return;
             }
 
-            _wfc.SetCell(row, col, pendingCell.PossibleCells.Where(option =>
+            _wfc.SetCell((row, col), pendingCell.PossibleCells.Where(option =>
             {
                 var points = option.AttachPoints.Where(point => modes.Contains(point.modeType)).ToList();
                 var result = (step == 0 || points.Any(points => points.edge == edge1)) &&

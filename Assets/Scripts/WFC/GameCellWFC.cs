@@ -126,7 +126,7 @@ public class GameCellWFC
 
         _allCellTypes = _gameCells.Select(cell => WFCCell.FromGameCell(cell)).SelectMany(x => x).ToList();
         _randomCellTypes = _allCellTypes.Where(t => t.CanBeRandom).ToList();
-        _wfc = new WFCContext<WFCCell>(_randomCellTypes, _rows, _cols, (row, col, cell) => Reduce(row, col, cell));
+        _wfc = new WFCContext<WFCCell>(_randomCellTypes, _rows, _cols, (loc, cell) => Reduce(loc, cell));
         _filler = new GameFiller(_wfc, _allCellTypes);
 
         Phase = GenerationPhase.INIT;
@@ -182,12 +182,12 @@ public class GameCellWFC
     {
         return _wfc.Grid;
     }
-    public bool IsCellQueued(int row, int col)
+    public bool IsCellQueued(GridLocation location)
     {
-        return _wfc.IsCellQueued(row, col);
+        return _wfc.IsCellQueued(location);
     }
 
-    private List<WFCCell> Reduce(int row, int col, PendingCell<WFCCell> cell)
+    private List<WFCCell> Reduce(GridLocation loc, PendingCell<WFCCell> cell)
     {
         var possibleCells = new List<WFCCell>(cell.PossibleCells);
         var forceFootprintOptions = new List<WFCCell>();
@@ -197,11 +197,11 @@ public class GameCellWFC
             return null;
         }
 
-        var neighbors = _wfc.Grid.GetAllNeighborCells(row, col);
+        var neighbors = _wfc.Grid.GetAllNeighborCells(loc);
 
         foreach (var neighbor in neighbors)
         {
-            ((var neighborRow, var neighborCol, var fromEdge), var neighborCell) = neighbor;
+            ((GridLocation neighborLoc, var fromEdge), var neighborCell) = neighbor;
             var neighborEdge = fromEdge.Opposite();
 
             if (neighborCell == null)
@@ -217,8 +217,8 @@ public class GameCellWFC
             {
                 foreach (var option in subCellNeighborOptions)
                 {
-                    var relativeRowFromNeighbor = row - neighborRow;
-                    var relativeColFromNeighbor = col - neighborCol;
+                    var relativeRowFromNeighbor = loc.row - neighborLoc.row;
+                    var relativeColFromNeighbor = loc.col - neighborLoc.col;
 
                     var thisSubRow = option.InnerRow + relativeRowFromNeighbor;
                     var thisSubCol = option.InnerCol + relativeColFromNeighbor;

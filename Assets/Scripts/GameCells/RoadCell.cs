@@ -22,9 +22,9 @@ public class RoadCell : MonoBehaviour
     public GameObject EastExit;
     public GameObject WestExit;
 
-    private List<(AbsoluteAttachPoint point, int row, int col)> _attachPoints;
+    private List<(AbsoluteAttachPoint point, GridLocation loc)> _attachPoints;
 
-    void OnDeterminedConnections(List<(AbsoluteAttachPoint point, int row, int col)> attachPoints)
+    void OnDeterminedConnections(List<(AbsoluteAttachPoint point, GridLocation loc)> attachPoints)
     {
         _attachPoints = attachPoints;
         var gameCell = GetComponent<GameCell>();
