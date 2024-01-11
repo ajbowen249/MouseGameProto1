@@ -51,6 +51,8 @@ public class PlayerMouse : MonoBehaviour
 
     private PlayerInput _playerInput;
 
+    private InteractionVolume _inInteractionVolume;
+
     [HideInInspector]
     public StarterAssetsInputs Input { get; private set; }
 
@@ -82,6 +84,7 @@ public class PlayerMouse : MonoBehaviour
         {
             case ControlState.EXPLORATION:
                 MouseController.BasicUpdate();
+                Interaction();
                 break;
             case ControlState.SUSPENDED:
                 Input.jump = false;
@@ -93,6 +96,18 @@ public class PlayerMouse : MonoBehaviour
     private void LateUpdate()
     {
         CameraRotation();
+    }
+
+    private void Interaction()
+    {
+        if (Input.interact)
+        {
+            Input.interact = false;
+            if (_inInteractionVolume != null)
+            {
+                MouseController.InteractWith(_inInteractionVolume);
+            }
+        }
     }
 
     public void OnStartedDialog(GameObject talkingTo)
@@ -148,5 +163,25 @@ public class PlayerMouse : MonoBehaviour
         if (lfAngle < -360f) lfAngle += 360f;
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
+        if (interactionVolume != null)
+        {
+            _inInteractionVolume = interactionVolume;
+            HUD.WithInstance(hud => hud.SetInteractionPrompt(_inInteractionVolume.Prompt));
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
+        if (interactionVolume != null)
+        {
+            _inInteractionVolume = null;
+            HUD.WithInstance(hud => hud.ClearInteractionPrompt());
+        }
     }
 }

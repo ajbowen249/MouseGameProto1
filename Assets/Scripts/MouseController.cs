@@ -101,8 +101,6 @@ public class MouseController : MonoBehaviour
     private CharacterController _controller;
     private GameObject _mainCamera;
 
-    private InteractionVolume _inInteractionVolume;
-
     private Vector3? _teleportTo;
 
     public GameObject AttachedTo { get; private set; }
@@ -241,7 +239,6 @@ public class MouseController : MonoBehaviour
         GroundedCheck();
         JumpAndGravity();
         Move();
-        Interaction();
     }
 
     public void WalkTo(WalkTarget target)
@@ -367,18 +364,6 @@ public class MouseController : MonoBehaviour
         _mouseAvatar.SetWalkRun(_animationBlend, inputMagnitude);
     }
 
-    private void Interaction()
-    {
-        if (Input.interact)
-        {
-            Input.interact = false;
-            if (_inInteractionVolume != null)
-            {
-                InteractWith(_inInteractionVolume);
-            }
-        }
-    }
-
     private void JumpAndGravity()
     {
         if (Grounded)
@@ -448,26 +433,6 @@ public class MouseController : MonoBehaviour
         Gizmos.DrawSphere(
             new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
             GroundedRadius);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
-        if (interactionVolume != null)
-        {
-            _inInteractionVolume = interactionVolume;
-            HUD.WithInstance(hud => hud.SetInteractionPrompt(_inInteractionVolume.Prompt));
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        var interactionVolume = other.gameObject.GetComponent<InteractionVolume>();
-        if (interactionVolume != null)
-        {
-            _inInteractionVolume = null;
-            HUD.WithInstance(hud => hud.ClearInteractionPrompt());
-        }
     }
 
     private IEnumerator WalkToCoroutine(WalkTarget target)
