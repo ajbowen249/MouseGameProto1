@@ -269,7 +269,7 @@ public class GameCellWFC
                     option => option.AttachPoints.Any(point => point.edge == neighborEdge && point.modeType == mode)
                 ).Count();
 
-                var mustConnect = matchingConnections == neighborCell.PossibleCells.Count;
+                var mustConnect = matchingConnections > 0 && matchingConnections == neighborCell.PossibleCells.Count;
                 var mustNotConnect = matchingConnections == 0;
 
                 if (mustConnect)
