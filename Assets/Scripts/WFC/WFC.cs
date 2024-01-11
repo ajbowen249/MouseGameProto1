@@ -56,6 +56,17 @@ public struct GridLocation
     {
         return (loc.row, loc.col);
     }
+
+    public IEnumerable<(GridLocation loc, AttachEdge edge)> GetAllNeighborLocations()
+    {
+        return new List<(GridLocation, AttachEdge)>
+        {
+            ((row - 1, col), AttachEdge.SOUTH),
+            ((row + 1, col), AttachEdge.NORTH),
+            ((row, col - 1), AttachEdge.WEST),
+            ((row, col + 1), AttachEdge.EAST),
+        };
+    }
 }
 
 public class PendingCell<TCell>
@@ -136,14 +147,7 @@ public class WFCGrid<TCell>
 
     public IEnumerable<((GridLocation loc, AttachEdge edge), PendingCell<TCell>)> GetAllNeighborCells(GridLocation loc)
     {
-        return new List<(GridLocation, AttachEdge)>
-        {
-            ((loc.row - 1, loc.col), AttachEdge.SOUTH),
-            ((loc.row + 1, loc.col), AttachEdge.NORTH),
-            ((loc.row, loc.col - 1), AttachEdge.WEST),
-            ((loc.row, loc.col + 1), AttachEdge.EAST),
-        }
-        .Select(location => (location, GetCell(location.Item1)));
+        return loc.GetAllNeighborLocations().Select(location => (location, GetCell(location.Item1)));
     }
 
     public bool AllSettled()

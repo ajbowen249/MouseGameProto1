@@ -15,6 +15,9 @@ public class GameFiller
 
     SeededRandom _random;
 
+    private List<WFCCell> _emptyTypeList = new List<WFCCell>();
+    private List<AttachModeType> _carMode = new List<AttachModeType> { AttachModeType.CAR };
+
     public GameFiller(WFCContext<WFCCell> wfc, List<WFCCell> allCellTypes)
     {
         _random = RandomInstances.GetInstance(RandomInstances.Names.Generator);
@@ -60,7 +63,7 @@ public class GameFiller
         // Temporary; Stick the cheese shop on the top row guaranteed earlier
         _wfc.SetCell((_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2), CheeseStoreCell, true);
 
-        var path = CreateMeanderingPath(pathStart.row, pathStart.col, _wfc.Grid.Rows - 2);
+        var path = CreateMeanderingPath(pathStart, _wfc.Grid.Rows - 2);
     }
 
     public void RandomFill()
@@ -94,6 +97,7 @@ public class GameFiller
         );
 
         _wfc.SetCell((randomCell.rowIndex, randomCell.colIndex), randomType, false);
+
     }
 
     private void DefineBiomes(int residentialHeight)
@@ -104,7 +108,7 @@ public class GameFiller
         // Second phase excludes roads to define actual "blocks."
 
         var urbanList = new List<Biome> { Biome.URBAN };
-        var suburbanList = new List<Biome> { Biome.SUBURBAN};
+        var suburbanList = new List<Biome> { Biome.SUBURBAN };
         var roadList = new List<Biome> { Biome.ROAD };
         var emptyList = new List<Biome> { };
 
@@ -169,9 +173,6 @@ public class GameFiller
 
     private GridLocation AddFixedRoads(int residentialHeight)
     {
-        var emptyTypeList = new List<WFCCell>();
-        var carMode = new List<AttachModeType> { AttachModeType.CAR };
-
         // Create a southern "home street"
         DefineTypeBlock(
             residentialHeight - 1,
@@ -179,7 +180,7 @@ public class GameFiller
             1,
             _wfc.Grid.Cols - 2,
             _allRoadCellTypes,
-            emptyTypeList
+            _emptyTypeList
         );
 
         ConnectStrip(
@@ -188,7 +189,7 @@ public class GameFiller
             _wfc.Grid.Cols - 2,
             0,
             1,
-            carMode
+            _carMode
         );
 
         // Create a northern road for the target shop
@@ -198,7 +199,7 @@ public class GameFiller
             1,
             _wfc.Grid.Cols - 2,
             _allRoadCellTypes,
-            emptyTypeList
+            _emptyTypeList
         );
 
         ConnectStrip(
@@ -207,7 +208,7 @@ public class GameFiller
             _wfc.Grid.Cols - 2,
             0,
             1,
-            carMode
+            _carMode
         );
 
         // At the end of the home road, turn north for a little bit.
@@ -219,7 +220,7 @@ public class GameFiller
             3,
             1,
             _allRoadCellTypes,
-            emptyTypeList
+            _emptyTypeList
         );
 
         ConnectStrip(
@@ -228,7 +229,7 @@ public class GameFiller
             3,
             1,
             0,
-            carMode
+            _carMode
         );
 
         // Ensure there are no roads one row north of the home road, since that would look weird and we won't drive
@@ -239,26 +240,62 @@ public class GameFiller
             1,
             _wfc.Grid.Cols - 4,
             _allCellTypes.Where(cell => cell.AttachPoints.Count == 0).ToList(),
-            emptyTypeList
+            _emptyTypeList
         );
 
         return (residentialHeight + 1, _wfc.Grid.Cols - 2);
     }
 
-    private List<GridLocation> CreateMeanderingPath(int startRow, int startCol, int endRow)
+    private List<GridLocation> CreateMeanderingPath(GridLocation startLocation, int endRow)
     {
         var points = new List<GridLocation>();
+
+        GridLocation? lastLoc = null;
+
+        var currentLoc = startLocation;
+
+        while (currentLoc.row < endRow)
+        {
+            var nextLocationOptions = currentLoc.GetAllNeighborLocations()
+                .Where(pair => pair.edge != AttachEdge.SOUTH)
+                .Where(pair =>
+                    (lastLoc == null || pair.loc != (GridLocation)lastLoc) &&
+                    pair.loc.row >= startLocation.row &&
+                    pair.loc.col >= 1 &&
+                    pair.loc.col <= startLocation.col
+                ).ToList();
+
+            if (nextLocationOptions.Count == 0)
+            {
+                throw new Exception($"No available options when making path at {currentLoc}");
+            }
+
+            var nextLocation = RandomUtil.RandomElement(nextLocationOptions, _random).loc;
+            points.Add(nextLocation);
+
+            DefineTypeStrip(
+                currentLoc.row,
+                currentLoc.col,
+                2,
+                nextLocation.row - currentLoc.row,
+                nextLocation.col - currentLoc.col,
+                _allRoadCellTypes,
+                _emptyTypeList
+            );
+
+            ConnectStrip(
+                currentLoc.row,
+                currentLoc.col,
+                2,
+                nextLocation.row - currentLoc.row,
+                nextLocation.col - currentLoc.col,
+                _carMode
+            );
+
+            currentLoc = nextLocation;
+        }
+
         return points;
-
-        //var currentRow = startRow;
-        //var currentCol = startCol;
-
-        //while (currentRow < endRow)
-        //{
-
-        //}
-
-        //return points;
     }
 
     private void DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)
@@ -299,6 +336,21 @@ public class GameFiller
         }
     }
 
+    private void DefineTypeStrip(
+        int startRow,
+        int startCol,
+        int length,
+        int rowStep,
+        int colStep,
+        List<WFCCell> includeTypes,
+        List<WFCCell> excludeTypes
+    )
+    {
+        NarrowStripByCondition(startRow, startCol, length, rowStep, colStep, (option, step) =>
+            (includeTypes.Count == 0 || includeTypes.Contains(option)) && !excludeTypes.Contains(option)
+        );
+    }
+
     private void ConnectStrip(
         int startRow,
         int startCol,
@@ -308,15 +360,34 @@ public class GameFiller
         IEnumerable<AttachModeType> modes
     )
     {
-        var row = startRow;
-        var col = startCol;
-        var step = 0;
-
         var edge1 = rowStep != 0 ? (rowStep > 0 ? AttachEdge.SOUTH : AttachEdge.NORTH) :
             (colStep > 0 ? AttachEdge.WEST : AttachEdge.EAST);
 
         var edge2 = rowStep != 0 ? (rowStep > 0 ? AttachEdge.NORTH : AttachEdge.SOUTH) :
             (colStep > 0 ? AttachEdge.EAST : AttachEdge.WEST);
+
+        NarrowStripByCondition(startRow, startCol, length, rowStep, colStep, (option, step) =>
+        {
+            var points = option.AttachPoints.Where(point => modes.Contains(point.modeType)).ToList();
+            var result = (step == 0 || points.Any(points => points.edge == edge1)) &&
+                (step == length - 1 || points.Any(point => point.edge == edge2));
+
+            return result;
+        });
+    }
+
+    private void NarrowStripByCondition(
+        int startRow,
+        int startCol,
+        int length,
+        int rowStep,
+        int colStep,
+        Func<WFCCell, int, bool> condition
+    )
+    {
+        var row = startRow;
+        var col = startCol;
+        var step = 0;
 
         var grid = _wfc.Grid;
 
@@ -328,14 +399,9 @@ public class GameFiller
                 return;
             }
 
-            _wfc.SetCell((row, col), pendingCell.PossibleCells.Where(option =>
-            {
-                var points = option.AttachPoints.Where(point => modes.Contains(point.modeType)).ToList();
-                var result = (step == 0 || points.Any(points => points.edge == edge1)) &&
-                    (step == length - 1 || points.Any(point => point.edge == edge2));
-
-                return result;
-            }).ToList(), true);
+            _wfc.SetCell((row, col), pendingCell.PossibleCells.Where((option) =>
+                condition(option, step)
+            ).ToList(), true);
 
             row += rowStep;
             col += colStep;
