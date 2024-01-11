@@ -41,7 +41,7 @@ public class GameFiller
         var residentialHeight = 3;
 
         DefineBiomes(residentialHeight);
-        DefineRoads(residentialHeight);
+        AddFixedRoads(residentialHeight);
 
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
@@ -77,6 +77,13 @@ public class GameFiller
         // boost likelihood.
         var baseTypeOptions = randomCell.cell.PossibleCells.Select(point => point.BaseCell)
             .Distinct().ToList();
+
+        // Try not to pick roads at random, if we can help it.
+        var nonRoadOptions = baseTypeOptions.Where((cell) => cell.name != "RoadCell").ToList();
+        if (nonRoadOptions.Count > 0)
+        {
+            baseTypeOptions = nonRoadOptions;
+        }
 
         var randomBase = RandomUtil.RandomElement(baseTypeOptions, _random);
         var randomType = RandomUtil.RandomElement(
@@ -158,18 +165,17 @@ public class GameFiller
         );
     }
 
-    private void DefineRoads(int residentialHeight)
+    private void AddFixedRoads(int residentialHeight)
     {
-        // Ensure a southern "home street"
-        // Using road specifically instead of biomes so ensure any point is walkable
         var emptyTypeList = new List<WFCCell>();
         var carMode = new List<AttachModeType> { AttachModeType.CAR };
 
+        // Create a southern "home street"
         DefineTypeBlock(
             residentialHeight - 1,
             1,
             1,
-            _wfc.Grid.Cols - 3,
+            _wfc.Grid.Cols - 2,
             _allRoadCellTypes,
             emptyTypeList
         );
@@ -177,13 +183,13 @@ public class GameFiller
         ConnectStrip(
             residentialHeight - 1,
             1,
-            _wfc.Grid.Cols - 3,
+            _wfc.Grid.Cols - 2,
             0,
             1,
             carMode
         );
 
-        // Ensure a southern road. The target shop can at least go here
+        // Create a northern road for the target shop
         DefineTypeBlock(
             _wfc.Grid.Rows - 2,
             1,
@@ -196,18 +202,19 @@ public class GameFiller
         ConnectStrip(
             _wfc.Grid.Rows - 2,
             1,
-            _wfc.Grid.Cols - 3,
+            _wfc.Grid.Cols - 2,
             0,
             1,
             carMode
         );
 
-        // Temporary; Make a basic road connecting the eastern edges
+        // At the end of the home road, turn north for a little bit.
+        // This is the point from which we will start our meandering paths.
 
         DefineTypeBlock(
             residentialHeight - 1,
-            _wfc.Grid.Cols - 3,
-            _wfc.Grid.Rows - 3,
+            _wfc.Grid.Cols - 2,
+            3,
             1,
             _allRoadCellTypes,
             emptyTypeList
@@ -215,11 +222,22 @@ public class GameFiller
 
         ConnectStrip(
             residentialHeight - 1,
-            _wfc.Grid.Cols - 3,
-            _wfc.Grid.Rows - 3,
+            _wfc.Grid.Cols - 2,
+            3,
             1,
             0,
             carMode
+        );
+
+        // Ensure there are no roads one row north of the home road, since that would look weird and we won't drive
+        // there anyway.
+        DefineTypeBlock(
+            residentialHeight,
+            2,
+            1,
+            _wfc.Grid.Cols - 4,
+            _allCellTypes.Where(cell => cell.AttachPoints.Count == 0).ToList(),
+            emptyTypeList
         );
     }
 
