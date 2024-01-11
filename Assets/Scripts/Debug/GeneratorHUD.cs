@@ -36,14 +36,12 @@ public class GeneratorHUD : MonoBehaviour
         StepButton.onClick.AddListener(() =>
         {
             ResetIfDone();
-            UpdateSeed();
             _generator.Step();
         });
 
         StepToEndButton.onClick.AddListener(() =>
         {
             ResetIfDone();
-            UpdateSeed();
             _isSteppingToEnd = true;
         });
 
