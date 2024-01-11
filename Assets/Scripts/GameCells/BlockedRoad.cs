@@ -18,7 +18,7 @@ public class BlockedRoad : MonoBehaviour
                 return true;
             }
 
-            HUD.Instance.AddMessage("The snow and your neighbor block your path.");
+            HUD.WithInstance(hud => hud.AddMessage("The snow and your neighbor block your path."));
 
             return false;
         });

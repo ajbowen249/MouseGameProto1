@@ -153,10 +153,10 @@ public class MouseController : MonoBehaviour
         if (costText != "")
         {
             message += $":{costText}";
-            HUD.Instance.SetMeters(Gas, Energy, Hours, Money);
+            HUD.WithInstance(hud => hud.SetMeters(Gas, Energy, Hours, Money));
         }
 
-        HUD.Instance.AddMessage(message);
+        HUD.WithInstance(hud => hud.AddMessage(message));
     }
 
     public void AddInventoryItem(string name, int quantity)
@@ -166,7 +166,7 @@ public class MouseController : MonoBehaviour
         existingQuantity += quantity;
         Inventory[name] = existingQuantity;
 
-        HUD.Instance.AddMessage($"Picked up {name} (x{quantity})");
+        HUD.WithInstance(hud => hud.AddMessage($"Picked up {name} (x{quantity})"));
     }
 
     public void AttachTo(GameObject parent, Transform target)
@@ -456,7 +456,7 @@ public class MouseController : MonoBehaviour
         if (interactionVolume != null)
         {
             _inInteractionVolume = interactionVolume;
-            HUD.Instance.SetInteractionPrompt(_inInteractionVolume.Prompt);
+            HUD.WithInstance(hud => hud.SetInteractionPrompt(_inInteractionVolume.Prompt));
         }
     }
 
@@ -466,7 +466,7 @@ public class MouseController : MonoBehaviour
         if (interactionVolume != null)
         {
             _inInteractionVolume = null;
-            HUD.Instance.ClearInteractionPrompt();
+            HUD.WithInstance(hud => hud.ClearInteractionPrompt());
         }
     }
 

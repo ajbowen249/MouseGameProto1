@@ -26,7 +26,7 @@ public class DialogController : MonoBehaviour
         _dialog = _talkingTo.DialogTree;
         _dialogIndex = 0;
 
-        HUD.Instance.SetDialog(_dialog, _dialogIndex);
+        HUD.WithInstance(hud => hud.SetDialog(_dialog, _dialogIndex));
 
         if (_talkingTo.TalkCamera != null)
         {
@@ -40,7 +40,7 @@ public class DialogController : MonoBehaviour
 
     public void OnEndedDialog(GameObject talkingTo)
     {
-        HUD.Instance.SetDialog(null, 0);
+        HUD.WithInstance(hud => hud.SetDialog(null, 0));
 
         if (_talkingTo.TalkCamera)
         {
@@ -65,7 +65,7 @@ public class DialogController : MonoBehaviour
 
             if (!_mouseController.CanSelectDialogOption(option))
             {
-                HUD.Instance.AddMessage("Missing requirements");
+                HUD.WithInstance(hud => hud.AddMessage("Missing requirements"));
                 return;
             }
 
@@ -78,7 +78,7 @@ public class DialogController : MonoBehaviour
             {
                 _dialog = option.Node;
                 _dialogIndex = 0;
-                HUD.Instance.SetDialog(_dialog, _dialogIndex);
+                HUD.WithInstance(hud => hud.SetDialog(_dialog, _dialogIndex));
             }
             else
             {
@@ -110,7 +110,7 @@ public class DialogController : MonoBehaviour
                 _dialogIndex = _dialog.Options.Count - 1;
             }
 
-            HUD.Instance.SetDialog(_dialog, _dialogIndex);
+            HUD.WithInstance(hud => hud.SetDialog(_dialog, _dialogIndex));
         }
     }
 }

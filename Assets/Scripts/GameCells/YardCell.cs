@@ -17,7 +17,7 @@ public class YardCell : MonoBehaviour
                 return true;
             }
 
-            HUD.Instance.AddMessage("The snow blocks your path.");
+            HUD.WithInstance(hud => hud.AddMessage("The snow blocks your path."));
 
             return false;
         });

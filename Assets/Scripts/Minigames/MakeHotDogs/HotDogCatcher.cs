@@ -57,7 +57,7 @@ public class HotDogCatcher : MonoBehaviour
     private void OnBadDog(string message)
     {
         Clear();
-        HUD.Instance.AddMessage(message);
+        HUD.WithInstance(hud => hud.AddMessage(message));
     }
 
     private void OnDogComplete()

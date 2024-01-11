@@ -24,7 +24,7 @@ public class HotDogStand : MonoBehaviour
                 return true;
             }
 
-            HUD.Instance.AddMessage("The crowd, ravenous for Hot Dogs, blocks your path.");
+            HUD.WithInstance(hud => hud.AddMessage("The crowd, ravenous for Hot Dogs, blocks your path."));
 
             return false;
         });

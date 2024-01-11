@@ -31,7 +31,7 @@ public class HUD : MonoBehaviour
     public int MessageLogLines = 5;
     public int MessageLogTimeSeconds = 7;
 
-    public static HUD Instance { get; private set; }
+    protected static HUD Instance { get; private set; }
 
     private List<string> _messages = new List<string>();
     private float _lastNewLog = 0;
@@ -42,6 +42,14 @@ public class HUD : MonoBehaviour
     private PlayerMouse _player;
 
     private bool _isConsoleOpen = false;
+
+    public static void WithInstance(Action<HUD> callback)
+    {
+        if (Instance != null)
+        {
+            callback(Instance);
+        }
+    }
 
     void Awake()
     {

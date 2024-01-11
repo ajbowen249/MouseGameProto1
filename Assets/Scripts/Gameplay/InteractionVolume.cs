@@ -35,7 +35,7 @@ public class InteractionVolume : MonoBehaviour
         if (Interactable != null)
         {
             Interactable.SendMessage("OnInteraction", interactor, SendMessageOptions.DontRequireReceiver);
-            HUD.Instance.ClearInteractionPrompt();
+            HUD.WithInstance(hud => hud.ClearInteractionPrompt());
         }
     }
 }
