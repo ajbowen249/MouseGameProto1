@@ -96,6 +96,7 @@ public enum GenerationPhase
 {
     INIT,
     PLACE_FIXED_CELLS,
+    LAY_PATH,
     COLLAPSE,
     FILL,
     DONE,
@@ -106,6 +107,7 @@ public class GameCellWFC
     public GenerationPhase Phase { get; private set; }
     public bool CanIterate { get { return Phase != GenerationPhase.DONE; } }
 
+    public bool GranularPathGeneration { get; set; }
     public bool GranularCollapse { get; set; }
 
     private List<GameCell> _gameCells;
@@ -149,7 +151,18 @@ public class GameCellWFC
                 break;
             case GenerationPhase.PLACE_FIXED_CELLS:
                 _filler.PlaceFixedCells();
-                Phase = GenerationPhase.COLLAPSE;
+                Phase = GenerationPhase.LAY_PATH;
+                break;
+            case GenerationPhase.LAY_PATH:
+                if (GranularPathGeneration)
+                {
+                    _filler.IteratePathGeneration();
+                }
+                else
+                {
+                    _filler.GeneratePathComplete();
+                }
+                Phase = _filler.HasCreatedRandomPath ? GenerationPhase.COLLAPSE : GenerationPhase.LAY_PATH;
                 break;
             case GenerationPhase.COLLAPSE:
                 if (GranularCollapse)

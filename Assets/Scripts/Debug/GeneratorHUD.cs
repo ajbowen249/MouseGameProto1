@@ -20,6 +20,7 @@ public class GeneratorHUD : MonoBehaviour
     public Button IncrementButton;
     public Button DecrementButton;
 
+    public Toggle GranularPathGenerationToggle;
     public Toggle GranularCollapseToggle;
 
     public Button MainMenuButton;
@@ -72,9 +73,14 @@ public class GeneratorHUD : MonoBehaviour
         IncrementButton.onClick.AddListener(() => incDec(true));
         DecrementButton.onClick.AddListener(() => incDec(false));
 
+        GranularPathGenerationToggle.onValueChanged.AddListener(value =>
+        {
+            _generator.WCF.GranularPathGeneration = value;
+        });
+
         GranularCollapseToggle.onValueChanged.AddListener(value =>
         {
-            _generator.WCF.GranularCollapse = GranularCollapseToggle.isOn;
+            _generator.WCF.GranularCollapse = value;
         });
 
         MainMenuButton.onClick.AddListener(() =>
@@ -108,6 +114,7 @@ public class GeneratorHUD : MonoBehaviour
     {
         _generator.ResetSelf();
         UpdateSeed();
+        _generator.WCF.GranularPathGeneration = GranularPathGenerationToggle.isOn;
         _generator.WCF.GranularCollapse = GranularCollapseToggle.isOn;
     }
 

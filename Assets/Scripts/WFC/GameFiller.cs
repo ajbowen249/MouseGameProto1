@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameFiller
@@ -17,6 +19,19 @@ public class GameFiller
 
     private List<WFCCell> _emptyTypeList = new List<WFCCell>();
     private List<AttachModeType> _carMode = new List<AttachModeType> { AttachModeType.CAR };
+
+    private GridLocation? _randomPathStart;
+    private GridLocation? _randomPathLast;
+    private GridLocation? _randomPathCurrent;
+
+    public bool HasPlacedFixedCells
+    {
+        get { return _randomPathStart != null; }
+    }
+
+    private List<GridLocation> _generatedPath = new List<GridLocation>();
+
+    public bool HasCreatedRandomPath { get; private set; } = false;
 
     public GameFiller(WFCContext<WFCCell> wfc, List<WFCCell> allCellTypes)
     {
@@ -44,7 +59,7 @@ public class GameFiller
         var residentialHeight = 3;
 
         DefineBiomes(residentialHeight);
-        var pathStart = AddFixedRoads(residentialHeight);
+        _randomPathStart = AddFixedRoads(residentialHeight);
 
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
         var YardCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "YardCell");
@@ -62,8 +77,6 @@ public class GameFiller
 
         // Temporary; Stick the cheese shop on the top row guaranteed earlier
         _wfc.SetCell((_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2), CheeseStoreCell, true);
-
-        var path = CreateMeanderingPath(pathStart, _wfc.Grid.Rows - 2);
     }
 
     public void RandomFill()
@@ -98,6 +111,80 @@ public class GameFiller
 
         _wfc.SetCell((randomCell.rowIndex, randomCell.colIndex), randomType, false);
 
+        // DO NOT COMMIT
+        if (nonRoadOptions.Count > 0)
+        {
+            _wfc.SetCell((randomCell.rowIndex, randomCell.colIndex), _allCellTypes.First(cell => cell.BaseCell.name == "BlankCell"), false);
+        }
+    }
+
+    public void GeneratePathComplete()
+    {
+        while (!HasCreatedRandomPath)
+        {
+            IteratePathGeneration();
+        }
+    }
+
+    public void IteratePathGeneration()
+    {
+        if (_randomPathStart == null)
+        {
+            throw new Exception("Tried laying path before fixed cells");
+        }
+
+        if (_randomPathCurrent == null)
+        {
+            _randomPathCurrent = _randomPathStart;
+        }
+
+        var currentLoc = (GridLocation)_randomPathCurrent;
+        var startLocation = (GridLocation)_randomPathStart;
+
+        if (currentLoc.row >= _wfc.Grid.Rows - 2)
+        {
+            HasCreatedRandomPath = true;
+            return;
+        }
+
+        var nextLocationOptions = currentLoc.GetAllNeighborLocations()
+            .Where(pair => pair.edge != AttachEdge.SOUTH)
+            .Where(pair =>
+                (_randomPathLast == null || pair.loc != (GridLocation)_randomPathLast) &&
+            pair.loc.row >= startLocation.row &&
+                pair.loc.col >= 1 &&
+                pair.loc.col <= startLocation.col
+            ).ToList();
+
+        if (nextLocationOptions.Count == 0)
+        {
+            throw new Exception($"No available options when making path at {currentLoc}");
+        }
+
+        var nextLocation = RandomUtil.RandomElement(nextLocationOptions, _random).loc;
+        _generatedPath.Add(nextLocation);
+
+        DefineTypeStrip(
+            currentLoc.row,
+            currentLoc.col,
+            2,
+            nextLocation.row - currentLoc.row,
+            nextLocation.col - currentLoc.col,
+            _allRoadCellTypes,
+            _emptyTypeList
+        );
+
+        ConnectStrip(
+            currentLoc.row,
+            currentLoc.col,
+            2,
+            nextLocation.row - currentLoc.row,
+            nextLocation.col - currentLoc.col,
+            _carMode
+        );
+
+        _randomPathLast = _randomPathCurrent;
+        _randomPathCurrent = nextLocation;
     }
 
     private void DefineBiomes(int residentialHeight)
@@ -244,58 +331,6 @@ public class GameFiller
         );
 
         return (residentialHeight + 1, _wfc.Grid.Cols - 2);
-    }
-
-    private List<GridLocation> CreateMeanderingPath(GridLocation startLocation, int endRow)
-    {
-        var points = new List<GridLocation>();
-
-        GridLocation? lastLoc = null;
-
-        var currentLoc = startLocation;
-
-        while (currentLoc.row < endRow)
-        {
-            var nextLocationOptions = currentLoc.GetAllNeighborLocations()
-                .Where(pair => pair.edge != AttachEdge.SOUTH)
-                .Where(pair =>
-                    (lastLoc == null || pair.loc != (GridLocation)lastLoc) &&
-                    pair.loc.row >= startLocation.row &&
-                    pair.loc.col >= 1 &&
-                    pair.loc.col <= startLocation.col
-                ).ToList();
-
-            if (nextLocationOptions.Count == 0)
-            {
-                throw new Exception($"No available options when making path at {currentLoc}");
-            }
-
-            var nextLocation = RandomUtil.RandomElement(nextLocationOptions, _random).loc;
-            points.Add(nextLocation);
-
-            DefineTypeStrip(
-                currentLoc.row,
-                currentLoc.col,
-                2,
-                nextLocation.row - currentLoc.row,
-                nextLocation.col - currentLoc.col,
-                _allRoadCellTypes,
-                _emptyTypeList
-            );
-
-            ConnectStrip(
-                currentLoc.row,
-                currentLoc.col,
-                2,
-                nextLocation.row - currentLoc.row,
-                nextLocation.col - currentLoc.col,
-                _carMode
-            );
-
-            currentLoc = nextLocation;
-        }
-
-        return points;
     }
 
     private void DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)
