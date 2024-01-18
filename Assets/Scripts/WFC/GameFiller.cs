@@ -75,6 +75,9 @@ public class GameFiller
         _wfc.SetCell((2, 4), BlockedRoadCell, true);
         _wfc.SetCell((2, 6), HotDogStandCell, true);
 
+        // The first cell of the auto path is the one to the east of the last "tutorial" encounter.
+        GeneratedPath.Add((2, 7));
+
         // Temporary; Stick the cheese shop on the top row guaranteed earlier
         _wfc.SetCell((_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2), CheeseStoreCell, true);
     }
@@ -304,14 +307,14 @@ public class GameFiller
             _emptyTypeList
         );
 
-        ConnectStrip(
+        GeneratedPath.AddRange(ConnectStrip(
             residentialHeight - 1,
             _wfc.Grid.Cols - 2,
             3,
             1,
             0,
             _carMode
-        );
+        ));
 
         // Ensure there are no roads one row north of the home road, since that would look weird and we won't drive
         // there anyway.
@@ -327,33 +330,38 @@ public class GameFiller
         return (residentialHeight + 1, _wfc.Grid.Cols - 2);
     }
 
-    private void DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)
+    private List<GridLocation> DefineBiomeBlock(int startRow, int startCol, int height, int width, List<Biome> includeBiomes, List<Biome> excludeBiomes)
     {
-        NarrowBlockByCondition(startRow, startCol, height, width,
+        return NarrowBlockByCondition(startRow, startCol, height, width,
             option => (includeBiomes.Count == 0 || option.BaseCell.Biomes.Any(biome => includeBiomes.Contains(biome))) &&
                         !option.BaseCell.Biomes.Any(biome => excludeBiomes.Contains(biome))
         );
     }
 
-    private void DefineTypeBlock(int startRow, int startCol, int height, int width, List<WFCCell> includeTypes, List<WFCCell> excludeTypes)
+    private List<GridLocation> DefineTypeBlock(int startRow, int startCol, int height, int width, List<WFCCell> includeTypes, List<WFCCell> excludeTypes)
     {
-        NarrowBlockByCondition(startRow, startCol, height, width,
+        return NarrowBlockByCondition(startRow, startCol, height, width,
             option => (includeTypes.Count == 0 || includeTypes.Contains(option)) && !excludeTypes.Contains(option)
         );
     }
 
-    private void NarrowBlockByCondition(int startRow, int startCol, int height, int width, Func<WFCCell, bool> condition)
+    private List<GridLocation> NarrowBlockByCondition(int startRow, int startCol, int height, int width, Func<WFCCell, bool> condition)
     {
+        var visitedLocations = new List<GridLocation>();
+
         for (var row = startRow; row < startRow + height; row++)
         {
             for (var col = startCol; col < startCol + width; col++)
             {
-                var cell = _wfc.Grid.GetCell((row, col));
+                GridLocation location = (row, col);
+                var cell = _wfc.Grid.GetCell(location);
                 if (cell == null)
                 {
                     Debug.LogWarning($"Tried to get cell {row}, {col}");
                     continue;
                 }
+
+                visitedLocations.Add(location);
 
                 var narrowedOptions = cell.PossibleCells.Where(condition).ToList();
 
@@ -363,9 +371,11 @@ public class GameFiller
                 }
             }
         }
+
+        return visitedLocations;
     }
 
-    private void DefineTypeStrip(
+    private List<GridLocation> DefineTypeStrip(
         int startRow,
         int startCol,
         int length,
@@ -375,12 +385,12 @@ public class GameFiller
         List<WFCCell> excludeTypes
     )
     {
-        NarrowStripByCondition(startRow, startCol, length, rowStep, colStep, (option, step) =>
+        return NarrowStripByCondition(startRow, startCol, length, rowStep, colStep, (option, step) =>
             (includeTypes.Count == 0 || includeTypes.Contains(option)) && !excludeTypes.Contains(option)
         );
     }
 
-    private void ConnectStrip(
+    private List<GridLocation> ConnectStrip(
         int startRow,
         int startCol,
         int length,
@@ -395,7 +405,7 @@ public class GameFiller
         var edge2 = rowStep != 0 ? (rowStep > 0 ? AttachEdge.NORTH : AttachEdge.SOUTH) :
             (colStep > 0 ? AttachEdge.EAST : AttachEdge.WEST);
 
-        NarrowStripByCondition(startRow, startCol, length, rowStep, colStep, (option, step) =>
+        return NarrowStripByCondition(startRow, startCol, length, rowStep, colStep, (option, step) =>
         {
             var points = option.AttachPoints.Where(point => modes.Contains(point.modeType)).ToList();
             var result = (step == 0 || points.Any(points => points.edge == edge1)) &&
@@ -405,7 +415,7 @@ public class GameFiller
         });
     }
 
-    private void NarrowStripByCondition(
+    private List<GridLocation> NarrowStripByCondition(
         int startRow,
         int startCol,
         int length,
@@ -414,6 +424,8 @@ public class GameFiller
         Func<WFCCell, int, bool> condition
     )
     {
+        var visitedLocations = new List<GridLocation>();
+
         var row = startRow;
         var col = startCol;
         var step = 0;
@@ -422,13 +434,16 @@ public class GameFiller
 
         while (step < length)
         {
-            var pendingCell = grid.GetCell((row, col));
+            var location = (row, col);
+            var pendingCell = grid.GetCell(location);
             if (pendingCell == null)
             {
-                return;
+                return visitedLocations;
             }
 
-            _wfc.SetCell((row, col), pendingCell.PossibleCells.Where((option) =>
+            visitedLocations.Add(location);
+
+            _wfc.SetCell(location, pendingCell.PossibleCells.Where((option) =>
                 condition(option, step)
             ).ToList(), true);
 
@@ -436,5 +451,7 @@ public class GameFiller
             col += colStep;
             step++;
         }
+
+        return visitedLocations;
     }
 }
