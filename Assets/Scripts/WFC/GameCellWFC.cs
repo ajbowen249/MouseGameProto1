@@ -106,6 +106,7 @@ public class GameCellWFC
 {
     public GenerationPhase Phase { get; private set; }
     public bool CanIterate { get { return Phase != GenerationPhase.DONE; } }
+    public List<GridLocation> GeneratedPath { get {  return _filler.GeneratedPath; } }
 
     public bool GranularPathGeneration { get; set; }
     public bool GranularCollapse { get; set; }

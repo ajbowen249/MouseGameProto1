@@ -29,7 +29,7 @@ public class GameFiller
         get { return _randomPathStart != null; }
     }
 
-    private List<GridLocation> _generatedPath = new List<GridLocation>();
+    public List<GridLocation> GeneratedPath { get; private set; } = new List<GridLocation>();
 
     public bool HasCreatedRandomPath { get; private set; } = false;
 
@@ -110,12 +110,6 @@ public class GameFiller
         );
 
         _wfc.SetCell((randomCell.rowIndex, randomCell.colIndex), randomType, false);
-
-        // DO NOT COMMIT
-        if (nonRoadOptions.Count > 0)
-        {
-            _wfc.SetCell((randomCell.rowIndex, randomCell.colIndex), _allCellTypes.First(cell => cell.BaseCell.name == "BlankCell"), false);
-        }
     }
 
     public void GeneratePathComplete()
@@ -162,7 +156,7 @@ public class GameFiller
         }
 
         var nextLocation = RandomUtil.RandomElement(nextLocationOptions, _random).loc;
-        _generatedPath.Add(nextLocation);
+        GeneratedPath.Add(nextLocation);
 
         DefineTypeStrip(
             currentLoc.row,

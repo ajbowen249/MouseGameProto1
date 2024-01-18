@@ -162,7 +162,7 @@ public class GameGenerator : MonoBehaviour
         }
 
         var grid = WCF.GetGrid();
-        ForEachPosition((loc, location) => _debugCells[loc.row][loc.col].SetOptions(grid.GetCell(loc), WCF.IsCellQueued(loc)));
+        ForEachPosition((loc, location) => _debugCells[loc.row][loc.col].SetOptions(loc, grid.GetCell(loc), WCF.IsCellQueued(loc)));
     }
 
     private void SpawnCells()

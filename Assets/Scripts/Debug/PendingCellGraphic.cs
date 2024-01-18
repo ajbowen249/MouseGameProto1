@@ -23,7 +23,9 @@ public class PendingCellGraphic : MonoBehaviour
     public Material QueuedMat;
     public Material SettledMat;
 
-    public void SetOptions(PendingCell<WFCCell> cell, bool isQueued)
+    public GameObject PathIndicator;
+
+    public void SetOptions(GridLocation loc, PendingCell<WFCCell> cell, bool isQueued)
     {
         var floorRenderer = Floor.GetComponent<Renderer>();
         floorRenderer.material = cell.IsSettled() ? SettledMat : (isQueued ? QueuedMat : UnqueuedMat);
@@ -82,6 +84,11 @@ public class PendingCellGraphic : MonoBehaviour
                     map[mode][edge].gameObject.SetActive(false);
                 }
             }
+        }
+
+        if (GameGenerator.Instance.WCF.GeneratedPath.Any(locaction => locaction == loc))
+        {
+            PathIndicator.SetActive(true);
         }
     }
 }
