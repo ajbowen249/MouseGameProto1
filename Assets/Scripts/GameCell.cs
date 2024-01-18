@@ -62,8 +62,7 @@ public class GameCell : MonoBehaviour
     public InteractionVolume InteractWithOnCellComplete;
 
     [HideInInspector]
-    public int Row { get; set; }
-    public int Col { get; set; }
+    public GridLocation Location { get; set; }
 
     public bool IsComplete { get; private set; } = false;
 
@@ -206,12 +205,6 @@ public class GameCell : MonoBehaviour
     public void GenerationComplete()
     {
         BroadcastMessage("OnGenerationComplete", this, SendMessageOptions.DontRequireReceiver);
-    }
-
-    public bool CanAutoContinue(GameObject fromCell)
-    {
-        return ActiveCarExits.Where(point => point.toCell != fromCell).Count() == 1 &&
-            ActiveFootExits.Count() == 0 && _exitRequirement == null;
     }
 
     public void FadeOutAndDie()

@@ -67,7 +67,7 @@ public class Exit : MonoBehaviour
         AttemptExit(interactor, null);
     }
 
-    public void AttemptExit(GameObject interactor, GameObject previousCell)
+    public void AttemptExit(GameObject interactor, GameObject previousCell, GameObject toCell = null)
     {
         var fromGameCell = FromCell?.GetComponent<GameCell>();
         if (fromGameCell == null)
@@ -75,12 +75,24 @@ public class Exit : MonoBehaviour
             Debug.LogError("Exit missing FromCell");
         }
 
-        if (_selectedPoint == null)
+        if (toCell != null && _selectedPoint == null)
+        {
+            _selectedPoint = SelectableOptions.First(point =>
+                point.toCell.GetComponent<GameCell>().Location ==
+                toCell.GetComponent<GameCell>().Location
+            );
+        }
+        else if (toCell == null && _selectedPoint != null)
+        {
+            toCell = _selectedPoint.toCell;
+        }
+        else if (toCell == null && _selectedPoint == null)
         {
             var selectableMinusPrevious = SelectableOptions.Where(point => point.toCell != previousCell).ToList();
             if (selectableMinusPrevious.Count == 1)
             {
                 _selectedPoint = selectableMinusPrevious[0];
+                toCell = _selectedPoint.toCell;
             }
             else
             {
@@ -89,15 +101,14 @@ public class Exit : MonoBehaviour
             }
         }
 
+        if (toCell == null || _selectedPoint == null)
+        {
+            throw new Exception("Unable to determine exit point.");
+        }
+
         if (!fromGameCell.CanExit(_selectedPoint))
         {
             return;
-        }
-
-        var toCell = _selectedPoint.toCell?.GetComponent<GameCell>();
-        if (toCell == null)
-        {
-            Debug.LogError("Exit missing to cell");
         }
 
         if (_exitHandler != null)

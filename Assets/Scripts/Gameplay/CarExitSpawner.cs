@@ -29,15 +29,22 @@ public class CarExitSpawner : MonoBehaviour
         _exit.AttemptExit(interactor);
     }
 
-    public bool ShouldAutoContinue(GameObject fromCell)
+    public GridLocation? AutoContinuePoint(GameObject fromCell)
     {
         if (!EnableAutoContinue)
         {
-            return false;
+            return null;
         }
 
         var cell = _exit.FromCell.GetComponent<GameCell>();
-        return cell.CanAutoContinue(fromCell);
+        var generatedPath = GameGenerator.Instance.WCF.GeneratedPath;
+        var pathIndex = generatedPath.IndexOf(cell.Location);
+        if (pathIndex >= 0 && pathIndex < generatedPath.Count - 1)
+        {
+            return generatedPath[pathIndex + 1];
+        }
+
+        return null;
     }
 
     void OnDrawGizmos()

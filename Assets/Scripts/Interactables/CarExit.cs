@@ -57,18 +57,19 @@ public class CarExit : MonoBehaviour
 
                 toCell.PlayerEntered(driver.gameObject);
 
-                var autoContinue = maybeSpawner.ShouldAutoContinue(exit.FromCell);
+                var autoContinuePoint = maybeSpawner.AutoContinuePoint(exit.FromCell);
 
-                var detachLocation = autoContinue ? DriverSeat.transform : ExitPoint.transform;
+                var detachLocation = autoContinuePoint != null ? DriverSeat.transform : ExitPoint.transform;
                 driver.DetachFrom(detachLocation);
                 Destroy(gameObject);
 
                 var nextExitObject = maybeSpawner.SpawnCarExit();
                 var nextExit = nextExitObject.GetComponent<CarExit>();
 
-                if (autoContinue)
+                if (autoContinuePoint is GridLocation continueTo)
                 {
-                    nextExit.AutoContinue(driver.gameObject, exit.FromCell);
+                    var targetCell = GameGenerator.Instance.GameCellGrid[continueTo.row][continueTo.col];
+                    nextExit.AutoContinue(driver.gameObject, _exit.FromCell, targetCell);
                 }
                 else
                 {
@@ -78,10 +79,9 @@ public class CarExit : MonoBehaviour
         });
     }
 
-    public void AutoContinue(GameObject driver, GameObject fromCell)
+    public void AutoContinue(GameObject driver, GameObject fromCell, GameObject toCell)
     {
-        var cell = _exit.FromCell.GetComponent<GameCell>();
-        _exit.AttemptExit(driver, fromCell);
+        _exit.AttemptExit(driver, fromCell, toCell);
     }
 
     void Update()

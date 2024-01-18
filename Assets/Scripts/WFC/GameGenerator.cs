@@ -228,8 +228,7 @@ public class GameGenerator : MonoBehaviour
             }
 
             var gameCell = cellObject.GetComponent<GameCell>();
-            gameCell.Row = loc.row;
-            gameCell.Col = loc.col;
+            gameCell.Location = loc;
             gameCell.DeterminedConnections(connections);
 
             GameCellGrid[loc.row].Add(cellObject);
