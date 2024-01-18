@@ -59,6 +59,8 @@ public class GameFiller
         var residentialHeight = 3;
 
         DefineBiomes(residentialHeight);
+        // The first cell of the auto path is the one to the east of the last "tutorial" encounter.
+        GeneratedPath.Add((2, 7));
         _randomPathStart = AddFixedRoads(residentialHeight);
 
         var HomeCell = _allCellTypes.Find(cell => cell.BaseCell.gameObject.name == "HomeCell");
@@ -74,9 +76,6 @@ public class GameFiller
         _wfc.SetCell((1, 4), YardCell, true);
         _wfc.SetCell((2, 4), BlockedRoadCell, true);
         _wfc.SetCell((2, 6), HotDogStandCell, true);
-
-        // The first cell of the auto path is the one to the east of the last "tutorial" encounter.
-        GeneratedPath.Add((2, 7));
 
         // Temporary; Stick the cheese shop on the top row guaranteed earlier
         _wfc.SetCell((_wfc.Grid.Rows - 1, _wfc.Grid.Cols / 2), CheeseStoreCell, true);
