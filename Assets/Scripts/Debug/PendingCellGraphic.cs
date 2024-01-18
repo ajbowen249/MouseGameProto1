@@ -86,9 +86,12 @@ public class PendingCellGraphic : MonoBehaviour
             }
         }
 
-        if (GameGenerator.Instance.WCF.GeneratedPath.Any(locaction => locaction == loc))
+        var pathIndex = GameGenerator.Instance.WCF.GeneratedPath.IndexOf(loc);
+        if (pathIndex > -1)
         {
             PathIndicator.SetActive(true);
+            var text = PathIndicator.GetComponentInChildren<TMP_Text>();
+            text.text = pathIndex.ToString();
         }
     }
 }
